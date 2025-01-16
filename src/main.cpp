@@ -6,7 +6,6 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-// #include <WebServer.h>
 
 #include <ESPAsyncWebServer.h>
 
@@ -19,6 +18,9 @@ AsyncWebServer server(listenPort);
 // #include <OneWire.h>
 // #include <DallasTemperature.h>
 
+// ---------------------------------------------------
+// dummy stub
+// ---------------------------------------------------
 #define ONE_WIRE_BUS 23
 
 class Dummy_OneWire
@@ -50,6 +52,7 @@ Dummy_OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature.
 // DallasTemperature sensors(&oneWire);
 Dummy_DallasTemperature sensors(&oneWire);
+// ---------------------------------------------------
 
 constexpr size_t arraySize{10};
 int tempArray[arraySize] = {};
@@ -60,21 +63,22 @@ const unsigned long UPDATE_INTERVAL = 10000UL;
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
 
-String getPage()
+String processor(const String &aVar);
+
+void GetPage(AsyncWebServerRequest *aRequest)
 {
   sensors.requestTemperatures();
 
-  // return BuildHTML(tempArray, timeArray, arraySize);
-  return String();
+  aRequest->send_P(200, "text/html", index_html_template, processor);
 }
 
 // ==================================================
 // Handle for page not found
 // ==================================================
-// void handleNotFound()
-// {
-//   server.send(200, "text/html", getPage());
-// }
+void handleNotFound(AsyncWebServerRequest *aRequest)
+{
+  GetPage(aRequest);
+}
 
 // функция формирования содержимого WEB страницы
 String processor(const String &aVar)
@@ -88,7 +92,7 @@ String processor(const String &aVar)
     {
       buttons += ",[";
       buttons += String(timeArray[i]);
-      buttons += ","; 
+      buttons += ",";
       buttons += String(tempArray[i]);
       buttons += "]";
     }
@@ -101,31 +105,37 @@ String processor(const String &aVar)
 // ==================================================
 // Handle submit form
 // ==================================================
-void handleSubmit()
+void handleSubmit(AsyncWebServerRequest *aRequest)
 {
-  // if (server.hasArg("button1"))
-  // {
-  //   Serial.print("The temperature is: ");
-  //   Serial.print(static_cast<int>(sensors.getTempCByIndex(0)));
-  //   Serial.println(" degrees C");
-  // }
-  // server.send(200, "text/html", getPage()); // Response to the HTTP request
+  if (aRequest->hasArg("button1"))
+  {
+    Serial.print("The temperature is: ");
+    Serial.print(static_cast<int>(sensors.getTempCByIndex(0)));
+    Serial.println(" degrees C");
+  }
+
+  GetPage(aRequest); // Response to the HTTP request
 }
 
 // ===================================================
 // Handle root
 // ===================================================
-void handleRoot()
+void handleRoot(AsyncWebServerRequest *aRequest)
 {
-  // if (server.args())
-  // {
-  //   handleSubmit();
-  // }
-  // else
-  // {
-  //   server.send(200, "text/html", getPage());
-  // }
+  if (aRequest->args())
+  {
+     handleSubmit(aRequest);
+  }
+  else
+  {
+    GetPage(aRequest);
+  }
 }
+
+// handleRoot->has arguments->handleSubmit->has "button1"->update sensor data
+//                          |--------------|--------------|-----------------|->getPage()
+//  onNotFound->handleNotFound
+//                           |->getPage()
 
 // ===================================================
 // Update values history
@@ -172,11 +182,9 @@ void setup()
   Serial.println(WiFi.localIP());
 
   // server.begin();
-  // server.on("/", handleRoot);
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send_P(200, "text/html", index_html_template, processor); });
+  server.on("/", HTTP_GET, handleRoot);
 
-  // server.onNotFound(handleNotFound);
+  server.onNotFound(handleNotFound);
   server.begin();
 
   // Start up the library
