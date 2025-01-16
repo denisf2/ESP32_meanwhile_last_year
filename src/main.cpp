@@ -6,13 +6,15 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-#include <WebServer.h>
+// #include <WebServer.h>
+
+#include <ESPAsyncWebServer.h>
 
 #include "wifisecrets.h"
-#include "HtmlBuilder.h"
+#include "index.h"
 
 constexpr int listenPort{80};
-WebServer server(listenPort);
+AsyncWebServer server(listenPort);
 
 // #include <OneWire.h>
 // #include <DallasTemperature.h>
@@ -62,15 +64,38 @@ String getPage()
 {
   sensors.requestTemperatures();
 
-  return BuildHTML(tempArray, timeArray, arraySize);
+  // return BuildHTML(tempArray, timeArray, arraySize);
+  return String();
 }
 
 // ==================================================
 // Handle for page not found
 // ==================================================
-void handleNotFound()
+// void handleNotFound()
+// {
+//   server.send(200, "text/html", getPage());
+// }
+
+// функция формирования содержимого WEB страницы
+String processor(const String &aVar)
 {
-  server.send(200, "text/html", getPage());
+  Serial.println(aVar);
+
+  if (aVar.equals("ARRAYPLACEHOLDER"))
+  {
+    String buttons;
+    for (size_t i = 0; i < arraySize; ++i)
+    {
+      buttons += ",[";
+      buttons += String(timeArray[i]);
+      buttons += ","; 
+      buttons += String(tempArray[i]);
+      buttons += "]";
+    }
+    return buttons;
+  }
+
+  return String();
 }
 
 // ==================================================
@@ -78,13 +103,13 @@ void handleNotFound()
 // ==================================================
 void handleSubmit()
 {
-  if (server.hasArg("button1"))
-  {
-    Serial.print("The temperature is: ");
-    Serial.print(static_cast<int>(sensors.getTempCByIndex(0)));
-    Serial.println(" degrees C");
-  }
-  server.send(200, "text/html", getPage()); // Response to the HTTP request
+  // if (server.hasArg("button1"))
+  // {
+  //   Serial.print("The temperature is: ");
+  //   Serial.print(static_cast<int>(sensors.getTempCByIndex(0)));
+  //   Serial.println(" degrees C");
+  // }
+  // server.send(200, "text/html", getPage()); // Response to the HTTP request
 }
 
 // ===================================================
@@ -92,14 +117,14 @@ void handleSubmit()
 // ===================================================
 void handleRoot()
 {
-  if (server.args())
-  {
-    handleSubmit();
-  }
-  else
-  {
-    server.send(200, "text/html", getPage());
-  }
+  // if (server.args())
+  // {
+  //   handleSubmit();
+  // }
+  // else
+  // {
+  //   server.send(200, "text/html", getPage());
+  // }
 }
 
 // ===================================================
@@ -146,9 +171,12 @@ void setup()
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-  server.begin();
-  server.on("/", handleRoot);
-  server.onNotFound(handleNotFound);
+  // server.begin();
+  // server.on("/", handleRoot);
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send_P(200, "text/html", index_html_template, processor); });
+
+  // server.onNotFound(handleNotFound);
   server.begin();
 
   // Start up the library
@@ -160,8 +188,8 @@ void setup()
 // ===================================================
 void loop()
 {
-  server.handleClient();
-  server.send(200, "text/html", getPage());
+  // server.handleClient();
+  // server.send(200, "text/html", getPage());
 
   const auto newmil = millis();
   if (newmil >= oldmil + UPDATE_INTERVAL)
