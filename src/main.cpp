@@ -33,8 +33,10 @@ const unsigned long UPDATE_INTERVAL = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
+// ---------------------------------------------------
 
 String processor(const String &aVar);
+// ---------------------------------------------------
 
 void GetPage(AsyncWebServerRequest *aRequest)
 {
@@ -54,6 +56,7 @@ void handleNotFound(AsyncWebServerRequest *aRequest)
 // функция формирования содержимого WEB страницы
 String processor(const String &aVar)
 {
+  Serial.print("processor aVar = ");
   Serial.println(aVar);
 
   if (aVar.equals("ARRAYPLACEHOLDER"))
@@ -95,7 +98,7 @@ void handleRoot(AsyncWebServerRequest *aRequest)
 {
   if (aRequest->args())
   {
-     handleSubmit(aRequest);
+    handleSubmit(aRequest);
   }
   else
   {
@@ -103,10 +106,17 @@ void handleRoot(AsyncWebServerRequest *aRequest)
   }
 }
 
-// handleRoot->has arguments->handleSubmit->has "button1"->update sensor data
-//                          |--------------|--------------|-----------------|->getPage()
-//  onNotFound->handleNotFound
-//                           |->getPage()
+/*******************
+handleRoot->has arguments->handleSubmit->has "button1"->print to serial sensor data
+                         |              |              |                          |------>|
+                         |              |              |--------------------------------->|
+                         |              |------------------------------------------------>|
+                         |--------------------------------------------------------------->|
+                                                                                          |
+onNotFound->handleNotFound                                                                |
+                         |--------------------------------------------------------------->|
+                                                                                          ->getPage()
+********************/
 
 // ===================================================
 // Update values history
@@ -152,9 +162,7 @@ void setup()
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-  // server.begin();
   server.on("/", HTTP_GET, handleRoot);
-
   server.onNotFound(handleNotFound);
   server.begin();
 
@@ -169,6 +177,7 @@ void loop()
 {
   // server.handleClient();
   // server.send(200, "text/html", getPage());
+  // * must send data by websocket
 
   const auto newmil = millis();
   if (newmil >= oldmil + UPDATE_INTERVAL)
