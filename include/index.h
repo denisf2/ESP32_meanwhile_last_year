@@ -40,7 +40,7 @@ const char index_html_template[] PROGMEM = R"rawhtml(
                 legend: { position: 'bottom' },
                 width: 600,
                 height: 400,
-                chartArea: { width: '90%', height: '75%' }
+                chartArea: { width: '90%%', height: '75%%' }
             };
             var chart = new google.visualization.LineChart(document.getElementById('temp_chart'));
             chart.draw(chartData, chartoptions);
