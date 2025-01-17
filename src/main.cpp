@@ -122,7 +122,7 @@ onNotFound->handleNotFound                                                      
 // ===================================================
 // Update values history
 // ===================================================
-auto UpdateFIFO(int aNewVAlue) -> void
+auto AddNewMeasurement(int aNewVAlue) -> void
 {
   constexpr size_t size{arraySize - 1};
   for (size_t i = 0; i < size; i++)
@@ -192,7 +192,7 @@ void loop()
     digitalWrite(BUILDIN_LED_PIN, ledState);
     ledState = 1 - ledState;
 
-    UpdateFIFO(temptemp);
+    AddNewMeasurement(temptemp);
     oldmil = newmil;
   }
 }
