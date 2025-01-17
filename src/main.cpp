@@ -61,16 +61,17 @@ String processor(const String &aVar)
 
   if (aVar.equals("ARRAYPLACEHOLDER"))
   {
-    String buttons;
+    String pointsStr;
     for (size_t i = 0; i < arraySize; ++i)
     {
-      buttons += ",[";
-      buttons += String(timeArray[i]);
-      buttons += ",";
-      buttons += String(tempArray[i]);
-      buttons += "]";
+      pointsStr += ",[";
+      pointsStr += String(timeArray[i]);
+      pointsStr += ",";
+      pointsStr += String(tempArray[i]);
+      pointsStr += "]";
     }
-    return buttons;
+    Serial.println(pointsStr);
+    return pointsStr;
   }
 
   return String();
