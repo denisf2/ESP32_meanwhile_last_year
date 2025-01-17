@@ -29,7 +29,7 @@ constexpr size_t arraySize{10};
 int tempArray[arraySize] = {};
 unsigned long timeArray[arraySize] = {};
 unsigned long oldmil = 0UL;
-const unsigned long UPDATE_INTERVAL = 10000UL;
+const unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
@@ -151,10 +151,10 @@ void setup()
   Serial.println(wifi::ssid);
 
   WiFi.begin(wifi::ssid, wifi::password);
-  constexpr uint32_t WIFI_RECON_DELAY_MSEC{500};
+  constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{500};
   while (WL_CONNECTED != WiFi.status())
   {
-    delay(WIFI_RECON_DELAY_MSEC);
+    delay(WIFI_RECON_DELAY_MILLISEC);
     Serial.print(".");
   }
 
@@ -182,7 +182,7 @@ void loop()
   // * must send data by websocket
 
   const auto newmil = millis();
-  if (newmil >= oldmil + UPDATE_INTERVAL)
+  if (newmil >= oldmil + UPDATE_INTERVAL_MILLISEC)
   {
     int tempC = sensors.getTempCByIndex(0U);
 
