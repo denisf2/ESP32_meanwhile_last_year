@@ -183,16 +183,16 @@ void loop()
   const auto newmil = millis();
   if (newmil >= oldmil + UPDATE_INTERVAL)
   {
-    int temptemp = static_cast<int>(sensors.getTempCByIndex(0U));
+    int tempC = sensors.getTempCByIndex(0U);
 
     Serial.print("The temperature in ticker is: ");
-    Serial.print(temptemp);
+    Serial.print(tempC);
     Serial.println(" degrees C");
 
     digitalWrite(BUILDIN_LED_PIN, ledState);
     ledState = 1 - ledState;
 
-    AddNewMeasurement(temptemp);
+    AddNewMeasurement(tempC);
     oldmil = newmil;
   }
 }
