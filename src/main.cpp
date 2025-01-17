@@ -27,7 +27,7 @@ AsyncWebServer server(listenPort);
 
 constexpr size_t arraySize{10};
 int tempArray[arraySize] = {};
-String timeArray[arraySize] = {};
+unsigned long timeArray[arraySize] = {};
 unsigned long oldmil = 0UL;
 const unsigned long UPDATE_INTERVAL = 10000UL;
 
@@ -125,6 +125,8 @@ onNotFound->handleNotFound                                                      
 auto AddNewMeasurement(int aNewVAlue) -> void
 {
   constexpr size_t size{arraySize - 1};
+  timeArray[size] = millis() / 1000UL;
+
   for (size_t i = 0; i < size; i++)
   {
     tempArray[i] = tempArray[i + 1];
@@ -132,7 +134,6 @@ auto AddNewMeasurement(int aNewVAlue) -> void
   }
 
   tempArray[size] = aNewVAlue;
-  timeArray[size] = String(static_cast<int>(millis() / 1000UL));
 }
 
 // ===================================================
