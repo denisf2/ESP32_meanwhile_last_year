@@ -11,6 +11,7 @@
 
 #include "wifisecrets.h"
 #include "index.h"
+#include "favicon.h"
 #include "stubs.h"
 
 // Setup a oneWire instance
@@ -183,6 +184,13 @@ void setup()
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/update", HTTP_GET, HandleUpdateParams);
+  server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest *aRequest)
+            {
+              Serial.println("favicon.ico");
+              aRequest->send_P(200, "image/x-icon"
+                                , reinterpret_cast<const uint8_t*>(pageFavicon)
+                                , pagFaviconSize);
+            });
   server.onNotFound(handleNotFound);
   server.begin();
 
