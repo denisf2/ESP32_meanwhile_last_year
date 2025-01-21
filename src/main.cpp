@@ -106,7 +106,6 @@ void handleRoot(AsyncWebServerRequest *aRequest)
     GetPage(aRequest);
   }
 }
-
 /*******************
 handleRoot->has arguments->handleSubmit->has "button1"->print to serial sensor data
                          |              |              |                          |------>|
@@ -118,6 +117,24 @@ onNotFound->handleNotFound                                                      
                          |--------------------------------------------------------------->|
                                                                                           ->getPage()
 ********************/
+
+auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void 
+{
+    size_t paramsNr = aRequest->params();
+    Serial.println(paramsNr);
+
+    for (size_t i = 0; i < paramsNr; i++)
+    {
+      AsyncWebParameter* p = aRequest->getParam(i);
+      Serial.print("Param name: ");
+      Serial.println(p->name());
+      
+      Serial.print("Param value: ");
+      Serial.println(p->value());
+      
+      Serial.println("------");
+    }
+}
 
 // ===================================================
 // Update values history
@@ -165,6 +182,7 @@ void setup()
   Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, handleRoot);
+  server.on("/update", HTTP_GET, HandleUpdateParams);
   server.onNotFound(handleNotFound);
   server.begin();
 
