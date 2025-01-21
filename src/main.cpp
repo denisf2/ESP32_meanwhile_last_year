@@ -119,22 +119,22 @@ onNotFound->handleNotFound                                                      
                                                                                           ->getPage()
 ********************/
 
-auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void 
+auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
-    size_t paramsNr = aRequest->params();
-    Serial.println(paramsNr);
+  size_t paramsNr = aRequest->params();
+  Serial.println(paramsNr);
 
-    for (size_t i = 0; i < paramsNr; i++)
-    {
-      AsyncWebParameter* p = aRequest->getParam(i);
-      Serial.print("Param name: ");
-      Serial.println(p->name());
-      
-      Serial.print("Param value: ");
-      Serial.println(p->value());
-      
-      Serial.println("------");
-    }
+  for (size_t i = 0; i < paramsNr; i++)
+  {
+    AsyncWebParameter *p = aRequest->getParam(i);
+    Serial.print("Param name: ");
+    Serial.println(p->name());
+
+    Serial.print("Param value: ");
+    Serial.println(p->value());
+
+    Serial.println("------");
+  }
 }
 
 // ===================================================
@@ -159,6 +159,8 @@ auto AddNewMeasurement(int aNewVAlue) -> void
 // ===================================================
 void setup()
 {
+  Serial.println("=================================");
+
   constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
   Serial.begin(SERIAL_MONITOR_SPEED);
 
