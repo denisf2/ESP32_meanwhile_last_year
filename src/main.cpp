@@ -159,10 +159,10 @@ auto AddNewMeasurement(int aNewVAlue) -> void
 // ===================================================
 void setup()
 {
-  Serial.println("=================================");
-
   constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
   Serial.begin(SERIAL_MONITOR_SPEED);
+
+  Serial.println("=================================");
 
   pinMode(BUILDIN_LED_PIN, OUTPUT);
 
