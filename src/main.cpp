@@ -191,8 +191,7 @@ void setup()
               Serial.println("favicon.ico");
               aRequest->send_P(200, "image/x-icon"
                                 , reinterpret_cast<const uint8_t*>(pageFavicon)
-                                , pagFaviconSize);
-            });
+                                , pagFaviconSize); });
   server.onNotFound(handleNotFound);
   server.begin();
 
