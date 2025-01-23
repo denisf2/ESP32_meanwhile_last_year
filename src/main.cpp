@@ -116,7 +116,7 @@ handleRoot->has arguments->handleSubmit->has "button1"->print to serial sensor d
                                                                                           |
 onNotFound->handleNotFound                                                                |
                          |--------------------------------------------------------------->|
-                                                                                          ->getPage()
+                                                                                          |->getPage()
 ********************/
 
 auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
