@@ -10,7 +10,7 @@
 #include <ESPAsyncWebServer.h>
 
 #include "wifisecrets.h"
-#include "index.h"
+// #include "index.h"
 #include "favicon.h"
 #include "stubs.h"
 
@@ -36,6 +36,10 @@ constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
 // ---------------------------------------------------
 
+extern const uint8_t index_html_gz_start[] asm("_binary_www_Index_html_gz_start");
+extern const uint8_t index_html_gz_end[] asm("_binary_www_Index_html_gz_end");
+const size_t index_html_gz_size = index_html_gz_end - index_html_gz_start;
+
 String processor(const String &aVar);
 // ---------------------------------------------------
 
@@ -43,7 +47,16 @@ void GetPage(AsyncWebServerRequest *aRequest)
 {
   sensors.requestTemperatures();
 
-  aRequest->send_P(200, "text/html", index_html_template, processor);
+  AsyncWebServerResponse *response = aRequest->beginResponse_P(200
+                                                              , "text/html"
+                                                              , index_html_gz_start
+                                                              , index_html_gz_size
+                                                               // , processor
+  );
+  response->addHeader("Content-Encoding", "gzip");
+  aRequest->send(response);
+
+  // aRequest->send_P(200, "text/html", index_html_template, processor);
 }
 
 // ==================================================

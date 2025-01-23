@@ -1,0 +1,1 @@
+Create Index.html.gz here. It will be appended to the firmware on build.
