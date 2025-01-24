@@ -1,3 +1,4 @@
+#pragma once
 // Put your WiFi Credentials here
 namespace wifi
 {
