@@ -178,18 +178,8 @@ auto AddNewMeasurement(int aNewVAlue) -> void
   tempArray[size] = aNewVAlue;
 }
 
-// ===================================================
-// Setup
-// ===================================================
-void setup()
+auto LockingWiFiConnection() -> void
 {
-  constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
-  Serial.begin(SERIAL_MONITOR_SPEED);
-
-  Serial.println("=================================");
-
-  pinMode(BUILDIN_LED_PIN, OUTPUT);
-
   // Connect to Wi-Fi network with SSID and password
   Serial.print("Connecting to ");
   Serial.println(wifi::ssid);
@@ -203,10 +193,25 @@ void setup()
   }
 
   // Print local IP address and start web server
-  Serial.println("");
+  Serial.println();
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+}
+
+// ===================================================
+// Setup
+// ===================================================
+void setup()
+{
+  constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
+  Serial.begin(SERIAL_MONITOR_SPEED);
+
+  Serial.println("=================================");
+
+  pinMode(BUILDIN_LED_PIN, OUTPUT);
+
+  LockingWiFiConnection();
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/update", HTTP_GET, HandleUpdateParams);
