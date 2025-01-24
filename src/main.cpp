@@ -42,12 +42,12 @@ void GetPage(AsyncWebServerRequest *aRequest)
 {
   sensors.requestTemperatures();
 
-  AsyncWebServerResponse *response = aRequest->beginResponse_P(200
-                                                              , "text/html"
-                                                              , index_html_gz_start
-                                                              , index_html_gz_size
-                                                               // , processor
-  );
+  auto response = aRequest->beginResponse_P(200
+                                          , "text/html"
+                                          , index_html_gz_start
+                                          , index_html_gz_size
+                                          // , processor
+                                          );
   response->addHeader("Content-Encoding", "gzip");
   aRequest->send(response);
 
