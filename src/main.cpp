@@ -157,6 +157,8 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 
     Serial.println("------");
   }
+
+  GetPage(aRequest);
 }
 
 // ===================================================
