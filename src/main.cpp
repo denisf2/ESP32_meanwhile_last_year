@@ -12,6 +12,7 @@
 #include "wifisecrets.h"
 #include "stubs.h"
 #include "resources.h"
+#include "TLog.h"
 
 // Setup a oneWire instance
 // OneWire oneWire(ONE_WIRE_BUS);
@@ -65,8 +66,8 @@ void handleNotFound(AsyncWebServerRequest *aRequest)
 // функция формирования содержимого WEB страницы
 String processor(const String &aVar)
 {
-  Serial.print("processor aVar = ");
-  Serial.println(aVar);
+  TLog::print("processor aVar = ");
+  TLog::println(aVar);
 
   if (aVar.equals("ARRAYPLACEHOLDER"))
   {
@@ -79,7 +80,7 @@ String processor(const String &aVar)
       pointsStr += String(tempArray[i]);
       pointsStr += "]";
     }
-    Serial.println(pointsStr);
+    TLog::println(pointsStr);
     return pointsStr;
   }
 
@@ -93,9 +94,9 @@ void handleSubmit(AsyncWebServerRequest *aRequest)
 {
   if (aRequest->hasArg("button1"))
   {
-    Serial.print("The temperature is: ");
-    Serial.print(static_cast<int>(sensors.getTempCByIndex(0)));
-    Serial.println(" degrees C");
+    TLog::print("The temperature is: ");
+    TLog::print(static_cast<int>(sensors.getTempCByIndex(0)));
+    TLog::println(" degrees C");
   }
 
   GetPage(aRequest); // Response to the HTTP request
@@ -129,7 +130,7 @@ onNotFound->handleNotFound                                                      
 
 auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 {
-  Serial.println("Requested favicon.ico");
+  TLog::println("Requested favicon.ico");
 
   auto response = aRequest->beginResponse_P(200
                                           , "image/x-icon"
@@ -143,20 +144,18 @@ auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 
 auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
-  Serial.println("HanleUpdateParams. Param numbers: ");
+  TLog::println("HanleUpdateParams. Params total: ");
   const size_t paramsNr = aRequest->params();
-  Serial.println(paramsNr);
+  TLog::print(paramsNr);
 
   for (size_t i = 0; i < paramsNr; i++)
   {
-    AsyncWebParameter *p = aRequest->getParam(i);
-    Serial.print("Param name: ");
-    Serial.println(p->name());
-
-    Serial.print("Param value: ");
-    Serial.println(p->value());
-
-    Serial.println("------");
+    const AsyncWebParameter * const p = aRequest->getParam(i);
+    TLog::println("Param [name, value] : [");
+    TLog::print(p->name());
+    TLog::print(", ");
+    TLog::print(p->value());
+    TLog::print("]");
   }
 
   GetPage(aRequest);
@@ -182,22 +181,23 @@ auto AddNewMeasurement(int aNewVAlue) -> void
 auto LockingWiFiConnection() -> void
 {
   // Connect to Wi-Fi network with SSID and password
-  Serial.print("Connecting to ");
-  Serial.println(wifi::ssid);
+  TLog::println("Connecting to ");
+  TLog::print(wifi::ssid);
+  TLog::print(" ");
 
   WiFi.begin(wifi::ssid, wifi::password);
   constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{500};
   while (WL_CONNECTED != WiFi.status())
   {
     delay(WIFI_RECON_DELAY_MILLISEC);
-    Serial.print(".");
+    TLog::print(".");
   }
 
   // Print local IP address and start web server
-  Serial.println();
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  TLog::println("WiFi connected.");
+  TLog::println("IP address: ");
+  TLog::print(WiFi.localIP());
+  TLog::println();
 }
 
 // ===================================================
@@ -208,7 +208,7 @@ void setup()
   constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
   Serial.begin(SERIAL_MONITOR_SPEED);
 
-  Serial.println("=================================");
+  TLog::println("=================================");
 
   pinMode(BUILDIN_LED_PIN, OUTPUT);
 
@@ -238,9 +238,9 @@ void loop()
   {
     int tempC = sensors.getTempCByIndex(0U);
 
-    Serial.print("The temperature in ticker is: ");
-    Serial.print(tempC);
-    Serial.println(" degrees C");
+    TLog::println("The temperature in ticker is: ");
+    TLog::print(tempC);
+    TLog::print(" degrees C");
 
     digitalWrite(BUILDIN_LED_PIN, ledState);
     ledState = 1 - ledState;
