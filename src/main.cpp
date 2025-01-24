@@ -10,9 +10,8 @@
 #include <ESPAsyncWebServer.h>
 
 #include "wifisecrets.h"
-// #include "index.h"
-#include "favicon.h"
 #include "stubs.h"
+#include "resources.h"
 
 // Setup a oneWire instance
 // OneWire oneWire(ONE_WIRE_BUS);
@@ -35,10 +34,6 @@ const unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
 // ---------------------------------------------------
-
-extern const uint8_t index_html_gz_start[] asm("_binary_www_Index_html_gz_start");
-extern const uint8_t index_html_gz_end[] asm("_binary_www_Index_html_gz_end");
-const size_t index_html_gz_size = index_html_gz_end - index_html_gz_start;
 
 String processor(const String &aVar);
 // ---------------------------------------------------
@@ -132,6 +127,20 @@ onNotFound->handleNotFound                                                      
                                                                                           |->getPage()
 ********************/
 
+auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
+{
+  Serial.println("Requested favicon.ico");
+
+  auto response = aRequest->beginResponse_P(200
+                                          , "image/x-icon"
+                                          , favicon_ico_gz_start
+                                          , favicon_ico_gz_size
+                                          // , processor
+                                                );
+  response->addHeader("Content-Encoding", "gzip");
+  aRequest->send(response);
+}
+
 auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
   size_t paramsNr = aRequest->params();
@@ -199,12 +208,7 @@ void setup()
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/update", HTTP_GET, HandleUpdateParams);
-  server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest *aRequest)
-            {
-              Serial.println("favicon.ico");
-              aRequest->send_P(200, "image/x-icon"
-                                , reinterpret_cast<const uint8_t*>(pageFavicon)
-                                , pagFaviconSize); });
+  server.on("/favicon.ico", HTTP_GET, HandleFavIcon);
   server.onNotFound(handleNotFound);
   server.begin();
 
