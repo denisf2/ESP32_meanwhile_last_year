@@ -3,7 +3,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=2.5, user-scalable=1">
-    <title>ESP32 temperature forecast log chart</title>
+    <title>Temperature Forecast Linechart demo</title>
 
     <style>
         body {
@@ -58,12 +58,12 @@
 <body>
     <!-- <h2>Tabs</h2> -->
     <!-- <p>Click on the buttons inside the tabbed menu:</p> -->
-    
+
     <div class="tab">
         <button class="tablinks active" onclick="openTab(event, 'Chart')">Chart</button>
         <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
     </div>
-    
+
     <div id="Chart" class="tabcontent" style="display: block;">
         <!-- <h3>Chart</h3> -->
         <p>Here should be some description.</p>
@@ -71,8 +71,8 @@
 
         <div id='temp_chart' style='width:600px; height: 400px;'></div>
         <br>
-
-        <form action="/" method="post">
+   <!-- <form action="/" method="post">-->
+        <form action="/" method="post" accept-charset="utf-8">
             <button type="submit" name="button1" id="button1" value="button1" onclick='update()'>CLICK FOR
                 UPDATE</button>
         </form>
@@ -81,17 +81,18 @@
     <div id="Settings" class="tabcontent">
         <!-- <h3>Settings</h3> -->
         <p>Here should be some description.</p>
-        <form action="/settings" method="post">
+        <form id="SettingsForm" action="/update" accept-charset="utf-8">
             <div>
-                <input class="inputbox" type="text" id="wifiSsid" title="ssid">wifi ssid</input><br>
-                <input class="inputbox" type="password" id="wifiPassword" title="password">wifi password</input><br>
-                <input class="inputbox" type="text" id="longitude" title="longitude">longitude</input><br>
-                <input class="inputbox" type="text" id="latitude" title="latitude">latitude</input><br>
-                <input class="inputbox" type="text" id="openWeatherKey" title="openWeatherKey">Openweather key</input><br>
-                <input class="inputbox" type="text" id="ip2geoKey" title="ip2geoKey">Ip to geo key</input><br>
+                <input class="inputbox" type="text" id="wifiSsid" name="wifiSsid" title="ssid">wifi ssid</input><br>
+                <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="password">wifi password</input><br>
+                <input class="inputbox" type="text" id="longitude" name="longitude" title="longitude">longitude</input><br>
+                <input class="inputbox" type="text" id="latitude" name="latitude" title="latitude">latitude</input><br>
+                <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="openWeatherKey">Openweather key</input><br>
+                <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey">Ip to geo key</input><br>
             </div>
             <div>
-                <button type="submit" name="button2" id="button2" value="button2" onclick='submitSettings()'>Submit</button>
+                <button type="submit" name="button2" id="button2">Submit</button>
+           <!-- <button type="submit" name="button2" id="button2" value="button2" onclick='submitSettings()'>Submit</button> -->
             </div>
         </form>
     </div>
@@ -101,7 +102,27 @@
         google.charts.load('current', { 'packages': ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
 
+        // SettingsForm.onsubmit = async (e) => {
+        //     e.preventDefault();
+        //     let host = window.location.host + "/update";
+        //     let response = await fetch(host, {
+        //                                 method: 'POST',
+        //                                 body: new FormData(SettingsForm)
+        //                             });
+        //
+        //     let result = await response.json();
+        //
+        //     // alert(result.message);
+        //
+        //     alert(true);
+        // };
+
         function drawChart() {
+
+//            let tmp = [['Time', 'Temp']
+//                %ARRAYPLACEHOLDER%
+//                        ];
+
             let tmp = [['Time', 'Temp']];
             for (let i = 0; i < 20; ++i)
                 tmp.push([i, Math.sin(i)]);
