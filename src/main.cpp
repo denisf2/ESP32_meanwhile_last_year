@@ -143,7 +143,8 @@ auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 
 auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
-  size_t paramsNr = aRequest->params();
+  Serial.println("HanleUpdateParams. Param numbers: ");
+  const size_t paramsNr = aRequest->params();
   Serial.println(paramsNr);
 
   for (size_t i = 0; i < paramsNr; i++)
