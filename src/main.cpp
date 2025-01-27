@@ -217,8 +217,14 @@ auto RestoreStoredData() -> void
     nvsPrefs.begin("AppNamespace", RW_MODE);
 
     //init storage by default values
-    // TODO: add default serveces api key zero values
-    // TODO: add default wifi ssid and wifipass zero values
+    // [x]TODO: add default serveces api key zero values
+    // https://api.openweathermap.org
+    nvsPrefs.putString("OpenWeather", "");
+    // https://api.ipgeolocation.io/ipgeo
+    nvsPrefs.putString("ipGeolocation", "");
+    // [x]TODO: add default wifi ssid and wifipass zero values
+    nvsPrefs.putString("wifiSSID", "");
+    nvsPrefs.putString("wifiPassword", "");
 
     nvsPrefs.putBool("nvsInit", true);
     
@@ -228,8 +234,13 @@ auto RestoreStoredData() -> void
   }
   
   // store in app values
-  // TODO: restore serveces api key values
-  // TODO: add default wifi ssid and wifi pass values
+  // TODO: make global variables
+  // [x]TODO: restore serveces api key values
+  auto opwTmp = nvsPrefs.getString("OpenWeather");
+  auto ip2geo = nvsPrefs.getString("ipGeolocation");
+  // [x]TODO: add default wifi ssid and wifi pass values
+  auto wifiSSID = nvsPrefs.getString("wifiSSID");
+  auto wifiPassword = nvsPrefs.getString("wifiPassword");
 
   nvsPrefs.end();
 }
