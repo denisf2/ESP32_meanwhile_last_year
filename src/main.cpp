@@ -217,6 +217,8 @@ auto RestoreStoredData() -> void
     nvsPrefs.begin("AppNamespace", RW_MODE);
 
     //init storage by default values
+    // TODO: add default serveces api key zero values
+    // TODO: add default wifi ssid and wifipass zero values
 
     nvsPrefs.putBool("nvsInit", true);
     
@@ -226,6 +228,8 @@ auto RestoreStoredData() -> void
   }
   
   // store in app values
+  // TODO: restore serveces api key values
+  // TODO: add default wifi ssid and wifi pass values
 
   nvsPrefs.end();
 }
@@ -242,6 +246,7 @@ void setup()
 
   pinMode(BUILDIN_LED_PIN, OUTPUT);
 
+  // TODO: setup and run default wifi access point on cold start
   RestoreStoredData();
   LockingWiFiConnection();
 
