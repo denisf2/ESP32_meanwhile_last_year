@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-
+#include <Preferences.h>
 #include <ESPAsyncWebServer.h>
 
 #include "wifisecrets.h"
@@ -25,6 +25,8 @@ Dummy_DallasTemperature sensors(&oneWire);
 
 constexpr int listenPort{80};
 AsyncWebServer server(listenPort);
+
+Preferences nvsPrefs;
 
 constexpr size_t arraySize{10};
 int tempArray[arraySize] = {};
@@ -200,6 +202,34 @@ auto LockingWiFiConnection() -> void
   TLog::println();
 }
 
+auto RestoreStoredData() -> void 
+{
+  constexpr bool RO_MODE = true;
+  constexpr bool RW_MODE = false;
+
+  TLog::println("Loading stored data");
+  nvsPrefs.begin("AppNamespace", RO_MODE);
+
+  if(false == nvsPrefs.isKey("nvsInit"))
+  {
+    nvsPrefs.end();
+    TLog::println("Restore default values : ");  
+    nvsPrefs.begin("AppNamespace", RW_MODE);
+
+    //init storage by default values
+
+    nvsPrefs.putBool("nvsInit", true);
+    
+    nvsPrefs.end();
+    TLog::print("Done");  
+    nvsPrefs.begin("AppNamespace", RO_MODE);
+  }
+  
+  // store in app values
+
+  nvsPrefs.end();
+}
+
 // ===================================================
 // Setup
 // ===================================================
@@ -212,6 +242,7 @@ void setup()
 
   pinMode(BUILDIN_LED_PIN, OUTPUT);
 
+  RestoreStoredData();
   LockingWiFiConnection();
 
   server.on("/", HTTP_GET, handleRoot);
