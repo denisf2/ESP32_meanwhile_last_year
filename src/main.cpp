@@ -281,7 +281,7 @@ void loop()
   // * must send data by websocket
 
   const auto newmil = millis();
-  if (newmil >= oldmil + UPDATE_INTERVAL_MILLISEC)
+  if (newmil - oldmil >= UPDATE_INTERVAL_MILLISEC)
   {
     int tempC = sensors.getTempCByIndex(0U);
 
