@@ -14,6 +14,7 @@
 #include "resources.h"
 #include "TLog.h"
 
+// [ ]TODO: remove dummy stubs
 // Setup a oneWire instance
 // OneWire oneWire(ONE_WIRE_BUS);
 Dummy_OneWire oneWire(ONE_WIRE_BUS);
@@ -234,7 +235,7 @@ auto RestoreStoredData() -> void
   }
   
   // store in app values
-  // TODO: make global variables
+  // [ ]TODO: make global variables
   // [x]TODO: restore serveces api key values
   auto opwTmp = nvsPrefs.getString("OpenWeather");
   auto ip2geo = nvsPrefs.getString("ipGeolocation");
@@ -257,7 +258,7 @@ void setup()
 
   pinMode(BUILDIN_LED_PIN, OUTPUT);
 
-  // TODO: setup and run default wifi access point on cold start
+  // [ ]TODO: setup and run default wifi access point on cold start
   RestoreStoredData();
   LockingWiFiConnection();
 
@@ -296,3 +297,14 @@ void loop()
     oldmil = newmil;
   }
 }
+
+/* Roadmap:
+
+[ ]TODO: get gps coordinates by ip
+[ ]TODO: get forecast by gps coordinates
+[ ]TODO: update wifi params from webpage
+[ ]TODO: update api keys params from webpage
+[ ]TODO: visualizate forecast using google charts
+[ ]TODO: export to a new module RestoreStoredData
+
+*/
