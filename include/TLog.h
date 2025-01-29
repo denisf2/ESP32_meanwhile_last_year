@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TLOG_H_
+#define TLOG_H_
 
 #include <stddef.h>
 #include <HardwareSerial.h>
@@ -21,8 +22,7 @@ namespace TLog
     return size;
   }
 
-  auto println() -> size_t 
-  {
-    return Serial.println();
-  }
+  auto println() -> size_t;
 }
+
+#endif /* TLOG_H_ */
