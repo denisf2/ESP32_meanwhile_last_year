@@ -17,11 +17,11 @@
 // [ ]TODO: remove dummy stubs
 // Setup a oneWire instance
 // OneWire oneWire(ONE_WIRE_BUS);
-Dummy_OneWire oneWire(ONE_WIRE_BUS);
+Dummy_OneWire __oneWire(ONE_WIRE_BUS);// [ ]TODO: remove
 
 // Pass our oneWire reference to Dallas Temperature.
 // DallasTemperature sensors(&oneWire);
-Dummy_DallasTemperature sensors(&oneWire);
+Dummy_DallasTemperature __sensors(&__oneWire);// [ ]TODO: remove
 // ---------------------------------------------------
 
 constexpr int listenPort{80};
@@ -42,7 +42,7 @@ String processor(const String &aVar);
 
 void GetPage(AsyncWebServerRequest *aRequest)
 {
-  sensors.requestTemperatures();
+  __sensors.requestTemperatures();
 
   auto response = aRequest->beginResponse_P(200
                                           , "text/html"
@@ -96,7 +96,7 @@ void handleSubmit(AsyncWebServerRequest *aRequest)
   if (aRequest->hasArg("button1"))
   {
     TLog::print("The temperature is: ");
-    TLog::print(static_cast<int>(sensors.getTempCByIndex(0)));
+    TLog::print(static_cast<int>(__sensors.getTempCByIndex(0)));
     TLog::println(" degrees C");
   }
 
@@ -230,7 +230,7 @@ void setup()
   server.begin();
 
   // Start up the library
-  sensors.begin();
+  __sensors.begin();
 }
 
 // ===================================================
@@ -245,7 +245,7 @@ void loop()
   const auto newmil = millis();
   if (newmil - oldmil >= UPDATE_INTERVAL_MILLISEC)
   {
-    int tempC = sensors.getTempCByIndex(0U);
+    int tempC = __sensors.getTempCByIndex(0U);
 
     TLog::println("The temperature in ticker is: ");
     TLog::print(tempC);
