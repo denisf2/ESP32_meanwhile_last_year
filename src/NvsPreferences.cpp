@@ -6,6 +6,11 @@ Preferences nvsPrefs;
 constexpr bool RO_MODE = true;
 constexpr bool RW_MODE = false;
 
+String ip2geo;
+String opwthr;
+String wifiSSID;
+String wifiPassword;
+
 auto RestoreDefaultData() -> void //[ ]TODO: why do I need these default values?
 {
     TLog::println("Restore default values : ");
@@ -42,17 +47,23 @@ auto RestoreStoredData() -> void
     // store in app values
     // [ ]TODO: make global variables
     // [x]TODO: restore serveces api key values
-    auto opwTmp = nvsPrefs.getString("OpenWeather");
-    auto ip2geo = nvsPrefs.getString("ipGeolocation");
+    opwthr = nvsPrefs.getString("OpenWeather");
+    ip2geo = nvsPrefs.getString("ipGeolocation");
     // [x]TODO: add default wifi ssid and wifi pass values
-    auto wifiSSID = nvsPrefs.getString("wifiSSID");
-    auto wifiPassword = nvsPrefs.getString("wifiPassword");
+    wifiSSID = nvsPrefs.getString("wifiSSID");
+    wifiPassword = nvsPrefs.getString("wifiPassword");
 
     nvsPrefs.end();
 }
 
 auto Save(const String &aKey, const String &aValue) -> void
 {
+    TLog::println("Saving[");
+    TLog::print(aKey);
+    TLog::print(", ");
+    TLog::print(aValue);
+    TLog::print("]");
+
     nvsPrefs.begin("AppNamespace", RW_MODE);
     nvsPrefs.putString(aKey.c_str(), aValue.c_str());
     nvsPrefs.end();
@@ -61,19 +72,43 @@ auto Save(const String &aKey, const String &aValue) -> void
 auto SaveIpGeolocation(const String &aValue) -> void
 {
     Save("ipGeolocation", aValue);
+    ip2geo = aValue;
 }
 
 auto SaveOpenWeather(const String &aValue) -> void
 {
     Save("OpenWeather", aValue);
+    opwthr = aValue;
 }
 
 auto SaveWifiSSID(const String &aValue) -> void
 {
     Save("wifiSSID", aValue);
+    wifiSSID = aValue;
 }
 
 auto SaveWifiPassword(const String &aValue) -> void
 {
     Save("wifiPassword", aValue);
+    wifiPassword = aValue;
+}
+
+auto GetIpGeoKey() -> String
+{
+    return ip2geo;
+}
+
+auto GetOpenWeatherKey() -> String
+{
+    return opwthr;
+}
+
+auto GetWifiSSID() -> String
+{
+    return wifiSSID;
+}
+
+auto GetWiFiPassword() -> String
+{
+    return wifiPassword;
 }
