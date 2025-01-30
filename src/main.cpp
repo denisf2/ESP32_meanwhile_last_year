@@ -145,7 +145,7 @@ auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 
 auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
-  TLog::println("HanleUpdateParams. Params total: ");
+  TLog::println("HandleUpdateParams. Params total: ");
   const size_t paramsNr = aRequest->params();
   TLog::print(paramsNr);
 
