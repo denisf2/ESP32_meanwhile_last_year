@@ -9,7 +9,7 @@
 #include <ESPAsyncWebServer.h>
 
 #include "NvsPreferences.h"
-#include "wifisecrets.h"
+// #include "wifisecrets.h"
 #include "stubs.h"
 #include "resources.h"
 #include "TLog.h"
@@ -145,18 +145,37 @@ auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 
 auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
-  TLog::println("HandleUpdateParams. Params total: ");
   const size_t paramsNr = aRequest->params();
+
+  TLog::println("HandleUpdateParams. Params total: ");
   TLog::print(paramsNr);
 
   for (size_t i = 0; i < paramsNr; i++)
   {
     const AsyncWebParameter * const p = aRequest->getParam(i);
+    const auto name = p->name();
+    const auto value = p->value();
+
     TLog::println("Param [name, value] : [");
-    TLog::print(p->name());
+    TLog::print(name);
     TLog::print(", ");
-    TLog::print(p->value());
+    TLog::print(value);
     TLog::print("]");
+
+    if(value.isEmpty())
+      continue;
+    
+    if(name == "ip2geoKey")
+      SaveIpGeolocation(value);
+
+    if(name == "openWeatherKey")
+      SaveOpenWeather(value);
+
+    if(name == "wifiSsid")
+      SaveWifiSSID(value);
+
+    if(name == "wifiPassword")
+      SaveWifiPassword(value);
   }
 
   GetPage(aRequest);
@@ -181,12 +200,13 @@ auto AddNewMeasurement(int aNewVAlue) -> void
 
 auto LockingWiFiConnection() -> void
 {
+  const auto wifiSSID = GetWifiSSID();
   // Connect to Wi-Fi network with SSID and password
   TLog::println("Connecting to ");
-  TLog::print(wifi::ssid);
+  TLog::print(wifiSSID);
   TLog::print(" ");
 
-  WiFi.begin(wifi::ssid, wifi::password);
+  WiFi.begin(wifiSSID, GetWiFiPassword());
   constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{500};
   while (WL_CONNECTED != WiFi.status())
   {
@@ -263,9 +283,9 @@ void loop()
 
 [ ]TODO: get gps coordinates by ip
 [ ]TODO: get forecast by gps coordinates
-[ ]TODO: update wifi params from webpage
-[ ]TODO: update api keys params from webpage
+[x]TODO: update wifi params from webpage
+[x]TODO: update api keys params from webpage
 [ ]TODO: visualizate forecast using google charts
-[ ]TODO: export to a new module RestoreStoredData
+[x]TODO: export to a new module RestoreStoredData
 
 */
