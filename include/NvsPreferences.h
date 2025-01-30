@@ -4,6 +4,10 @@
 #include <Preferences.h>
 
 auto RestoreStoredData() -> void;
+auto SaveIpGeolocation(const String &aValue) -> void;
+auto SaveOpenWeather(const String &aValue) -> void;
+auto SaveWifiSSID(const String &aValue) -> void;
+auto SaveWifiPassword(const String &aValue) -> void;
 
 extern Preferences nvsPrefs;
 
