@@ -40,7 +40,7 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 String processor(const String &aVar);
 // ---------------------------------------------------
 
-void GetPage(AsyncWebServerRequest *aRequest)
+void GetPage(AsyncWebServerRequest *aRequest)//[ ]TODO: rename GetPage
 {
   __sensors.requestTemperatures();
 
@@ -273,7 +273,7 @@ void loop()
 
     digitalWrite(BUILDIN_LED_PIN, ledState);
     ledState = 1 - ledState;
-
+// [ ]TODO:need remove
     AddNewMeasurement(tempC);
     oldmil = newmil;
   }
@@ -287,5 +287,7 @@ void loop()
 [x]TODO: update api keys params from webpage
 [ ]TODO: visualizate forecast using google charts
 [x]TODO: export to a new module RestoreStoredData
+[ ]TODO: test connection and report before save them. Possible to lose wifi connection
+[ ]TODO: reset to default mode AP
 
 */
