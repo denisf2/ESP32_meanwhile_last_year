@@ -1,8 +1,8 @@
-#ifndef IPGEOLOCATION_H__
-#define IPGEOLOCATION_H__
+#ifndef IPGEOLOCATIONAPI_H__
+#define IPGEOLOCATIONAPI_H__
 
 #include <Arduino.h>
 
 auto GetLocationCoordinates(const String& aApiKey) -> void;
 
-#endif /* IPGEOLOCATION_H__ */
+#endif /* IPGEOLOCATIONAPI_H__ */
