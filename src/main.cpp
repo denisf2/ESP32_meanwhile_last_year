@@ -279,6 +279,22 @@ void loop()
   }
 }
 
+//===========================================================
+
+
+/************************
+get cooord -> has city name? ->yes------------------>|
+                        |->no-->get city info by ip->|
+                                         |           |->return coordinates-|
+    |------------------------------------]---------------------------------|
+    |                                    |                                                   
+    v                                    |
+get forcast by coordinate-->forecast-|   |
+                                     |   v
+                                     |-> print city/forecast info
+*************************/
+
+
 /* Roadmap:
 
 [ ]TODO: get gps coordinates by ip
