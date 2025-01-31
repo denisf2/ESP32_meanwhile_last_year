@@ -8,11 +8,14 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 
+#include <functional>
+
 #include "NvsPreferences.h"
 // #include "wifisecrets.h"
 #include "stubs.h"
 #include "resources.h"
 #include <TLog.h>
+#include "IpGeolocationApi.h"
 
 // [ ]TODO: remove dummy stubs
 // Setup a oneWire instance
@@ -31,6 +34,7 @@ constexpr size_t arraySize{10};
 int tempArray[arraySize] = {};
 unsigned long timeArray[arraySize] = {};
 unsigned long oldmil = 0UL;
+unsigned long oldmil2 = 0UL;
 const unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
@@ -221,9 +225,14 @@ auto LockingWiFiConnection() -> void
   TLog::println();
 }
 
-
-
-  {
+using callback__ = std::function<auto(const String&) -> void>;// [ ]FIXME:rename
+auto TryToGetData(callback__ aFunc, const String& aApiKey) -> void// [x]FIXME:rename
+{
+  //Check WiFi connection status
+  if(WL_CONNECTED == WiFi.status()) {
+    aFunc(aApiKey);
+  } else {
+    TLog::println("WiFi Disconnected");
   }
 }
 
@@ -276,6 +285,14 @@ void loop()
 // [ ]TODO:need remove
     AddNewMeasurement(tempC);
     oldmil = newmil;
+  }
+   
+  static bool once = false;
+  if (newmil - oldmil2 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
+  {
+    TryToGetData(GetLocationCoordinates, GetIpGeoKey());
+    oldmil2 = newmil;
+    once = true;
   }
 }
 
