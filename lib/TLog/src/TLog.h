@@ -21,6 +21,7 @@ namespace TLog
     size += Serial.print(aArg);
     return size;
   }
+    auto print(double aArg, int digits = 2) -> size_t;
 
   auto println() -> size_t;
 }
