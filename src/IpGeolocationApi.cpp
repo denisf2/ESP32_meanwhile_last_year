@@ -45,8 +45,8 @@ auto GetLocationCoordinates(const String &aApiKey) -> void
         // Test if parsing succeeds.
         if (error)
         {
-            Serial.print(F("deserializeJson() failed: "));
-            Serial.println(error.f_str());
+            TLog::println(F("deserializeJson() failed: "));
+            TLog::print(error.f_str());
             return;
         }
 
