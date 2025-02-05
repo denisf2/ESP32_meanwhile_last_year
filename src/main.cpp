@@ -186,6 +186,13 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
   GetPage(aRequest);
 }
 
+auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
+{
+    TLog::println("Handle Soft Restart");
+    TLog::println();
+    ESP.restart();
+}
+
 // ===================================================
 // Update values history
 // ===================================================
@@ -255,6 +262,7 @@ void setup()
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/update", HTTP_GET, HandleUpdateParams);
+  server.on("/restart", HTTP_GET, HandleDeviceSoftRestart);
   server.on("/favicon.ico", HTTP_GET, HandleFavIcon);
   server.onNotFound(handleNotFound);
   server.begin();
