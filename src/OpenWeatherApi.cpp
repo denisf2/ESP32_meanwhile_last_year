@@ -49,7 +49,34 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
         TLog::println("HTTP Response code: ");
         TLog::print(httpResponseCode);
         const String payload = http.getString();
-        TLog::println(payload);
+        // TLog::println(payload);
+
+        // Allocate the JSON document
+        JsonDocument doc;
+        // Deserialize the JSON document
+        DeserializationError error = deserializeJson(doc, payload);
+
+        // Test if parsing succeeds.
+        if (error)
+        {
+            TLog::println(F("deserializeJson() failed: "));
+            TLog::print(error.f_str());
+            return;
+        }
+
+        // Fetch values.
+        //
+        // Most of the time, you can rely on the implicit casts.
+        // In other case, you can do doc["time"].as<long>();
+        double temp = doc["main"]["temp"];
+        // Coordinates_.longitude = doc["longitude"];
+
+        // // Print values.
+        TLog::println("Acquired temperature: [");
+        TLog::print(temp, 6);
+        // TLog::print(", ");
+        // TLog::print(Coordinates_.longitude, 6);
+        TLog::print("]");
     }
     else
     {

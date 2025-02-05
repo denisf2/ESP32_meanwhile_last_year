@@ -16,6 +16,7 @@
 #include "resources.h"
 #include <TLog.h>
 #include "IpGeolocationApi.h"
+#include "OpenWeatherApi.h"
 
 // [ ]TODO: remove dummy stubs
 // Setup a oneWire instance
@@ -290,7 +291,15 @@ void loop()
   static bool once = false;
   if (newmil - oldmil2 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
   {
-    TryToGetData(GetLocationCoordinates, GetIpGeoKey());
+    //Check WiFi connection status
+    if(WL_CONNECTED == WiFi.status()) {
+        GetLocationCoordinates(GetIpGeoKey());
+        GetForecast(GetOpenWeatherKey()
+                    , String(Coordinates_.latitude)
+                    , String(Coordinates_.longitude));
+    } else {
+        TLog::println("WiFi Disconnected");
+    }
     oldmil2 = newmil;
     once = true;
   }
