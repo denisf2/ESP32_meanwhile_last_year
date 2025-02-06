@@ -190,6 +190,21 @@ auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
 {
     TLog::println("Handle Soft Restart");
     TLog::println();
+
+    const char webpage[] PROGMEM = R"rawhtml(
+        <!DOCTYPE HTML>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=2.5, user-scalable=1">
+            <title>Temperature Forecast Linechart demo</title>
+        </head>
+        <body>         
+        <h2>Restarting...</h2>
+        </body>
+        </html>
+    )rawhtml";
+    aRequest->send(200, String("text/html"), webpage);
+
     ESP.restart();
 }
 
