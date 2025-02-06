@@ -62,6 +62,7 @@
     <div class="tab">
         <button class="tablinks active" onclick="openTab(event, 'Chart')">Chart</button>
         <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
+        <button class="tablinks" onclick="openTab(event, 'System')">System</button>
     </div>
 
     <div id="Chart" class="tabcontent" style="display: block;">
@@ -93,6 +94,15 @@
             <div>
                 <button type="submit" name="button2" id="button2" value="button2" onclick='return submitSettings()'>Submit</button>
             </div>
+        </form>
+    </div>
+
+    <div id="System" class="tabcontent">
+        <br>
+        <!-- <label>dev form</label> -->
+        <!-- [ ]:TODO what fore name\id\value -->
+        <form id="SystemForm" action="/restart">
+            <button type="submit" name="buttonRestart" id="buttonRestart" value="buttonRestart">Restart</button>
         </form>
     </div>
 
