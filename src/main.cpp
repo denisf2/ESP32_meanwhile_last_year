@@ -346,8 +346,8 @@ get forcast by coordinate-->forecast-|   |
 
 /* Roadmap:
 
-[ ]TODO: get gps coordinates by ip
-[ ]TODO: get forecast by gps coordinates
+[x]TODO: get gps coordinates by ip
+[x]TODO: get forecast by gps coordinates
 [x]TODO: update wifi params from webpage
 [x]TODO: update api keys params from webpage
 [ ]TODO: visualizate forecast using google charts
@@ -355,6 +355,6 @@ get forcast by coordinate-->forecast-|   |
 [ ]TODO: test connection and report before save them. Possible to lose wifi connection
 [ ]TODO: reset to default mode AP
 [ ]TODO: prebuild acton to gzip index.html
-[ ]TODO: soft reset button on web page
+[x]TODO: soft reset button on web page
 
 */
