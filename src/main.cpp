@@ -45,7 +45,7 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 String processor(const String &aVar);
 // ---------------------------------------------------
 
-void GetPage(AsyncWebServerRequest *aRequest) //[ ]TODO: rename GetPage
+void SendWebPageResponse(AsyncWebServerRequest *aRequest)
 {
     __sensors.requestTemperatures();
 
@@ -66,7 +66,7 @@ void GetPage(AsyncWebServerRequest *aRequest) //[ ]TODO: rename GetPage
 // ==================================================
 void handleNotFound(AsyncWebServerRequest *aRequest)
 {
-    GetPage(aRequest);
+    SendWebPageResponse(aRequest);
 }
 
 // функция формирования содержимого WEB страницы
@@ -105,7 +105,7 @@ void handleSubmit(AsyncWebServerRequest *aRequest)
         TLog::println(" degrees C");
     }
 
-    GetPage(aRequest); // Response to the HTTP request
+    SendWebPageResponse(aRequest); // Response to the HTTP request
 }
 
 // ===================================================
@@ -119,7 +119,7 @@ void handleRoot(AsyncWebServerRequest *aRequest)
     }
     else
     {
-        GetPage(aRequest);
+        SendWebPageResponse(aRequest);
     }
 }
 /*******************
@@ -183,7 +183,7 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
             SaveWifiPassword(value);
     }
 
-    GetPage(aRequest);
+    SendWebPageResponse(aRequest);
 }
 
 auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
