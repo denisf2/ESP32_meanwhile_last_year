@@ -355,6 +355,8 @@ get forcast by coordinate-->forecast-|   |
 [ ]TODO: test connection and report before save them. Possible to lose wifi connection
 [ ]TODO: reset to default mode AP
 [ ]TODO: prebuild acton to gzip index.html
-[x]TODO: soft reset button on web page
+[x]TODO: soft restart button on web page
+[ ]TODO: add status of coordinates acquisition 
+[ ]TODO: add status of forecast acquisition 
 
 */
