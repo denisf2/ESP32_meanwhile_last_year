@@ -21,11 +21,11 @@
 // [ ]TODO: remove dummy stubs
 // Setup a oneWire instance
 // OneWire oneWire(ONE_WIRE_BUS);
-Dummy_OneWire __oneWire(ONE_WIRE_BUS);// [ ]TODO: remove
+Dummy_OneWire __oneWire(ONE_WIRE_BUS); // [ ]TODO: remove
 
 // Pass our oneWire reference to Dallas Temperature.
 // DallasTemperature sensors(&oneWire);
-Dummy_DallasTemperature __sensors(&__oneWire);// [ ]TODO: remove
+Dummy_DallasTemperature __sensors(&__oneWire); // [ ]TODO: remove
 // ---------------------------------------------------
 
 constexpr int listenPort{80};
@@ -45,20 +45,20 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 String processor(const String &aVar);
 // ---------------------------------------------------
 
-void GetPage(AsyncWebServerRequest *aRequest)//[ ]TODO: rename GetPage
+void GetPage(AsyncWebServerRequest *aRequest) //[ ]TODO: rename GetPage
 {
-  __sensors.requestTemperatures();
+    __sensors.requestTemperatures();
 
-  auto response = aRequest->beginResponse_P(200
-                                          , "text/html"
-                                          , index_html_gz_start
-                                          , index_html_gz_size
-                                          // , processor
-                                          );
-  response->addHeader("Content-Encoding", "gzip");
-  aRequest->send(response);
+    auto response = aRequest->beginResponse_P(200
+                                            , "text/html"
+                                            , index_html_gz_start
+                                            , index_html_gz_size
+                                            // , processor
+                                            );
+    response->addHeader("Content-Encoding", "gzip");
+    aRequest->send(response);
 
-  // aRequest->send_P(200, "text/html", index_html_template, processor);
+    // aRequest->send_P(200, "text/html", index_html_template, processor);
 }
 
 // ==================================================
@@ -66,31 +66,31 @@ void GetPage(AsyncWebServerRequest *aRequest)//[ ]TODO: rename GetPage
 // ==================================================
 void handleNotFound(AsyncWebServerRequest *aRequest)
 {
-  GetPage(aRequest);
+    GetPage(aRequest);
 }
 
 // функция формирования содержимого WEB страницы
 String processor(const String &aVar)
 {
-  TLog::print("processor aVar = ");
-  TLog::println(aVar);
+    TLog::print("processor aVar = ");
+    TLog::println(aVar);
 
-  if (aVar.equals("ARRAYPLACEHOLDER"))
-  {
-    String pointsStr;
-    for (size_t i = 0; i < arraySize; ++i)
+    if (aVar.equals("ARRAYPLACEHOLDER"))
     {
-      pointsStr += ",[";
-      pointsStr += String(timeArray[i]);
-      pointsStr += ",";
-      pointsStr += String(tempArray[i]);
-      pointsStr += "]";
+        String pointsStr;
+        for (size_t i = 0; i < arraySize; ++i)
+        {
+            pointsStr += ",[";
+            pointsStr += String(timeArray[i]);
+            pointsStr += ",";
+            pointsStr += String(tempArray[i]);
+            pointsStr += "]";
+        }
+        TLog::println(pointsStr);
+        return pointsStr;
     }
-    TLog::println(pointsStr);
-    return pointsStr;
-  }
 
-  return String();
+    return String();
 }
 
 // ==================================================
@@ -98,14 +98,14 @@ String processor(const String &aVar)
 // ==================================================
 void handleSubmit(AsyncWebServerRequest *aRequest)
 {
-  if (aRequest->hasArg("button1"))
-  {
-    TLog::print("The temperature is: ");
-    TLog::print(static_cast<int>(__sensors.getTempCByIndex(0)));
-    TLog::println(" degrees C");
-  }
+    if (aRequest->hasArg("button1"))
+    {
+        TLog::print("The temperature is: ");
+        TLog::print(static_cast<int>(__sensors.getTempCByIndex(0)));
+        TLog::println(" degrees C");
+    }
 
-  GetPage(aRequest); // Response to the HTTP request
+    GetPage(aRequest); // Response to the HTTP request
 }
 
 // ===================================================
@@ -113,14 +113,14 @@ void handleSubmit(AsyncWebServerRequest *aRequest)
 // ===================================================
 void handleRoot(AsyncWebServerRequest *aRequest)
 {
-  if (aRequest->args())
-  {
-    handleSubmit(aRequest);
-  }
-  else
-  {
-    GetPage(aRequest);
-  }
+    if (aRequest->args())
+    {
+        handleSubmit(aRequest);
+    }
+    else
+    {
+        GetPage(aRequest);
+    }
 }
 /*******************
 handleRoot->has arguments->handleSubmit->has "button1"->print to serial sensor data
@@ -136,54 +136,54 @@ onNotFound->handleNotFound                                                      
 
 auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 {
-  TLog::println("Requested favicon.ico");
+    TLog::println("Requested favicon.ico");
 
-  auto response = aRequest->beginResponse_P(200
-                                          , "image/x-icon"
-                                          , favicon_ico_gz_start
-                                          , favicon_ico_gz_size
-                                          // , processor
-                                                );
-  response->addHeader("Content-Encoding", "gzip");
-  aRequest->send(response);
+    auto response = aRequest->beginResponse_P(200
+                                            , "image/x-icon"
+                                            , favicon_ico_gz_start
+                                            , favicon_ico_gz_size
+                                              // , processor
+    );
+    response->addHeader("Content-Encoding", "gzip");
+    aRequest->send(response);
 }
 
 auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
-  const size_t paramsNr = aRequest->params();
+    const size_t paramsNr = aRequest->params();
 
-  TLog::println("HandleUpdateParams. Params total: ");
-  TLog::print(paramsNr);
+    TLog::println("HandleUpdateParams. Params total: ");
+    TLog::print(paramsNr);
 
-  for (size_t i = 0; i < paramsNr; i++)
-  {
-    const AsyncWebParameter * const p = aRequest->getParam(i);
-    const auto name = p->name();
-    const auto value = p->value();
+    for (size_t i = 0; i < paramsNr; i++)
+    {
+        const AsyncWebParameter *const p = aRequest->getParam(i);
+        const auto name = p->name();
+        const auto value = p->value();
 
-    TLog::println("Param [name, value] : [");
-    TLog::print(name);
-    TLog::print(", ");
-    TLog::print(value);
-    TLog::print("]");
+        TLog::println("Param [name, value] : [");
+        TLog::print(name);
+        TLog::print(", ");
+        TLog::print(value);
+        TLog::print("]");
 
-    if(value.isEmpty())
-      continue;
-    
-    if(name == "ip2geoKey")
-      SaveIpGeolocation(value);
+        if (value.isEmpty())
+            continue;
 
-    if(name == "openWeatherKey")
-      SaveOpenWeather(value);
+        if (name == "ip2geoKey")
+            SaveIpGeolocation(value);
 
-    if(name == "wifiSsid")
-      SaveWifiSSID(value);
+        if (name == "openWeatherKey")
+            SaveOpenWeather(value);
 
-    if(name == "wifiPassword")
-      SaveWifiPassword(value);
-  }
+        if (name == "wifiSsid")
+            SaveWifiSSID(value);
 
-  GetPage(aRequest);
+        if (name == "wifiPassword")
+            SaveWifiPassword(value);
+    }
+
+    GetPage(aRequest);
 }
 
 auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
@@ -213,50 +213,53 @@ auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
 // ===================================================
 auto AddNewMeasurement(int aNewVAlue) -> void
 {
-  constexpr size_t size{arraySize - 1};
-  timeArray[size] = millis() / 1000UL;
+    constexpr size_t size{arraySize - 1};
+    timeArray[size] = millis() / 1000UL;
 
-  for (size_t i = 0; i < size; i++)
-  {
-    tempArray[i] = tempArray[i + 1];
-    timeArray[i] = timeArray[i + 1];
-  }
+    for (size_t i = 0; i < size; i++)
+    {
+        tempArray[i] = tempArray[i + 1];
+        timeArray[i] = timeArray[i + 1];
+    }
 
-  tempArray[size] = aNewVAlue;
+    tempArray[size] = aNewVAlue;
 }
 
 auto LockingWiFiConnection() -> void
 {
-  const auto wifiSSID = GetWifiSSID();
-  // Connect to Wi-Fi network with SSID and password
-  TLog::println("Connecting to ");
-  TLog::print(wifiSSID);
-  TLog::print(" ");
+    const auto wifiSSID = GetWifiSSID();
+    // Connect to Wi-Fi network with SSID and password
+    TLog::println("Connecting to ");
+    TLog::print(wifiSSID);
+    TLog::print(" ");
 
-  WiFi.begin(wifiSSID, GetWiFiPassword());
-  constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{500};
-  while (WL_CONNECTED != WiFi.status())
-  {
-    delay(WIFI_RECON_DELAY_MILLISEC);
-    TLog::print(".");
-  }
+    WiFi.begin(wifiSSID, GetWiFiPassword());
+    constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{500};
+    while (WL_CONNECTED != WiFi.status())
+    {
+        delay(WIFI_RECON_DELAY_MILLISEC);
+        TLog::print(".");
+    }
 
-  // Print local IP address and start web server
-  TLog::println("WiFi connected.");
-  TLog::println("IP address: ");
-  TLog::print(WiFi.localIP());
-  TLog::println();
+    // Print local IP address and start web server
+    TLog::println("WiFi connected.");
+    TLog::println("IP address: ");
+    TLog::print(WiFi.localIP());
+    TLog::println();
 }
 
-using callback__ = std::function<auto(const String&) -> void>;// [ ]FIXME:rename
-auto TryToGetData(callback__ aFunc, const String& aApiKey) -> void// [x]FIXME:rename
+using callback__ = std::function<auto(const String &)->void>;      // [ ]FIXME:rename
+auto TryToGetData(callback__ aFunc, const String &aApiKey) -> void // [x]FIXME:rename
 {
-  //Check WiFi connection status
-  if(WL_CONNECTED == WiFi.status()) {
-    aFunc(aApiKey);
-  } else {
-    TLog::println("WiFi Disconnected");
-  }
+    // Check WiFi connection status
+    if (WL_CONNECTED == WiFi.status())
+    {
+        aFunc(aApiKey);
+    }
+    else
+    {
+        TLog::println("WiFi Disconnected");
+    }
 }
 
 // ===================================================
@@ -264,26 +267,26 @@ auto TryToGetData(callback__ aFunc, const String& aApiKey) -> void// [x]FIXME:re
 // ===================================================
 void setup()
 {
-  constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
-  Serial.begin(SERIAL_MONITOR_SPEED);
+    constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
+    Serial.begin(SERIAL_MONITOR_SPEED);
 
-  TLog::println("=================================");
+    TLog::println("=================================");
 
-  pinMode(BUILDIN_LED_PIN, OUTPUT);
+    pinMode(BUILDIN_LED_PIN, OUTPUT);
 
-  // [ ]TODO: setup and run default wifi access point on cold start
-  RestoreStoredData();
-  LockingWiFiConnection();
+    // [ ]TODO: setup and run default wifi access point on cold start
+    RestoreStoredData();
+    LockingWiFiConnection();
 
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/update", HTTP_GET, HandleUpdateParams);
-  server.on("/restart", HTTP_GET, HandleDeviceSoftRestart);
-  server.on("/favicon.ico", HTTP_GET, HandleFavIcon);
-  server.onNotFound(handleNotFound);
-  server.begin();
+    server.on("/", HTTP_GET, handleRoot);
+    server.on("/update", HTTP_GET, HandleUpdateParams);
+    server.on("/restart", HTTP_GET, HandleDeviceSoftRestart);
+    server.on("/favicon.ico", HTTP_GET, HandleFavIcon);
+    server.onNotFound(handleNotFound);
+    server.begin();
 
-  // Start up the library
-  __sensors.begin();
+    // Start up the library
+    __sensors.begin();
 }
 
 // ===================================================
@@ -291,58 +294,59 @@ void setup()
 // ===================================================
 void loop()
 {
-  // server.handleClient();
-  // server.send(200, "text/html", getPage());
-  // * must send data by websocket
+    // server.handleClient();
+    // server.send(200, "text/html", getPage());
+    // * must send data by websocket
 
-  const auto newmil = millis();
-  if (newmil - oldmil >= UPDATE_INTERVAL_MILLISEC)
-  {
-    int tempC = __sensors.getTempCByIndex(0U);
+    const auto newmil = millis();
+    if (newmil - oldmil >= UPDATE_INTERVAL_MILLISEC)
+    {
+        int tempC = __sensors.getTempCByIndex(0U);
 
-    TLog::println("The temperature in ticker is: ");
-    TLog::print(tempC);
-    TLog::print(" degrees C");
+        TLog::println("The temperature in ticker is: ");
+        TLog::print(tempC);
+        TLog::print(" degrees C");
 
-    digitalWrite(BUILDIN_LED_PIN, ledState);
-    ledState = 1 - ledState;
-// [ ]TODO:need remove
-    AddNewMeasurement(tempC);
-    oldmil = newmil;
-  }
-   
-  static bool once = false;
-  if (newmil - oldmil2 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
-  {
-    //Check WiFi connection status
-    if(WL_CONNECTED == WiFi.status()) {
-        GetLocationCoordinates(GetIpGeoKey());
-        GetForecast(GetOpenWeatherKey()
-                    , String(Coordinates_.latitude)
-                    , String(Coordinates_.longitude));
-    } else {
-        TLog::println("WiFi Disconnected");
+        digitalWrite(BUILDIN_LED_PIN, ledState);
+        ledState = 1 - ledState;
+        // [ ]TODO:need remove
+        AddNewMeasurement(tempC);
+        oldmil = newmil;
     }
-    oldmil2 = newmil;
-    once = true;
-  }
+
+    static bool once = false;
+    if (newmil - oldmil2 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
+    {
+        // Check WiFi connection status
+        if (WL_CONNECTED == WiFi.status())
+        {
+            GetLocationCoordinates(GetIpGeoKey());
+            GetForecast(GetOpenWeatherKey()
+                        , String(Coordinates_.latitude)
+                        , String(Coordinates_.longitude));
+        }
+        else
+        {
+            TLog::println("WiFi Disconnected");
+        }
+        oldmil2 = newmil;
+        once = true;
+    }
 }
 
 //===========================================================
-
 
 /************************
 get cooord -> has city name? ->yes------------------>|
                         |->no-->get city info by ip->|
                                          |           |->return coordinates-|
     |------------------------------------]---------------------------------|
-    |                                    |                                                   
+    |                                    |
     v                                    |
 get forcast by coordinate-->forecast-|   |
                                      |   v
                                      |-> print city/forecast info
 *************************/
-
 
 /* Roadmap:
 
@@ -356,7 +360,7 @@ get forcast by coordinate-->forecast-|   |
 [ ]TODO: reset to default mode AP
 [ ]TODO: prebuild acton to gzip index.html
 [x]TODO: soft restart button on web page
-[ ]TODO: add status of coordinates acquisition 
-[ ]TODO: add status of forecast acquisition 
+[ ]TODO: add status of coordinates acquisition
+[ ]TODO: add status of forecast acquisition
 
 */
