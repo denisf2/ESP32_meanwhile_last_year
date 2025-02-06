@@ -339,5 +339,7 @@ get forcast by coordinate-->forecast-|   |
 [x]TODO: export to a new module RestoreStoredData
 [ ]TODO: test connection and report before save them. Possible to lose wifi connection
 [ ]TODO: reset to default mode AP
+[ ]TODO: prebuild acton to gzip index.html
+[ ]TODO: soft reset button on web page
 
 */
