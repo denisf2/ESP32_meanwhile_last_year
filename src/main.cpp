@@ -1,7 +1,16 @@
 // ======================================================
-// Webserver program that gets temperature info
-// from a Dallas DS18B20 and puts that in a linegraph
-// on a webpage with a update every x seconds
+// Webserver program that gets own coordinates by IP address 
+// and acquiring weather forecast info hourly for today and 
+// historical weather for several days back.
+
+// Using services:
+// https://ipgeolocation.io/
+// https://openweathermap.org/
+
+// https://ipgeolocation.io/ip-location-api.html
+// https://openweathermap.org/api
+// https://openweathermap.org/history
+// https://openweathermap.org/api/geocoding-api
 // ======================================================
 
 #include <Arduino.h>
