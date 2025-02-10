@@ -18,14 +18,9 @@
 #include "IpGeolocationApi.h"
 #include "OpenWeatherApi.h"
 
-// [ ]TODO: remove dummy stubs
-// Setup a oneWire instance
-// OneWire oneWire(ONE_WIRE_BUS);
-Dummy_OneWire __oneWire(ONE_WIRE_BUS); // [ ]TODO: remove
-
 // Pass our oneWire reference to Dallas Temperature.
 // DallasTemperature sensors(&oneWire);
-Dummy_DallasTemperature __sensors(&__oneWire); // [ ]TODO: remove
+Dummy_DallasTemperature __sensors; // [ ]TODO: remove
 // ---------------------------------------------------
 
 constexpr int listenPort{80};
@@ -47,8 +42,6 @@ String processor(const String &aVar);
 
 void SendWebPageResponse(AsyncWebServerRequest *aRequest)
 {
-    __sensors.requestTemperatures();
-
     auto response = aRequest->beginResponse_P(200
                                             , "text/html"
                                             , index_html_gz_start
@@ -99,11 +92,7 @@ String processor(const String &aVar)
 void handleSubmit(AsyncWebServerRequest *aRequest)
 {
     if (aRequest->hasArg("button1"))
-    {
-        TLog::print("The temperature is: ");
-        TLog::print(static_cast<int>(__sensors.getTempCByIndex(0)));
-        TLog::println(" degrees C");
-    }
+        TLog::println("button1 was pressed");
 
     SendWebPageResponse(aRequest); // Response to the HTTP request
 }
@@ -284,9 +273,6 @@ void setup()
     server.on("/favicon.ico", HTTP_GET, HandleFavIcon);
     server.onNotFound(handleNotFound);
     server.begin();
-
-    // Start up the library
-    __sensors.begin();
 }
 
 // ===================================================

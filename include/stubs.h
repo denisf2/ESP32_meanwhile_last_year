@@ -19,6 +19,7 @@ private:
   mutable unsigned int m_value{0};
 
 public:
+  Dummy_DallasTemperature() = default;
   Dummy_DallasTemperature(const Dummy_OneWire *const _tmp) {}
   void requestTemperatures() const {}
   int getTempCByIndex(uint _aIndex) const
