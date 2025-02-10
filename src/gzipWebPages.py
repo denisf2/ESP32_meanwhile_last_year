@@ -1,8 +1,10 @@
 # SCRIPT TO GZIP CRITICAL FILES FOR ACCELERATED WEBSERVING
 # see also https://community.platformio.org/t/question-esp32-compress-files-in-data-to-gzip-before-upload-possible-to-spiffs/6274/10
 #
+# Added some modifications to process files as embedded
 
-Import( 'env', 'projenv' )
+Import( 'env' )
+# Import( 'env', 'projenv' ) <-- base line
 
 import os
 import gzip
@@ -16,17 +18,22 @@ def gzip_file( src_path, dst_path ):
             dst.write( chunk )
 
 # GZIP DEFINED FILES FROM 'data' DIR to 'data/gzip/' DIR
-def gzip_webfiles( source, target, env ):
+# def gzip_webfiles( source, target, env ): <-- base line
+def gzip_webfiles( env ):
     
     # FILETYPES / SUFFIXES WHICh NEED TO BE GZIPPED
-    source_file_prefix = '_'
-    filetypes_to_gzip = [ 'css', 'html' ]
+    # source_file_prefix = '_' <-- base line
+    source_file_prefix = ''
+    source_file_base_regex = '*.'
+    filetypes_to_gzip = [ 'css', 'html' , 'ico']
+    # filetypes_to_gzip = [ 'css', 'html' ] <-- base line
 
-    print( '\nGZIP: INITIATED GZIP FOR SPIFFS...\n' )
+    # print( '\nGZIP: INITIATED GZIP FOR SPIFFS...\n' )
+    print( '\nGZIP: INITIATED GZIP FOR EMBEDDED WEBPAGE...\n' )
     GZIP_DIR_NAME = 'gzip'
 
-    data_dir_path = env.get( 'PROJECTDATA_DIR' )
-    gzip_dir_path = os.path.join( env.get( 'PROJECTDATA_DIR' ), GZIP_DIR_NAME )
+    data_dir_path = env.get( 'PROJECT_DATA_DIR' )
+    gzip_dir_path = os.path.join( env.get( 'PROJECT_DATA_DIR' ), GZIP_DIR_NAME )
 
     # CHECK DATA DIR
     if not os.path.exists( data_dir_path ):
@@ -51,7 +58,7 @@ def gzip_webfiles( source, target, env ):
     # DETERMINE FILES TO COMPRESS
     files_to_gzip = []
     for extension in filetypes_to_gzip:
-        match_str = source_file_prefix + '*.'
+        match_str = source_file_prefix + source_file_base_regex
         files_to_gzip.extend( glob.glob( os.path.join( data_dir_path, match_str + extension ) ) )
     
     # print( 'GZIP: GZIPPING FILES... {}\n'.format( files_to_gzip ) )
@@ -81,4 +88,7 @@ def gzip_webfiles( source, target, env ):
         print( 'GZIP: SUCCESS/COMPRESSED.\n' )
 
 # IMPORTANT, this needs to be added to call the routine
-env.AddPreAction( '$BUILD_DIR/spiffs.bin', gzip_webfiles )
+# env.AddPreAction( "$BUILD_DIR/spiffs.bin", gzip_webfiles ) <-- base line
+
+# Call this at the beginning, no events hooks
+gzip_webfiles(env)

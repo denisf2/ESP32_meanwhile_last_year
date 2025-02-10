@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=2.5, user-scalable=1">
+    <title>Temperature Forecast Linechart demo</title>
+
+    <style>
+        body {
+            background-color: powderblue;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        .inputbox {
+            margin: 5px;
+            margin-left: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <h2>Tabs</h2> -->
+    <!-- <p>Click on the buttons inside the tabbed menu:</p> -->
+
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'Chart')">Chart</button>
+        <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
+        <button class="tablinks" onclick="openTab(event, 'System')">System</button>
+    </div>
+
+    <div id="Chart" class="tabcontent" style="display: block;">
+        <!-- <h3>Chart</h3> -->
+        <p>Here should be some description.</p>
+        <!-- <h3 style='color:brown'>Room Temperature</h1> -->
+
+        <div id='temp_chart' style='width:600px; height: 400px;'></div>
+        <br>
+   <!-- <form action="/" method="post">-->
+        <form action="/" method="post" accept-charset="utf-8">
+            <button type="submit" name="button1" id="button1" value="button1" onclick='update()'>CLICK FOR
+                UPDATE</button>
+        </form>
+    </div>
+
+    <div id="Settings" class="tabcontent">
+        <!-- <h3>Settings</h3> -->
+        <p>Here should be some description.</p>
+        <form id="SettingsForm" action="/update" accept-charset="utf-8">
+            <div>
+                <input class="inputbox" type="text" id="wifiSsid" name="wifiSsid" title="ssid">wifi ssid</input><br>
+                <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="password">wifi password</input><br>
+                <input class="inputbox" type="text" id="longitude" name="longitude" title="longitude">longitude</input><br>
+                <input class="inputbox" type="text" id="latitude" name="latitude" title="latitude">latitude</input><br>
+                <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="openWeatherKey">Openweather key</input><br>
+                <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey">Ip to geo key</input><br>
+            </div>
+            <div>
+                <button type="submit" name="button2" id="button2" value="button2" onclick='return submitSettings()'>Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="System" class="tabcontent">
+        <br>
+        <!-- <label>dev form</label> -->
+        <!-- [ ]:TODO what fore name\id\value -->
+        <form id="SystemForm">
+            <button type="submit" id="buttonRestart" formaction="/restart">Restart</button>
+            <button type="submit" id="buttonResetDefault" formaction="/default">Reset to Default</button>
+        </form>
+    </div>
+
+    <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+    <script type='text/javascript'>
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        // SettingsForm.onsubmit = async (e) => {
+        //     e.preventDefault();
+        //     let host = window.location.host + "/update";
+        //     let response = await fetch(host, {
+        //                                 method: 'POST',
+        //                                 body: new FormData(SettingsForm)
+        //                             });
+        //
+        //     let result = await response.json();
+        //
+        //     // alert(result.message);
+        //
+        //     alert(true);
+        // };
+
+        function drawChart() {
+
+//            let tmp = [['Time', 'Temp']
+//                %ARRAYPLACEHOLDER%
+//                        ];
+
+            let tmp = [['Time', 'Temp']];
+            for (let i = 0; i < 20; ++i)
+                tmp.push([i, Math.sin(i)]);
+
+            var chartData = google.visualization.arrayToDataTable(tmp);
+
+            var chartoptions =
+            {
+                title: 'Local Temperature Log',
+                legend: { position: 'bottom' },
+                width: 600,
+                height: 400,
+                chartArea: { width: '90%', height: '75%' }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('temp_chart'));
+            chart.draw(chartData, chartoptions);
+        }
+
+        function update() {
+            chart.draw(chartData, chartoptions);
+        }
+
+        function openTab(evt, tabLabel) {
+            let tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            let tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabLabel).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function submitSettings() {
+            // validate data from form controls and post it to the server
+            let reg = /^[0-9a-f]{32}$/i;
+
+            let apikey = document.forms["SettingsForm"]["openWeatherKey"].value;
+            if (!reg.test(apikey) && apikey != "") {
+                alert("invalid openWeatherKey key value")
+                return false;
+            }
+
+            apikey = document.forms["SettingsForm"]["ip2geoKey"].value;
+            if (!reg.test(apikey) && apikey != "") {
+                alert("invalid ip2geoKey key value")
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+
+</html>
