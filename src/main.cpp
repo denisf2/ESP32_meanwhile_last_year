@@ -186,20 +186,6 @@ auto LockingWiFiConnection() -> void
     TLog::println();
 }
 
-using callback__ = std::function<auto(const String &)->void>;      // [ ]FIXME:rename
-auto TryToGetData(callback__ aFunc, const String &aApiKey) -> void // [x]FIXME:rename
-{
-    // Check WiFi connection status
-    if (WL_CONNECTED == WiFi.status())
-    {
-        aFunc(aApiKey);
-    }
-    else
-    {
-        TLog::println("WiFi Disconnected");
-    }
-}
-
 // ===================================================
 // Setup
 // ===================================================
