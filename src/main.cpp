@@ -44,33 +44,6 @@ constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
 // ---------------------------------------------------
 
-String processor(const String &aVar);
-// ---------------------------------------------------
-
-// функция формирования содержимого WEB страницы
-String processor(const String &aVar)
-{
-    TLog::print("processor aVar = ");
-    TLog::println(aVar);
-
-    if (aVar.equals("ARRAYPLACEHOLDER"))
-    {
-        String pointsStr;
-        for (size_t i = 0; i < arraySize; ++i)
-        {
-            pointsStr += ",[";
-            pointsStr += String(timeArray[i]);
-            pointsStr += ",";
-            pointsStr += String(tempArray[i]);
-            pointsStr += "]";
-        }
-        TLog::println(pointsStr);
-        return pointsStr;
-    }
-
-    return String();
-}
-
 // ==================================================
 // Handle submit form
 // ==================================================
