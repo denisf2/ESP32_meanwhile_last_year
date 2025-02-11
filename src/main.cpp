@@ -35,7 +35,6 @@ Dummy_DallasTemperature __sensors; // [ ]TODO: remove
 
 constexpr size_t arraySize{10};
 int tempArray[arraySize] = {};
-unsigned long timeArray[arraySize] = {};
 unsigned long oldmil = 0UL;
 unsigned long oldmil2 = 0UL;
 const unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
@@ -119,23 +118,6 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
     SendWebPageResponse(aRequest);
 }
 
-// ===================================================
-// Update values history
-// ===================================================
-auto AddNewMeasurement(int aNewVAlue) -> void
-{
-    constexpr size_t size{arraySize - 1};
-    timeArray[size] = millis() / 1000UL;
-
-    for (size_t i = 0; i < size; i++)
-    {
-        tempArray[i] = tempArray[i + 1];
-        timeArray[i] = timeArray[i + 1];
-    }
-
-    tempArray[size] = aNewVAlue;
-}
-
 auto LockingWiFiConnection() -> void
 {
     const auto wifiSSID = GetWifiSSID();
@@ -204,8 +186,6 @@ void loop()
 
         digitalWrite(BUILDIN_LED_PIN, ledState);
         ledState = 1 - ledState;
-        // [ ]TODO:need remove
-        AddNewMeasurement(tempC);
         oldmil = newmil;
     }
 
