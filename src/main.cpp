@@ -229,6 +229,7 @@ void setup()
 // ===================================================
 void loop()
 {
+    // [ ]TODO: wrap into task or jobs
     // server.handleClient();
     // server.send(200, "text/html", getPage());
     // * must send data by websocket
