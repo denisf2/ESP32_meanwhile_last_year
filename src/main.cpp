@@ -273,15 +273,21 @@ void loop()
 //===========================================================
 
 /************************
-get cooord -> has city name? ->yes------------------>|
-                        |->no-->get city info by ip->|
-                                         |           |->return coordinates-|
-    |------------------------------------]---------------------------------|
-    |                                    |
-    v                                    |
-get forcast by coordinate-->forecast-|   |
-                                     |   v
-                                     |-> print city/forecast info
+get cooord
+    v
+has city name?
+             |
+    |------------------|
+    v                  v
+    no                yes
+    v                  |
+get city info by ip ---]----|
+    v                  |    |
+return coordinates <---|    |
+    v                       |
+get forcast by coordinate   |
+    v                       |
+print city/forecast info <--|
 *************************/
 
 /* Roadmap:
