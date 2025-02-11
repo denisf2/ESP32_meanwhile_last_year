@@ -21,20 +21,12 @@
 
 #include "NvsPreferences.h"
 // #include "wifisecrets.h"
-#include "stubs.h"
 #include "resources.h"
 #include <TLog.h>
 #include "IpGeolocationApi.h"
 #include "OpenWeatherApi.h"
 #include "WebServerHandlers.h"
 
-// Pass our oneWire reference to Dallas Temperature.
-// DallasTemperature sensors(&oneWire);
-Dummy_DallasTemperature __sensors; // [ ]TODO: remove
-// ---------------------------------------------------
-
-constexpr size_t arraySize{10};
-int tempArray[arraySize] = {};
 unsigned long oldmil = 0UL;
 unsigned long oldmil2 = 0UL;
 const unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
@@ -178,14 +170,9 @@ void loop()
     const auto newmil = millis();
     if (newmil - oldmil >= UPDATE_INTERVAL_MILLISEC)
     {
-        int tempC = __sensors.getTempCByIndex(0U);
-
-        TLog::println("The temperature in ticker is: ");
-        TLog::print(tempC);
-        TLog::print(" degrees C");
-
         digitalWrite(BUILDIN_LED_PIN, ledState);
         ledState = 1 - ledState;
+
         oldmil = newmil;
     }
 
