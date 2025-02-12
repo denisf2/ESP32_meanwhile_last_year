@@ -126,7 +126,7 @@ auto LockingWiFiConnection() -> void
 
         status = WiFi.begin(wifiSSID, wifiPass);
         for(int split{0}
-                ; wl_status_t::WL_CONNECTED != status || split < 10
+                ; wl_status_t::WL_CONNECTED != status && split < 10
                 ; ++split, status = WiFi.status())
         {
             TLog::print(".");
