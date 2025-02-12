@@ -14,6 +14,7 @@ auto GetIpGeoKey() -> String;
 auto GetOpenWeatherKey() -> String;
 auto GetWifiSSID() -> String;
 auto GetWiFiPassword() -> String;
+auto IsColdStart() -> bool;
 
 extern Preferences nvsPrefs;
 
