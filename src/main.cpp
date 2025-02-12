@@ -113,23 +113,41 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 auto LockingWiFiConnection() -> void
 {
     const auto wifiSSID = GetWifiSSID();
+    const auto wifiPass = GetWiFiPassword();
+
     // Connect to Wi-Fi network with SSID and password
-    TLog::println("Connecting to ");
-    TLog::print(wifiSSID);
-    TLog::print(" ");
-
-    WiFi.begin(wifiSSID, GetWiFiPassword());
-    constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{500};
-    while (WL_CONNECTED != WiFi.status())
+    constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{10000};
+    constexpr uint32_t WIFI_PROGRESS_DELAY_MILLISEC{500};
+    for(auto status = wl_status_t::WL_IDLE_STATUS; wl_status_t::WL_CONNECTED != status; )
     {
-        delay(WIFI_RECON_DELAY_MILLISEC);
-        TLog::print(".");
-    }
+        TLog::println("Attempting to connect to SSID: ");
+        TLog::print(wifiSSID);
+        TLog::print(" ");
 
+        status = WiFi.begin(wifiSSID, wifiPass);
+        for(int split{0}
+                ; wl_status_t::WL_CONNECTED != status || split < 10
+                ; ++split, status = WiFi.status())
+        {
+            TLog::print(".");
+            delay(WIFI_PROGRESS_DELAY_MILLISEC);
+        }
+
+        if(wl_status_t::WL_CONNECTED != status )
+            delay(WIFI_RECON_DELAY_MILLISEC);
+    }
+}
+
+auto PrintWifiStatus() -> void
+{
     // Print local IP address and start web server
-    TLog::println("WiFi connected.");
-    TLog::println("IP address: ");
+    TLog::println("WiFi connected to SSID: ");
+    TLog::print(WiFi.SSID());
+    TLog::println("IP Address: ");
     TLog::print(WiFi.localIP());
+    TLog::println("Signal strength (RSSI): ");
+    TLog::print(WiFi.RSSI());
+    TLog::print(" dBm");
     TLog::println();
 }
 
@@ -140,6 +158,10 @@ void setup()
 {
     constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
     Serial.begin(SERIAL_MONITOR_SPEED);
+    while (!Serial)
+    {
+        ; // wait for serial port to connect. Needed for native USB port only
+    }
 
     TLog::println("=================================");
 
@@ -148,6 +170,7 @@ void setup()
     // [ ]TODO: setup and run default wifi access point on cold start
     RestoreStoredData();
     LockingWiFiConnection();
+    PrintWifiStatus();
 
     server.on("/", HTTP_GET, handleRoot);
     server.on("/update", HTTP_GET, HandleUpdateParams);
