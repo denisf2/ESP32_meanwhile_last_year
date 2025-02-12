@@ -110,7 +110,16 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
     SendWebPageResponse(aRequest);
 }
 
-auto LockingWiFiConnection() -> void
+auto SetupWiFiAccessPoint() -> void
+{
+    TLog::println("Setting AP (Access Point)...");
+    WiFi.softAP(GetWifiSSID(), GetWiFiPassword());
+
+    TLog::println("AP IP address: ");
+    TLog::print(WiFi.softAPIP());
+}
+
+auto LockingWiFiConnection() -> bool
 {
     const auto wifiSSID = GetWifiSSID();
     const auto wifiPass = GetWiFiPassword();
@@ -118,7 +127,9 @@ auto LockingWiFiConnection() -> void
     // Connect to Wi-Fi network with SSID and password
     constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{10000};
     constexpr uint32_t WIFI_PROGRESS_DELAY_MILLISEC{500};
-    for(auto status = wl_status_t::WL_IDLE_STATUS; wl_status_t::WL_CONNECTED != status; )
+
+    auto status = wl_status_t::WL_IDLE_STATUS;
+    for(int count{0}; count < 5 && wl_status_t::WL_CONNECTED != status; ++count)
     {
         TLog::println("Attempting to connect to SSID: ");
         TLog::print(wifiSSID);
@@ -135,7 +146,11 @@ auto LockingWiFiConnection() -> void
 
         if(wl_status_t::WL_CONNECTED != status )
             delay(WIFI_RECON_DELAY_MILLISEC);
+        else
+            return true;
     }
+
+    return false;
 }
 
 auto PrintWifiStatus() -> void
@@ -169,7 +184,10 @@ void setup()
 
     // [ ]TODO: setup and run default wifi access point on cold start
     RestoreStoredData();
-    LockingWiFiConnection();
+
+    if (IsColdStart() || !LockingWiFiConnection())
+        SetupWiFiAccessPoint();
+
     PrintWifiStatus();
 
     server.on("/", HTTP_GET, handleRoot);
