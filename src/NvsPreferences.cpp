@@ -106,14 +106,14 @@ auto GetOpenWeatherKey() -> String
     return opwthr;
 }
 
-auto GetWifiSSID() -> String
+auto GetWifiSSID(SettingsType aType) -> String
 {
-    return wifiSSID;
+    return (SettingsType::factory == aType) ? defaultSSID : wifiSSID;
 }
 
-auto GetWiFiPassword() -> String
+auto GetWiFiPassword(SettingsType aType) -> String
 {
-    return wifiPassword;
+    return (SettingsType::factory == aType) ? defaultPass : wifiPassword;
 }
 
 auto IsColdStart() -> bool

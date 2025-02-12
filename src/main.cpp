@@ -20,7 +20,6 @@
 #include <functional>
 
 #include "NvsPreferences.h"
-// #include "wifisecrets.h"
 #include "resources.h"
 #include <TLog.h>
 #include "IpGeolocationApi.h"
@@ -112,8 +111,13 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 
 auto SetupWiFiAccessPoint() -> void
 {
-    TLog::println("Setting AP (Access Point)...");
-    WiFi.softAP(GetWifiSSID(), GetWiFiPassword());
+    TLog::println("Setting AP (Access Point): ");
+    const auto ssid = GetWifiSSID(SettingsType::factory);
+    TLog::print(ssid);
+    TLog::println("pass: ");
+    const auto pass = GetWiFiPassword(SettingsType::factory);
+    TLog::print(pass);
+    WiFi.softAP(ssid, pass);
 
     TLog::println("AP IP address: ");
     TLog::print(WiFi.softAPIP());
@@ -182,7 +186,6 @@ void setup()
 
     pinMode(BUILDIN_LED_PIN, OUTPUT);
 
-    // [ ]TODO: setup and run default wifi access point on cold start
     RestoreStoredData();
 
     if (IsColdStart() || !LockingWiFiConnection())
@@ -266,12 +269,12 @@ print city/forecast info <--|
 [ ]TODO: visualizate forecast using google charts
 [x]TODO: export to a new module RestoreStoredData
 [ ]TODO: test connection and report before save them. Possible to lose wifi connection
-[ ]TODO: reset to default mode AP
 [x]TODO: prebuild acton to gzip index.html
 [x]TODO: soft restart button on web page
 [ ]TODO: add status of coordinates acquisition
 [ ]TODO: add status of forecast acquisition
 [ ]TODO: in wifi AP mode web page freezes couse google charts js
-[ ]TODO: set default SSID and pass in case "no connection to router". now it is last
+[x]TODO: set default SSID and pass in case "no connection to router". now it is last
+[x]TODO: setup and run default wifi access point on cold start
 
 */
