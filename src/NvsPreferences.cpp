@@ -11,6 +11,9 @@ String opwthr;
 String wifiSSID;
 String wifiPassword;
 
+const char defaultSSID[] = "esp32";
+const char defaultPass[] = "esp32pass";
+
 auto RestoreDefaultData() -> void //[ ]TODO: why do I need these default values?
 {
     TLog::println("Restore default values : ");
@@ -23,8 +26,8 @@ auto RestoreDefaultData() -> void //[ ]TODO: why do I need these default values?
     // https://api.ipgeolocation.io/ipgeo
     nvsPrefs.putString("ipGeolocation", "");
     // [x]TODO: add default wifi ssid and wifipass zero values
-    nvsPrefs.putString("wifiSSID", "");
-    nvsPrefs.putString("wifiPassword", "");
+    nvsPrefs.putString("wifiSSID", defaultSSID);
+    nvsPrefs.putString("wifiPassword", defaultPass);
 
     nvsPrefs.putBool("nvsInit", true);
 
