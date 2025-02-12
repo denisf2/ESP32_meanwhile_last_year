@@ -271,5 +271,7 @@ print city/forecast info <--|
 [x]TODO: soft restart button on web page
 [ ]TODO: add status of coordinates acquisition
 [ ]TODO: add status of forecast acquisition
+[ ]TODO: in wifi AP mode web page freezes couse google charts js
+[ ]TODO: set default SSID and pass in case "no connection to router". now it is last
 
 */
