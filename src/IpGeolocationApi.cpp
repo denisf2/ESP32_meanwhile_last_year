@@ -2,7 +2,6 @@
 
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <TLog.h>
 
 Coordinates Coordinates_;
 
@@ -16,7 +15,7 @@ auto GetLocationCoordinates(const String &aApiKey) -> void
 
     const String serverPath = serverName + "?apiKey=" + aApiKey;
 
-    TLog::println(serverPath);
+    log_d("%s", serverPath.c_str());
 
     HTTPClient http;
     // Your Domain name with URL path or IP address with path
@@ -32,10 +31,9 @@ auto GetLocationCoordinates(const String &aApiKey) -> void
     if (httpResponseCode > 0)
     {
         // [ ]TODO: handle response codes and JSONs 200 401 404
-        TLog::println("HTTP Response code: ");
-        TLog::print(httpResponseCode);
+        log_d("HTTP Response code: %d", httpResponseCode);
         const String payload = http.getString();
-        // TLog::println(payload);
+        // log_d("%s", payload.c_str());
 
         // Allocate the JSON document
         JsonDocument doc;
@@ -45,8 +43,7 @@ auto GetLocationCoordinates(const String &aApiKey) -> void
         // Test if parsing succeeds.
         if (error)
         {
-            TLog::println(F("deserializeJson() failed: "));
-            TLog::print(error.f_str());
+            log_w("JSON deserializition is failed. Error code: %s", error.f_str());
             return;
         }
 
@@ -58,16 +55,11 @@ auto GetLocationCoordinates(const String &aApiKey) -> void
         Coordinates_.longitude = doc["longitude"];
 
         // Print values.
-        TLog::println("Acquired coordinates: [");
-        TLog::print(Coordinates_.latitude, 6);
-        TLog::print(", ");
-        TLog::print(Coordinates_.longitude, 6);
-        TLog::print("]");
+        log_i("Acquired coordinates: [%3.3f, %3.3f]", Coordinates_.latitude, Coordinates_.longitude);
     }
     else
     {
-        TLog::println("Error code: ");
-        TLog::print(httpResponseCode);
+        log_w("Error code: %d", httpResponseCode);
     }
     // Free resources
     http.end();

@@ -1,6 +1,5 @@
 #include "WebServerHandlers.h"
 
-#include <TLog.h>
 #include "resources.h"
 
 constexpr int listenPort{80};
@@ -8,7 +7,7 @@ AsyncWebServer server(listenPort);
 
 auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 {
-    TLog::println("Requested favicon.ico");
+    log_d("Requested favicon.ico");
 
     auto response = aRequest->beginResponse_P(200
                                             , "image/x-icon"
@@ -22,8 +21,7 @@ auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 
 auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
 {
-    TLog::println("Handle Soft Restart");
-    TLog::println();
+    log_d("Handle Soft Restart");
 
     const char webpage[] PROGMEM = R"rawhtml(
         <!DOCTYPE HTML>

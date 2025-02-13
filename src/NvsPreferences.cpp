@@ -1,5 +1,4 @@
 #include "NvsPreferences.h"
-#include <TLog.h>
 
 Preferences nvsPrefs;
 
@@ -16,7 +15,7 @@ const char defaultPass[] = "esp32pass";
 
 auto RestoreDefaultData() -> void //[ ]TODO: why do I need these default values?
 {
-    TLog::println("Restore default values : ");
+    log_i("Restore default values : ");
     nvsPrefs.begin("AppNamespace", RW_MODE);
 
     // init storage by default values
@@ -32,12 +31,12 @@ auto RestoreDefaultData() -> void //[ ]TODO: why do I need these default values?
     nvsPrefs.putBool("nvsInit", true);
 
     nvsPrefs.end();
-    TLog::print("Done");
+    log_i("Done");
 }
 
 auto RestoreStoredData() -> void
 {
-    TLog::println("Loading stored data");
+    log_i("Loading stored data");
     nvsPrefs.begin("AppNamespace", RO_MODE);
 
     if (false == nvsPrefs.isKey("nvsInit"))
@@ -61,11 +60,7 @@ auto RestoreStoredData() -> void
 
 auto Save(const String &aKey, const String &aValue) -> void
 {
-    TLog::println("Saving[");
-    TLog::print(aKey);
-    TLog::print(", ");
-    TLog::print(aValue);
-    TLog::print("]");
+    log_d("Saving [%s, %s]", aKey.c_str(), aValue.c_str());
 
     nvsPrefs.begin("AppNamespace", RW_MODE);
     nvsPrefs.putString(aKey.c_str(), aValue.c_str());

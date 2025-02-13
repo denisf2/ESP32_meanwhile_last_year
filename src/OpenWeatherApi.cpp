@@ -2,7 +2,6 @@
 
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <TLog.h>
 
 /*
 api description: https://openweathermap.org/current
@@ -30,7 +29,7 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
     const String units{"metric"};
     const String serverPath = serverName + "?lat=" + aLat + "&lon=" + aLon + "&appid=" + aApiKey + "&units=" + units;
 
-    TLog::println(serverPath);
+    log_d("%s", serverPath);
 
     HTTPClient http;
     // Your Domain name with URL path or IP address with path
@@ -46,10 +45,9 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
     if (httpResponseCode > 0)
     {
         // [ ]TODO: handle response codes and JSONs 200 400 401 404
-        TLog::println("HTTP Response code: ");
-        TLog::print(httpResponseCode);
+        log_d("HTTP Response code: %d", httpResponseCode);
         const String payload = http.getString();
-        // TLog::println(payload);
+        // log_d("%s", payload.c_str());
 
         // Allocate the JSON document
         JsonDocument doc;
@@ -59,8 +57,7 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
         // Test if parsing succeeds.
         if (error)
         {
-            TLog::println(F("deserializeJson() failed: "));
-            TLog::print(error.f_str());
+            log_w("JSON deserialition failed. Error code: %s", error.c_str());
             return;
         }
 
@@ -72,16 +69,11 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
         // Coordinates_.longitude = doc["longitude"];
 
         // // Print values.
-        TLog::println("Acquired temperature: [");
-        TLog::print(temp, 6);
-        // TLog::print(", ");
-        // TLog::print(Coordinates_.longitude, 6);
-        TLog::print("]");
+        log_d("Acquired temperature: [ %4.1f ]", temp);
     }
     else
     {
-        TLog::println("Error code: ");
-        TLog::print(httpResponseCode);
+        log_d("Error code: %d", httpResponseCode);
     }
     // Free resources
     http.end();

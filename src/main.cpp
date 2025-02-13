@@ -21,7 +21,6 @@
 
 #include "NvsPreferences.h"
 #include "resources.h"
-#include <TLog.h>
 #include "IpGeolocationApi.h"
 #include "OpenWeatherApi.h"
 #include "WebServerHandlers.h"
@@ -42,7 +41,7 @@ void handleSubmit(AsyncWebServerRequest *aRequest)
     // [ ]TODO: do something with button1
     if (aRequest->hasArg("button1"))
     {
-        TLog::println("button1 was pressed");;
+        log_i("button1 was pressed");
     }
 
     SendWebPageResponse(aRequest); // Response to the HTTP request
@@ -78,8 +77,7 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
     const size_t paramsNr = aRequest->params();
 
-    TLog::println("HandleUpdateParams. Params total: ");
-    TLog::print(paramsNr);
+    log_i("Params total: %d", paramsNr);
 
     for (size_t i = 0; i < paramsNr; i++)
     {
@@ -87,11 +85,7 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
         const auto name = p->name();
         const auto value = p->value();
 
-        TLog::println("Param [name, value] : [");
-        TLog::print(name);
-        TLog::print(", ");
-        TLog::print(value);
-        TLog::print("]");
+        log_i("Param [name, value] : [%s, %s]", name.c_str(), value.c_str());
 
         if (value.isEmpty())
             continue;
@@ -114,16 +108,13 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 
 auto SetupWiFiAccessPoint() -> void
 {
-    TLog::println("Setting AP (Access Point): ");
     const auto ssid = GetWifiSSID(SettingsType::factory);
-    TLog::print(ssid);
-    TLog::println("pass: ");
     const auto pass = GetWiFiPassword(SettingsType::factory);
-    TLog::print(pass);
+    log_i("Setting default AP (Access Point) ssid: %s, pass: %s", ssid, pass);
     WiFi.softAP(ssid, pass);
 
-    TLog::println("AP IP address: ");
-    TLog::print(WiFi.softAPIP());
+    const auto ip = WiFi.softAPIP();
+    log_i("AP IP address: %s", ip.toString().c_str());
 }
 
 auto LockingWiFiConnection() -> bool
@@ -138,16 +129,14 @@ auto LockingWiFiConnection() -> bool
     auto status = wl_status_t::WL_IDLE_STATUS;
     for(int count{0}; count < 5 && wl_status_t::WL_CONNECTED != status; ++count)
     {
-        TLog::println("Attempting to connect to SSID: ");
-        TLog::print(wifiSSID);
-        TLog::print(" ");
+        log_i("Attempting to connect to SSID: %s", wifiSSID.c_str());
 
         status = WiFi.begin(wifiSSID, wifiPass);
         for(int split{0}
                 ; wl_status_t::WL_CONNECTED != status && split < 10
                 ; ++split, status = WiFi.status())
         {
-            TLog::print(".");
+            log_i("Waiting");
             delay(WIFI_PROGRESS_DELAY_MILLISEC);
         }
 
@@ -163,14 +152,11 @@ auto LockingWiFiConnection() -> bool
 auto PrintWifiStatus() -> void
 {
     // Print local IP address and start web server
-    TLog::println("WiFi connected to SSID: ");
-    TLog::print(WiFi.SSID());
-    TLog::println("IP Address: ");
-    TLog::print(WiFi.localIP());
-    TLog::println("Signal strength (RSSI): ");
-    TLog::print(WiFi.RSSI());
-    TLog::print(" dBm");
-    TLog::println();
+    log_i("WiFi status:\r\nConnected to SSID: %s \r\nIP Address: %s\r\nSignal strength (RSSI): %d dBm"
+            , WiFi.SSID().c_str()
+            , WiFi.localIP().toString().c_str()
+            , WiFi.RSSI()
+        );
 }
 
 // ===================================================
@@ -184,8 +170,6 @@ void setup()
     {
         ; // wait for serial port to connect. Needed for native USB port only
     }
-
-    TLog::println("=================================");
 
     pinMode(BUILDIN_LED_PIN, OUTPUT);
 
@@ -236,7 +220,7 @@ void loop()
         }
         else
         {
-            TLog::println("WiFi Disconnected");
+            log_i("WiFi Disconnected");
         }
         oldmil2 = newmil;
         once = true;
