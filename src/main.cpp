@@ -39,8 +39,11 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 // ==================================================
 void handleSubmit(AsyncWebServerRequest *aRequest)
 {
+    // [ ]TODO: do something with button1
     if (aRequest->hasArg("button1"))
-        TLog::println("button1 was pressed");
+    {
+        TLog::println("button1 was pressed");;
+    }
 
     SendWebPageResponse(aRequest); // Response to the HTTP request
 }
