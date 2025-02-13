@@ -257,11 +257,14 @@ print city/forecast info <--|
 [x]TODO: export to a new module RestoreStoredData
 [ ]TODO: test connection and report before save them. Possible to lose wifi connection
 [x]TODO: prebuild acton to gzip index.html
+[ ]TODO: remove prebuild action from upload target
 [x]TODO: soft restart button on web page
 [ ]TODO: add status of coordinates acquisition
 [ ]TODO: add status of forecast acquisition
 [ ]TODO: in wifi AP mode web page freezes couse google charts js
 [x]TODO: set default SSID and pass in case "no connection to router". now it is last
 [x]TODO: setup and run default wifi access point on cold start
+[ ]TODO: store coordinates
+[ ]TODO: update coordinates button on web page
 
 */
