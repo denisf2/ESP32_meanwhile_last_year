@@ -29,7 +29,7 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
     const String units{"metric"};
     const String serverPath = serverName + "?lat=" + aLat + "&lon=" + aLon + "&appid=" + aApiKey + "&units=" + units;
 
-    log_d("%s", serverPath);
+    log_d("%s", serverPath.c_str());
 
     HTTPClient http;
     // Your Domain name with URL path or IP address with path
