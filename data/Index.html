@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=2.5, user-scalable=1">
     <title>Temperature Forecast Linechart demo</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
         body {
             background-color: powderblue;
@@ -60,9 +62,9 @@
     <!-- <p>Click on the buttons inside the tabbed menu:</p> -->
 
     <div class="tab">
-        <button class="tablinks active" onclick="openTab(event, 'Chart')">Chart</button>
-        <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
-        <button class="tablinks" onclick="openTab(event, 'System')">System</button>
+        <button class="tablinks active" onclick="openTab(event, 'Chart')"><i class="fa fa-bar-chart"></i> Chart</button>
+        <button class="tablinks" onclick="openTab(event, 'Settings')"><i class="fa fa-file-text-o"></i> Settings</button>
+        <button class="tablinks" onclick="openTab(event, 'System')"><i class="fa fa-cogs"></i> System</button>
     </div>
 
     <div id="Chart" class="tabcontent" style="display: block;">
