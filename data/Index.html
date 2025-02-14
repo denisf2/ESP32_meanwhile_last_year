@@ -54,6 +54,18 @@
             margin: 5px;
             margin-left: 0px;
         }
+
+        .button_sys {
+            margin-block-start: 5px;
+            margin-block-end: 5px;
+            background-color: DodgerBlue;
+            border: none;
+            color: white;
+            padding: 12px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 
@@ -76,7 +88,7 @@
         <br>
    <!-- <form action="/" method="post">-->
         <form action="/" method="post" accept-charset="utf-8">
-            <button type="submit" name="button1" id="button1" value="button1" onclick='update()'>CLICK FOR
+            <button class="button_sys" type="submit" name="button1" id="button1" value="button1" onclick='update()'>CLICK FOR
                 UPDATE</button>
         </form>
     </div>
@@ -94,7 +106,7 @@
                 <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey">Ip to geo key</input><br>
             </div>
             <div>
-                <button type="submit" name="button2" id="button2" value="button2" onclick='return submitSettings()'>Submit</button>
+                <button class="button_sys" type="submit" name="button2" id="button2" value="button2" onclick='return submitSettings()'>Submit</button>
             </div>
         </form>
     </div>
@@ -104,8 +116,8 @@
         <!-- <label>dev form</label> -->
         <!-- [ ]:TODO what fore name\id\value -->
         <form id="SystemForm">
-            <button type="submit" id="buttonRestart" formaction="/restart">Restart</button>
-            <button type="submit" id="buttonResetDefault" formaction="/default">Reset to Default</button>
+            <button class="button_sys" type="submit" id="buttonResetDefault" formaction="/default">Reset to Default</button><br>
+            <button class="button_sys" type="submit" id="buttonRestart" formaction="/restart">Restart</button>
         </form>
     </div>
 
