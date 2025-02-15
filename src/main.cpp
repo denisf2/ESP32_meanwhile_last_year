@@ -159,6 +159,17 @@ auto PrintWifiStatus() -> void
         );
 }
 
+
+auto InitWebServer() -> void
+{
+    server.on("/", HTTP_GET, handleRoot);
+    server.on("/update", HTTP_GET, HandleUpdateParams);
+    server.on("/restart", HTTP_GET, HandleDeviceSoftRestart);
+    server.on("/favicon.ico", HTTP_GET, HandleFavIcon);
+    server.onNotFound(handleNotFound);
+    server.begin();
+}
+
 // ===================================================
 // Setup
 // ===================================================
@@ -180,12 +191,7 @@ void setup()
 
     PrintWifiStatus();
 
-    server.on("/", HTTP_GET, handleRoot);
-    server.on("/update", HTTP_GET, HandleUpdateParams);
-    server.on("/restart", HTTP_GET, HandleDeviceSoftRestart);
-    server.on("/favicon.ico", HTTP_GET, HandleFavIcon);
-    server.onNotFound(handleNotFound);
-    server.begin();
+    InitWebServer();
 }
 
 // ===================================================
