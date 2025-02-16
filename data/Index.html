@@ -154,6 +154,57 @@
         google.charts.load('current', { 'packages': ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
 
+        let gateway = `ws://${window.location.hostname}/ws`
+        let websocket;
+        window.addEventListener('load', onLoad)
+
+        function onLoad(aEvent) {
+            initWebSocket();
+        }
+
+        function initWebSocket(){
+            console.log('Trying to open WebSocket connection...');
+            websocket = new WebSocket(gateway);
+            websocket.onopen = onOpen;
+            websocket.onclose = onClose;
+            websocket.onmessage = onMessage;
+        }
+
+        function onOpen(aEvent) {
+            console.log('Connection opened');
+        }
+
+        function onClose(aEvent) {
+            console.log('Connection closed');
+            setTimeout(initWebSocket, 2000);
+        }
+
+        function onMessage(aEvent) {
+            try {
+                switch (aEvent.data) {
+                    // [ ]TODO: do some document changes
+                    case "deadbeaf":
+                        // [ ]TODO: remove test code
+                        console.log('Get WebSocket data: %s', aEvent.data)
+                        updateInfo(aEvent.data);
+                        break;
+                    default:
+                        console.log('Unknown websocket argument: %s', aEvent.data)
+                    }
+            }
+            catch (aError)
+            {
+                console.log('onMessage Error: %s', aError);
+            }
+        }
+
+        function updateInfo(aInfo) {
+            let infoParag = document.getElementsByClassName("info");
+            for (let i = 0; i < infoParag.length; i++) {
+                infoParag[i].innerText = aInfo;
+            }
+        }
+
         // SettingsForm.onsubmit = async (e) => {
         //     e.preventDefault();
         //     let host = window.location.host + "/update";

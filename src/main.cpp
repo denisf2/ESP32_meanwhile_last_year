@@ -31,6 +31,8 @@ const unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
+
+AsyncWebSocket websocket("/ws");
 // ---------------------------------------------------
 
 // ==================================================
@@ -159,6 +161,61 @@ auto PrintWifiStatus() -> void
         );
 }
 
+auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventType aType, void *aArg, uint8_t *aData, size_t aLen) -> void
+{
+    switch (aType)
+    {
+        case AwsEventType::WS_EVT_CONNECT:
+            log_i("WebSocket[%s][%u] connected from %s"
+                    , aServer->url()
+                    , aClient->id()
+                    , aClient->remoteIP().toString().c_str());
+            aClient->ping();
+        break;
+
+        case AwsEventType::WS_EVT_DISCONNECT:
+            log_i("WebSocket[%s][%u] disconnect: %u"
+                , aServer->url()
+                , aClient->id());
+        break;
+
+        case AwsEventType::WS_EVT_DATA:
+        {
+            auto info = reinterpret_cast<const AwsFrameInfo * const>(aArg);
+            log_d("WebSocket[%s][%u] %s-message[%llu]: "
+                , aServer->url()
+                , aClient->id()
+                , (AwsFrameType::WS_TEXT == info->opcode) ? "text" : "binary"
+                , info->len);
+            break;
+        }
+
+        case AwsEventType::WS_EVT_PONG:
+            log_i("WebSocket[%s][%u] pong[%u]: %s"
+                    , aServer->url()
+                    , aClient->id()
+                    , aLen
+                    , (0 < aLen) ? reinterpret_cast<char*>(aData) : "");
+                    break;
+
+        case AwsEventType::WS_EVT_ERROR:
+            log_e("WebSocket[%s][%u] error(%u): %s"
+                    , aServer->url()
+                    , aClient->id()
+                    , *(static_cast<uint16_t*>(aArg))
+                    , reinterpret_cast<char*>(aData));
+        break;
+
+        default:
+            break;
+    }
+}
+
+auto InitWebSocket() -> void
+{
+    websocket.onEvent(OnEvent);
+    server.addHandler(&websocket);
+}
 
 auto InitWebServer() -> void
 {
@@ -191,6 +248,7 @@ void setup()
 
     PrintWifiStatus();
 
+    InitWebSocket();
     InitWebServer();
 }
 
@@ -203,6 +261,8 @@ void loop()
     // server.handleClient();
     // server.send(200, "text/html", getPage());
     // * must send data by websocket
+
+    websocket.cleanupClients();
 
     const auto newmil = millis();
     if (newmil - oldmil >= UPDATE_INTERVAL_MILLISEC)
@@ -223,6 +283,9 @@ void loop()
             GetForecast(GetOpenWeatherKey()
                         , String(Coordinates_.latitude)
                         , String(Coordinates_.longitude));
+
+            // [ ]TODO: remove test code
+            websocket.textAll("deadbeaf");
         }
         else
         {
