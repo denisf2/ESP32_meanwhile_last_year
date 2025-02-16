@@ -66,6 +66,24 @@
             cursor: pointer;
         }
 
+        .container {
+            display: grid;
+            grid-template-columns: auto 70%;
+            background-color: dodgerblue;
+            /* padding: 10px; */
+        }
+
+        .container > div {
+            background-color: #f1f1f1;
+            /* border: 1px solid #ffffff; */
+            padding: 20px;
+            /* font-size: 30px; */
+            /* text-align: center; */
+        }
+
+        .info {
+            margin: 13px;
+        }
     </style>
 </head>
 
@@ -97,13 +115,23 @@
         <!-- <h3>Settings</h3> -->
         <p>Here should be some description.</p>
         <form id="SettingsForm" action="/update" accept-charset="utf-8">
-            <div>
-                <input class="inputbox" type="text" id="wifiSsid" name="wifiSsid" title="ssid">wifi ssid</input><br>
-                <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="password">wifi password</input><br>
-                <input class="inputbox" type="text" id="longitude" name="longitude" title="longitude">longitude</input><br>
-                <input class="inputbox" type="text" id="latitude" name="latitude" title="latitude">latitude</input><br>
-                <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="openWeatherKey">Openweather key</input><br>
-                <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey">Ip to geo key</input><br>
+            <div class="container">
+                <div>
+                    <input class="inputbox" type="text" id="wifiSsid" name="wifiSsid" title="ssid">wifi ssid</input><br>
+                    <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="password">wifi password</input><br>
+                    <input class="inputbox" type="text" id="longitude" name="longitude" title="longitude">longitude</input><br>
+                    <input class="inputbox" type="text" id="latitude" name="latitude" title="latitude">latitude</input><br>
+                    <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="openWeatherKey">Openweather key</input><br>
+                    <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey">Ip to geo key</input><br>
+                </div>
+                <div>
+                    <p class="info" id="info-wifiSsid">status</p>
+                    <p class="info" id="info-wifiPass">status</p>
+                    <p class="info" id="info-longitude">status</p>
+                    <p class="info" id="info-latitude">status</p>
+                    <p class="info" id="info-opwKey">status</p>
+                    <p class="info" id="info-ip2geoKey">status</p>
+                </div>
             </div>
             <div>
                 <button class="button_sys" type="submit" name="button2" id="button2" value="button2" onclick='return submitSettings()'>Submit</button>
