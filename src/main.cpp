@@ -1,6 +1,6 @@
 // ======================================================
-// Webserver program that gets own coordinates by IP address 
-// and acquiring weather forecast info hourly for today and 
+// Webserver program that gets own coordinates by IP address
+// and acquiring weather forecast info hourly for today and
 // historical weather for several days back.
 
 // Using services:
