@@ -129,7 +129,7 @@ auto LockingWiFiConnection() -> bool
     constexpr uint32_t WIFI_PROGRESS_DELAY_MILLISEC{500};
 
     auto status = wl_status_t::WL_IDLE_STATUS;
-    for(int count{0}; count < 5 && wl_status_t::WL_CONNECTED != status; ++count)
+    for(int count{0}; count < 2 && wl_status_t::WL_CONNECTED != status; ++count)
     {
         log_i("Attempting to connect to SSID: %s", wifiSSID.c_str());
 
