@@ -3,6 +3,6 @@
 
 #include <Arduino.h>
 
-auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) -> void;
+auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) -> bool;
 
 #endif /* OPENWEATHERAPI_H__ */

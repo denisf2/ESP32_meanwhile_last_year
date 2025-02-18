@@ -23,7 +23,7 @@ const String GEO_REVERSE_API = "https://api.openweathermap.org/geo/1.0/reverse";
 ```
 */
 
-auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) -> void // [ ]FIXME:rename
+auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) -> bool // [ ]FIXME:rename
 {
     const String serverName = "https://api.openweathermap.org/data/2.5/weather";
     const String units{"metric"};
@@ -58,7 +58,24 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
         if (error)
         {
             log_w("JSON deserialition failed. Error code: %s", error.c_str());
-            return;
+            http.end();
+            return false;
+        }
+
+        if(doc["cod"].is<int>())
+        {
+            constexpr int respondOK{200};
+            constexpr int respondGoodKeyInvalidData{400};
+            const int code = doc["cod"].as<int>();
+            if (!(respondOK == code || respondGoodKeyInvalidData == code)){
+                http.end();
+                return false;
+            }
+        }
+        else
+        {
+            http.end();
+            return false;
         }
 
         // Fetch values.
@@ -74,7 +91,11 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
     else
     {
         log_d("Error code: %d", httpResponseCode);
+        http.end();
+        return false;
     }
     // Free resources
     http.end();
+
+    return true;
 }

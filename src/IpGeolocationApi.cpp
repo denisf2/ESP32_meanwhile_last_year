@@ -9,7 +9,7 @@ Coordinates Coordinates_;
 api description: https://ipgeolocation.io/ip-location-api.html#documentation-overview
 */
 
-auto GetLocationCoordinates(const String &aApiKey) -> void
+auto GetLocationCoordinates(const String &aApiKey) -> bool
 { // [ ]FIXME:rename
     const String serverName = "https://api.ipgeolocation.io/ipgeo";
 
@@ -44,7 +44,15 @@ auto GetLocationCoordinates(const String &aApiKey) -> void
         if (error)
         {
             log_w("JSON deserializition is failed. Error code: %s", error.f_str());
-            return;
+            http.end();
+            return false;
+        }
+
+        if(!doc["ip"].is<String>())
+        {
+            log_i("JSON invalid format %s", payload.c_str());
+            http.end();
+            return false;
         }
 
         // Fetch values.
@@ -60,7 +68,11 @@ auto GetLocationCoordinates(const String &aApiKey) -> void
     else
     {
         log_w("Error code: %d", httpResponseCode);
+        http.end();
+        return false;
     }
     // Free resources
     http.end();
+
+    return true;
 }
