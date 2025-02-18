@@ -121,8 +121,16 @@
                     <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="password">wifi password</input><br>
                     <input class="inputbox" type="text" id="longitude" name="longitude" title="longitude">longitude</input><br>
                     <input class="inputbox" type="text" id="latitude" name="latitude" title="latitude">latitude</input><br>
-                    <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="openWeatherKey">Openweather key</input><br>
-                    <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey">Ip to geo key</input><br>
+                    <div>
+                        <label for="openWeatherKey">Openweather key</label>
+                        <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="openWeatherKey"></input>
+                        <button type="button" name="testButton" id="testbutton"  onclick="return OnTestButtonClick(openWeatherKey)">test</button>
+                    </div>
+                    <div>
+                        <label for="ip2geoKey">IpGeolocation key</label>
+                        <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey"></input>
+                        <button type="button" name="testButton" id="testbutton"  onclick="return OnTestButtonClick(ip2geoKey)">test</button>
+                    </div>
                 </div>
                 <div>
                     <p class="info" id="info-wifiSsid">status</p>
@@ -134,7 +142,7 @@
                 </div>
             </div>
             <div>
-                <button class="button_sys" type="submit" name="button2" id="button2" value="button2" onclick='return submitSettings()'>Submit</button>
+                <button class="button_sys" type="submit" name="button2" id="button2" onclick='return submitSettings()'>Submit</button>
             </div>
         </form>
     </div>
@@ -181,16 +189,44 @@
 
         function onMessage(aEvent) {
             try {
+                let json = JSON.parse(aEvent.data);
+                // [] TODO: check json length
+                if("message" == json[0])
+                {
+                    switch (json[1])
+                    {
+                        case "ip2geoTest":
+                        {
+                            let keyStatus = ("true" == json[3]) ? "Validated" : "Not valid";
+                            document.getElementById("info-ip2geoKey").innerText = keyStatus;
+
+                            console.log('IpToGeo Key status: %s', keyStatus)
+                            break;
+                        }
+                        case "openWeatherTest":
+                        {
+                            let keyStatus = ("true" == json[3]) ? "Validated" : "Not valid";
+                            document.getElementById("info-opwKey").innerText = keyStatus;
+
+                            console.log('IpToGeo Key status: %s', keyStatus)
+                            break;
+                        }
+                        default:
+                            console.log('JSON message: %s', aEvent.data)
+                    }
+                }
+
                 switch (aEvent.data) {
                     // [ ]TODO: do some document changes
                     case "deadbeaf":
+                    case "beaf":
                         // [ ]TODO: remove test code
                         console.log('Get WebSocket data: %s', aEvent.data)
                         updateInfo(aEvent.data);
                         break;
                     default:
                         console.log('Unknown websocket argument: %s', aEvent.data)
-                    }
+                }
             }
             catch (aError)
             {
@@ -199,10 +235,37 @@
         }
 
         function updateInfo(aInfo) {
+            // [ ]TODO: remove test code
             let infoParag = document.getElementsByClassName("info");
             for (let i = 0; i < infoParag.length; i++) {
                 infoParag[i].innerText = aInfo;
             }
+        }
+
+        function CtrlToMessageID(aCtrlID) {
+            switch (aCtrlID.id)
+            {
+                case "ip2geoKey":
+                    return "ip2geoTest";
+                case "openWeatherKey":
+                    return "openWeatherTest";
+                default:
+                    console.log("Unknown control id: %s", aCtrlID.id);
+
+                return "Unknown"
+            }
+        }
+
+        function OnTestButtonClick(aCtrlID) {
+
+            var obj = new Object();
+            obj.message = CtrlToMessageID(aCtrlID);
+            obj.apikey = aCtrlID.value;
+
+            var jsonString = JSON.stringify(obj);
+            websocket.send(jsonString);
+
+            return true;
         }
 
         // SettingsForm.onsubmit = async (e) => {

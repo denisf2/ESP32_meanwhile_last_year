@@ -16,6 +16,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 
 #include <functional>
 
@@ -161,6 +162,72 @@ auto PrintWifiStatus() -> void
         );
 }
 
+auto SendTestRespond(JsonDocument&& aDoc, const String& aMsgType, bool aValidated) -> void
+{
+    // drop request json
+    aDoc.clear();
+
+    aDoc.add("message");
+    aDoc.add(aMsgType.c_str());
+    aDoc.add("valid");
+    aDoc.add((aValidated) ? "true" : "false");
+
+    String serial;
+    serializeJson(aDoc, serial);
+    log_d("Check response json %s", serial.c_str());
+
+    websocket.textAll(serial.c_str());
+}
+
+auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const aData) -> void
+{
+    if (AwsFrameType::WS_TEXT != aFrameInfo->opcode)
+        return;
+
+    String json(reinterpret_cast<const char* const >(aData));
+    log_d("Incoming JSON %s", json.c_str());
+
+    // Allocate the JSON document
+    JsonDocument doc;
+    // Deserialize the JSON document
+    DeserializationError error = deserializeJson(doc, json);
+
+    // Test if parsing succeeds.
+    if (error)
+    {
+        log_w("JSON deserializition is failed. Error code: %s", error.f_str());
+        return;
+    }
+
+    // [ ]TODO: need refactoring
+    // messages dispatching
+    if (!doc["message"].is<String>() || !doc["apikey"].is<String>())
+    {
+        log_w("Unknown JSON format");
+        return;
+    }
+
+    const auto msgType = doc["message"].as<String>();
+    const auto key = doc["apikey"].as<String>();
+    // [ ]TODO: split function
+    if ("ip2geoTest" == msgType.c_str())
+    {
+        const auto res = GetLocationCoordinates(key);
+        log_d("IpToGeo key check is %s ", (res) ? "Ok": "failed");
+
+        SendTestRespond(std::move(doc), msgType, res);
+    }
+    else if ("openWeatherTest" == msgType.c_str())
+    {
+        const auto res = GetForecast(key, String("0"), String("0"));
+        log_d("OpenWeather key check is %s ", (res) ? "Ok": "failed");
+
+        SendTestRespond(std::move(doc), msgType, res);
+    }
+    else
+        log_w("Unknown message");
+}
+
 auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventType aType, void *aArg, uint8_t *aData, size_t aLen) -> void
 {
     switch (aType)
@@ -187,6 +254,8 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
                 , aClient->id()
                 , (AwsFrameType::WS_TEXT == info->opcode) ? "text" : "binary"
                 , info->len);
+            // [ ] TODO: what if multiframe data?
+            ProcessWSData(info, aData);
             break;
         }
 
