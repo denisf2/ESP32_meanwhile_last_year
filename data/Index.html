@@ -43,16 +43,11 @@
         }
 
         /* Style the tab content */
-        .tabcontent {
+        .tab-content {
             display: none;
             padding: 6px 12px;
             border: 1px solid #ccc;
             border-top: none;
-        }
-
-        .inputbox {
-            margin: 5px;
-            margin-left: 0px;
         }
 
         .button_sys {
@@ -66,23 +61,73 @@
             cursor: pointer;
         }
 
-        .container {
-            display: grid;
-            grid-template-columns: auto 70%;
-            background-color: dodgerblue;
-            /* padding: 10px; */
+        /* [ ]TODO: change to class */
+        .testbutton-marg-top {
+            margin-top: 2px;
         }
 
-        .container > div {
-            background-color: #f1f1f1;
-            /* border: 1px solid #ffffff; */
+        .chart-width{
+            max-width: 600px;
+        }
+
+        .settings-width{
+            max-width: 400px;
+        }
+
+        .form-settings {
+            margin: 50px auto;
             padding: 20px;
-            /* font-size: 30px; */
-            /* text-align: center; */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #007bff;
         }
 
-        .info {
-            margin: 13px;
+        .form-settings .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-settings label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-settings input[type="text"],
+        .form-settings input[type="password"],
+        .form-settings button {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-settings input[type="text"]:focus,
+        .form-settings input[type="password"]:focus {
+            border-color: dodgerblue;
+            outline: none;
+        }
+
+        .form-settings button {
+            background-color: dodgerblue;
+            width: 100%;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-settings button:hover {
+            background-color: #007bff;
+        }
+
+        /* developer styles */
+        .info-dev {
+            display: none;
+        }
+
+        .dev-todo {
+            display: none;
         }
     </style>
 </head>
@@ -97,61 +142,64 @@
         <button class="tablinks" onclick="openTab(event, 'System')"><i class="fa fa-cogs"></i> System</button>
     </div>
 
-    <div id="Chart" class="tabcontent" style="display: block;">
+    <div id="Chart" class="tab-content" style="display: block;">
         <!-- <h3>Chart</h3> -->
-        <p>Here should be some description.</p>
+        <p class="dev-todo">Here should be some description.</p>
         <!-- <h3 style='color:brown'>Room Temperature</h1> -->
 
-        <div id='temp_chart' style='width:600px; height: 400px;'></div>
-        <br>
-   <!-- <form action="/" method="post">-->
-        <form action="/" method="post" accept-charset="utf-8">
-            <button class="button_sys" type="submit" name="button1" id="button1" value="button1" onclick='update()'>CLICK FOR
-                UPDATE</button>
+        <!-- <form action="/" method="post">-->
+        <form class="form-settings chart-width" action="/" method="post" accept-charset="utf-8">
+            <div id='temp-chart' style='width:600px; height: 400px;'></div>
+            <button class="button_sys" type="submit" name="button1" id="button1" value="button1" onclick='update()'>CLICK FOR UPDATE</button>
         </form>
     </div>
 
-    <div id="Settings" class="tabcontent">
+    <div id="Settings" class="tab-content">
         <!-- <h3>Settings</h3> -->
-        <p>Here should be some description.</p>
-        <form id="SettingsForm" action="/update" accept-charset="utf-8">
-            <div class="container">
-                <div>
-                    <input class="inputbox" type="text" id="wifiSsid" name="wifiSsid" title="ssid">wifi ssid</input><br>
-                    <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="password">wifi password</input><br>
-                    <input class="inputbox" type="text" id="longitude" name="longitude" title="longitude">longitude</input><br>
-                    <input class="inputbox" type="text" id="latitude" name="latitude" title="latitude">latitude</input><br>
-                    <div>
-                        <label for="openWeatherKey">Openweather key</label>
-                        <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="openWeatherKey"></input>
-                        <button type="button" name="testButton" id="testbutton"  onclick="return OnTestButtonClick(openWeatherKey)">test</button>
-                    </div>
-                    <div>
-                        <label for="ip2geoKey">IpGeolocation key</label>
-                        <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="ip2geoKey"></input>
-                        <button type="button" name="testButton" id="testbutton"  onclick="return OnTestButtonClick(ip2geoKey)">test</button>
-                    </div>
-                </div>
-                <div>
-                    <p class="info" id="info-wifiSsid">status</p>
-                    <p class="info" id="info-wifiPass">status</p>
-                    <p class="info" id="info-longitude">status</p>
-                    <p class="info" id="info-latitude">status</p>
-                    <p class="info" id="info-opwKey">status</p>
-                    <p class="info" id="info-ip2geoKey">status</p>
-                </div>
+        <p class="dev-todo">Here should be some description.</p>
+        <form class="form-settings settings-width" id="SettingsForm" action="/update" accept-charset="utf-8">
+            <div class="form-group">
+                <label for="wifiSsid">WiFi SSID:</label>
+                <input class="inputbox" type="text" id="wifiSsid" name="wifiSsid" title="WiFi SSID">
+                <button class="testbutton-marg-top" type="button" name="testButton" onclick="">Survey</button>
+                <span class="info-dev" id="info-wifiSsid">status</span>
             </div>
-            <div>
-                <button class="button_sys" type="submit" name="button2" id="button2" onclick='return submitSettings()'>Submit</button>
+            <div class="form-group">
+                <label for="wifiPassword">WiFi Password:</label>
+                <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="WiFi Password">
+                <span class="info-dev" id="info-wifiPass">status</span>
             </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input class="inputbox" type="text" id="longitude" name="longitude" title="Longitude">
+                <span class="info-dev" id="info-longitude">status</span>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input class="inputbox" type="text" id="latitude" name="latitude" title="Latitude">
+                <span class="info-dev" id="info-latitude">status</span>
+            </div>
+            <div class="form-group">
+                <label for="openWeatherKey">Openweather Key:</label>
+                <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="OpenWeather API Key">
+                <button class="testbutton-marg-top" type="button" name="testButton" onclick="return OnTestButtonClick(openWeatherKey)">Check Key</button>
+                <span class="info-dev" id="info-opwKey">status</span>
+            </div>
+            <div class="form-group">
+                <label for="ip2geoKey">IpGeolocation Key:</label>
+                <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="IpGeolocation API Key">
+                <button class="testbutton-marg-top" type="button" name="testButton" onclick="return OnTestButtonClick(ip2geoKey)">Check Key</button>
+                <span class="info-dev" id="info-ip2geoKey">status</span>
+            </div>
+
+            <button class="button_sys" type="submit" name="button2" id="button2" onclick='return submitSettings()'>Submit</button>
         </form>
     </div>
 
-    <div id="System" class="tabcontent">
-        <br>
-        <!-- <label>dev form</label> -->
+    <div id="System" class="tab-content">
         <!-- [ ]:TODO what is meaning name\id\value -->
-        <form id="SystemForm">
+        <p class="dev-todo">Here should be some description.</p>
+        <form class="form-settings settings-width" id="SystemForm">
             <button class="button_sys" type="submit" id="buttonResetDefault" formaction="/default">Reset to Default</button><br>
             <button class="button_sys" type="submit" id="buttonRestart" formaction="/restart">Restart</button>
         </form>
@@ -222,7 +270,7 @@
                     case "beaf":
                         // [ ]TODO: remove test code
                         console.log('Get WebSocket data: %s', aEvent.data)
-                        updateInfo(aEvent.data);
+                        updateInfoDev(aEvent.data);
                         break;
                     default:
                         console.log('Unknown websocket argument: %s', aEvent.data)
@@ -234,9 +282,9 @@
             }
         }
 
-        function updateInfo(aInfo) {
+        function updateInfoDev(aInfo) {
             // [ ]TODO: remove test code
-            let infoParag = document.getElementsByClassName("info");
+            let infoParag = document.getElementsByClassName("info-dev");
             for (let i = 0; i < infoParag.length; i++) {
                 infoParag[i].innerText = aInfo;
             }
@@ -304,7 +352,7 @@
                 chartArea: { width: '90%', height: '75%' }
             };
 
-            var chart = new google.visualization.LineChart(document.getElementById('temp_chart'));
+            var chart = new google.visualization.LineChart(document.getElementById('temp-chart'));
             chart.draw(chartData, chartoptions);
         }
 
@@ -313,7 +361,7 @@
         }
 
         function openTab(evt, tabLabel) {
-            let tabcontent = document.getElementsByClassName("tabcontent");
+            let tabcontent = document.getElementsByClassName("tab-content");
             for (let i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
