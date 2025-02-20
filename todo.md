@@ -17,3 +17,4 @@
 [x]TODO: setup and run default wifi access point on cold start
 [ ]TODO: store coordinates
 [ ]TODO: update coordinates button on web page
+[ ]TODO: scan wifi networks
