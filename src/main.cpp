@@ -241,9 +241,10 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
         break;
 
         case AwsEventType::WS_EVT_DISCONNECT:
-            log_i("WebSocket[%s][%u] disconnect: %u"
-                , aServer->url()
-                , aClient->id());
+        log_i("WebSocket[%s][%u] disconnect: %s"
+                    , aServer->url()
+                    , aClient->id()
+                    , aClient->remoteIP().toString().c_str());
         break;
 
         case AwsEventType::WS_EVT_DATA:
