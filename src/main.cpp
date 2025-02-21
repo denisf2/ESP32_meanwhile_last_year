@@ -352,9 +352,6 @@ void loop()
             GetForecast(GetOpenWeatherKey()
                         , String(Coordinates_.latitude)
                         , String(Coordinates_.longitude));
-
-            // [ ]TODO: remove test code
-            websocket.textAll("deadbeaf");
         }
         else
         {
