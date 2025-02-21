@@ -248,7 +248,7 @@
                             let keyStatus = ("true" == json[3]) ? "Validated" : "Not valid";
                             document.getElementById("info-ip2geoKey").innerText = keyStatus;
 
-                            console.log('IpToGeo Key status: %s', keyStatus)
+                            console.log('IpGeoloc Key status: %s', keyStatus)
                             break;
                         }
                         case "openWeatherTest":
@@ -256,7 +256,7 @@
                             let keyStatus = ("true" == json[3]) ? "Validated" : "Not valid";
                             document.getElementById("info-opwKey").innerText = keyStatus;
 
-                            console.log('IpToGeo Key status: %s', keyStatus)
+                            console.log('Openweather Key status: %s', keyStatus)
                             break;
                         }
                         default:
@@ -268,11 +268,11 @@
                     // [ ]TODO: do some document changes
                     case "beaf":
                         // [ ]TODO: remove test code
-                        console.log('Get WebSocket data: %s', aEvent.data)
+                        console.log('[dev] Get WebSocket data: %s', aEvent.data)
                         updateInfoDev(aEvent.data);
                         break;
                     default:
-                        console.log('Unknown websocket argument: %s', aEvent.data)
+                        console.log('[dev] Unknown websocket argument: %s', aEvent.data)
                 }
             }
             catch (aError)
