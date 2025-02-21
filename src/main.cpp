@@ -162,7 +162,39 @@ auto PrintWifiStatus() -> void
         );
 }
 
-auto SendTestRespond(JsonDocument&& aDoc, const String& aMsgType, bool aValidated) -> void
+auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType, bool aValidated) -> String
+{
+    // [x]TODO: rename and implement
+    // [ ]TODO: need interface refactoring
+
+    // drop request json
+    aDoc.clear();
+
+    aDoc.add("message");
+    aDoc.add("FormFillStoredData");
+    aDoc.add("WifiSsid");
+    aDoc.add(GetWifiSSID());
+    aDoc.add("WiFiPassword");
+    // [ ]TODO: need to think about this
+    // aDoc.add(GetWiFiPassword());
+    aDoc.add("");
+    aDoc.add("Longitude");
+    aDoc.add("[ ]TODO: longitude");
+    aDoc.add("Latitude");
+    aDoc.add("[ ]TODO: latitude");
+    aDoc.add("IpGeolocKey");
+    aDoc.add(GetIpGeoKey());
+    aDoc.add("OpenWeatherKey");
+    aDoc.add(GetOpenWeatherKey());
+
+    String serial;
+    serializeJson(aDoc, serial);
+    log_d("Check response json %s", serial.c_str());
+
+    return serial;
+}
+
+auto SerializeRespondJSON(JsonDocument&& aDoc, const String& aMsgType, bool aValidated) -> String
 {
     // drop request json
     aDoc.clear();
@@ -176,13 +208,17 @@ auto SendTestRespond(JsonDocument&& aDoc, const String& aMsgType, bool aValidate
     serializeJson(aDoc, serial);
     log_d("Check response json %s", serial.c_str());
 
-    websocket.textAll(serial.c_str());
+    return serial;
 }
 
 auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const aData) -> void
 {
+    // taking care only JSON
     if (AwsFrameType::WS_TEXT != aFrameInfo->opcode)
+    {
+        log_i("Do not care binary formats");
         return;
+    }
 
     String json(reinterpret_cast<const char* const >(aData));
     log_d("Incoming JSON %s", json.c_str());
@@ -201,28 +237,43 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
 
     // [ ]TODO: need refactoring
     // messages dispatching
-    if (!doc["message"].is<String>() || !doc["apikey"].is<String>())
+    if (!doc["message"].is<String>())
     {
         log_w("Unknown JSON format");
         return;
     }
 
     const auto msgType = doc["message"].as<String>();
-    const auto key = doc["apikey"].as<String>();
-    // [ ]TODO: split function
-    if ("ip2geoTest" == msgType.c_str())
-    {
-        const auto res = GetLocationCoordinates(key);
-        log_d("IpToGeo key check is %s ", (res) ? "Ok": "failed");
 
-        SendTestRespond(std::move(doc), msgType, res);
+    if (doc["apikey"].is<String>())
+    {
+        const auto key = doc["apikey"].as<String>();
+        // [ ]TODO: split function
+        if (String("ip2geoTest") == msgType)
+        {
+            const auto res = GetLocationCoordinates(key);
+            log_d("IpToGeo key check is %s ", (res) ? "Ok": "failed");
+
+            const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
+            websocket.textAll(respond.c_str());
+        }
+        else if (String("openWeatherTest") == msgType)
+        {
+            const auto res = GetForecast(key, String("0"), String("0"));
+            log_d("OpenWeather key check is %s ", (res) ? "Ok": "failed");
+
+            const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
+            websocket.textAll(respond.c_str());
+        }
+        else
+            log_w("Unknown message");
     }
-    else if ("openWeatherTest" == msgType.c_str())
+    else if (String("FormFill") == msgType)
     {
-        const auto res = GetForecast(key, String("0"), String("0"));
-        log_d("OpenWeather key check is %s ", (res) ? "Ok": "failed");
-
-        SendTestRespond(std::move(doc), msgType, res);
+        // [x]TODO: update form with stored data
+        const String respond = SerializeFormStoredData(std::move(doc), "", "");
+        log_d("Ready to send %s", respond.c_str());
+        websocket.textAll(respond.c_str());
     }
     else
         log_w("Unknown message");

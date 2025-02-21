@@ -138,7 +138,7 @@
 
     <div class="tab">
         <button class="tablinks active" onclick="openTab(event, 'Chart')"><i class="fa fa-bar-chart"></i> Chart</button>
-        <button class="tablinks" onclick="openTab(event, 'Settings')"><i class="fa fa-file-text-o"></i> Settings</button>
+        <button class="tablinks" onclick="openTabSettings(event, 'Settings')"><i class="fa fa-file-text-o"></i> Settings</button>
         <button class="tablinks" onclick="openTab(event, 'System')"><i class="fa fa-cogs"></i> System</button>
     </div>
 
@@ -216,6 +216,7 @@
 
         function onLoad(aEvent) {
             initWebSocket();
+            setTimeout(RequestFormData, 2000);
         }
 
         function initWebSocket(){
@@ -257,6 +258,18 @@
                             document.getElementById("info-opwKey").innerText = keyStatus;
 
                             console.log('Openweather Key status: %s', keyStatus)
+                            break;
+                        }
+                        case "FormFillStoredData":
+                        {
+                            document.getElementById("wifiSsid").value = json[3];
+                            document.getElementById("wifiPassword").value = json[5];
+                            document.getElementById("longitude").value = json[7];
+                            document.getElementById("latitude").value = json[9];
+                            document.getElementById("ip2geoKey").value = json[11];
+                            document.getElementById("openWeatherKey").value = json[13];
+
+                            console.log('Form Fill message');
                             break;
                         }
                         default:
@@ -315,6 +328,14 @@
             return true;
         }
 
+        function RequestFormData() {
+            var obj = new Object();
+            obj.message = "FormFill";
+
+            var jsonString = JSON.stringify(obj);
+            websocket.send(jsonString);
+        }
+
         // SettingsForm.onsubmit = async (e) => {
         //     e.preventDefault();
         //     let host = window.location.host + "/update";
@@ -357,6 +378,11 @@
 
         function update() {
             chart.draw(chartData, chartoptions);
+        }
+
+        function openTabSettings(evt, tabLabel) {
+            openTab(evt, tabLabel);
+            RequestFormData();
         }
 
         function openTab(evt, tabLabel) {
