@@ -36,6 +36,10 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 AsyncWebSocket websocket("/ws");
 // ---------------------------------------------------
 
+
+auto wifiscan() -> String;
+
+
 // ==================================================
 // Handle submit form
 // ==================================================
@@ -114,10 +118,99 @@ auto SetupWiFiAccessPoint() -> void
     const auto ssid = GetWifiSSID(SettingsType::factory);
     const auto pass = GetWiFiPassword(SettingsType::factory);
     log_i("Setting default AP (Access Point) ssid: %s, pass: %s", ssid, pass);
+    WiFi.mode(wifi_mode_t::WIFI_MODE_AP);
+    WiFi.disconnect();
+    wifiscan();
     WiFi.softAP(ssid, pass);
 
     const auto ip = WiFi.softAPIP();
     log_i("AP IP address: %s", ip.toString().c_str());
+}
+
+auto to_string(const wifi_auth_mode_t aMode) -> String {
+    switch (aMode)
+    {
+    case WIFI_AUTH_OPEN:
+        return String("open");
+    case WIFI_AUTH_WEP:
+        return String("WEP");
+    case WIFI_AUTH_WPA_PSK:
+        return String("WPA");
+    case WIFI_AUTH_WPA2_PSK:
+        return String("WPA2");
+    case WIFI_AUTH_WPA_WPA2_PSK:
+        return String("WPA+WPA2");
+    case WIFI_AUTH_WPA2_ENTERPRISE:
+        return String("WPA2-EAP");
+    case WIFI_AUTH_WPA3_PSK:
+        return String("WPA3");
+    case WIFI_AUTH_WPA2_WPA3_PSK:
+        return String("WPA2+WPA3");
+    case WIFI_AUTH_WAPI_PSK:
+        return String("WAPI");
+    default:
+        return String("unknown");
+    }
+};
+
+auto PrintWiFiAPPrettyTable(const int16_t aTotal) -> void
+{
+    log_i("Nr | SSID                             | RSSI | CH | Encryption");
+    for (auto i = 0; i < aTotal; ++i)
+    {
+        // Print SSID and RSSI for each network found
+        log_i("%2d | %-32.32s | %4d | %2d | %s", i + 1
+                , WiFi.SSID(i).c_str()
+                , WiFi.RSSI(i)
+                , WiFi.channel(i)
+                , to_string(WiFi.encryptionType(i)).c_str()
+            );
+    }
+}
+
+auto WiFiAPtoJSON(const int16_t aTotal) -> String
+{
+    JsonDocument doc;
+    doc["message"] = "wifiAps";
+
+    for (auto i = 0; i < aTotal; ++i)
+    {
+        doc["APs"][i]["ssid"] = WiFi.SSID(i).c_str();
+        doc["APs"][i]["rssi"] = WiFi.RSSI(i);
+        doc["APs"][i]["channel"] = WiFi.channel(i);
+        doc["APs"][i]["encryption"] = to_string(WiFi.encryptionType(i)).c_str();
+    }
+
+    String serial;
+    serializeJson(doc, serial);
+    log_d("Available WiFi APs response json %s", serial.c_str());
+
+    return serial;
+}
+
+auto wifiscan() -> String
+{
+    // WiFi.scanNetworks will return the number of networks found.
+    const auto n = WiFi.scanNetworks();
+    log_i("Scan done");
+    if (0 == n)
+        log_i("No networks found");
+    else
+    {
+        log_i("%d networks found", n);
+        PrintWiFiAPPrettyTable(n);
+        const auto json = WiFiAPtoJSON(n);
+        // [x]TODO: wrap into JSON
+
+        // Delete the scan result to free memory for code below.
+        WiFi.scanDelete();
+
+        return json;
+    }
+
+    // Delete the scan result to free memory for code below.
+    WiFi.scanDelete();
+    return {};
 }
 
 auto LockingWiFiConnection() -> bool
@@ -368,6 +461,8 @@ void setup()
         SetupWiFiAccessPoint();
 
     PrintWifiStatus();
+
+    wifiscan();
 
     InitWebSocket();
     InitWebServer();
