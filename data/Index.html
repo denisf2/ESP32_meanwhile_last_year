@@ -240,52 +240,56 @@
         function onMessage(aEvent) {
             try {
                 let json = JSON.parse(aEvent.data);
-                // [] TODO: check json length
-                if("message" == json[0])
+                switch (json['message'])
                 {
-                    switch (json[1])
+                    case "ip2geoTest":
                     {
-                        case "ip2geoTest":
-                        {
-                            let keyStatus = ("true" == json[3]) ? "Validated" : "Not valid";
-                            document.getElementById("info-ip2geoKey").innerText = keyStatus;
+                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
+                        document.getElementById("info-ip2geoKey").innerText = keyStatus;
 
-                            console.log('IpGeoloc Key status: %s', keyStatus)
-                            break;
-                        }
-                        case "openWeatherTest":
-                        {
-                            let keyStatus = ("true" == json[3]) ? "Validated" : "Not valid";
-                            document.getElementById("info-opwKey").innerText = keyStatus;
-
-                            console.log('Openweather Key status: %s', keyStatus)
-                            break;
-                        }
-                        case "FormFillStoredData":
-                        {
-                            document.getElementById("wifiSsid").value = json[3];
-                            document.getElementById("wifiPassword").value = json[5];
-                            document.getElementById("longitude").value = json[7];
-                            document.getElementById("latitude").value = json[9];
-                            document.getElementById("ip2geoKey").value = json[11];
-                            document.getElementById("openWeatherKey").value = json[13];
-
-                            console.log('Form Fill message');
-                            break;
-                        }
-                        case "wifiAps":
-                            {
-                                // [ ] TODO:deserialize json
-                                console.log('Available WiFi access points');
-                            break;
-                        }
-                        default:
-                            console.log('JSON message: %s', aEvent.data)
+                        console.log('IpGeoloc Key status: %s', keyStatus)
+                        break;
                     }
+                    case "openWeatherTest":
+                    {
+                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
+                        document.getElementById("info-opwKey").innerText = keyStatus;
+
+                        console.log('Openweather Key status: %s', keyStatus)
+                        break;
+                    }
+                    case "FormFillStoredData":
+                    {
+                        document.getElementById("wifiSsid").value = json['WifiSsid'];
+                        document.getElementById("wifiPassword").value = json['WiFiPassword'];
+                        document.getElementById("longitude").value = json['Longitude'];
+                        document.getElementById("latitude").value = json['Latitude'];
+                        document.getElementById("ip2geoKey").value = json['IpGeolocKey'];
+                        document.getElementById("openWeatherKey").value = json['OpenWeatherKey'];
+
+                        console.log('Form Fill message');
+                        break;
+                    }
+                    case "wifiAps":
+                    {
+                        // [ ] TODO:deserialize json
+                        // console.log(json["APs"][0]);
+                        console.log('Available WiFi access points');
+
+                        let str = CreateTableHeader();
+                        for(let i = 0; i < json["APs"].length; ++i)
+                        {
+                            str += CreateTableRaw(json["APs"][i]);
+                        }
+                        document.getElementById('table-content').innerHTML = str;
+                        break;
+                    }
+                    default:
+                        console.log('JSON message: %s', aEvent.data)
                 }
 
-                switch (aEvent.data) {
-                    // [ ]TODO: do some document changes
+                switch (aEvent.data)
+                {
                     case "beaf":
                         // [ ]TODO: remove test code
                         console.log('[dev] Get WebSocket data: %s', aEvent.data)
@@ -299,6 +303,26 @@
             {
                 console.log('onMessage Error: %s', aError);
             }
+        }
+
+        function CreateTableHeader() {
+            return '<th>SSID</th><th>RSSI</th><th>Channel</th><th>Encryption</th>';
+        }
+
+        function CreateTableRaw(aJsonNode) {
+            let rowStr = '<tr><td>';
+            rowStr += '<button type="submit" class="btn">';
+            rowStr += aJsonNode["ssid"];
+            rowStr += '</button>';
+            rowStr += '</td><td>';
+            rowStr += aJsonNode["rssi"];
+            rowStr += '</td><td>';
+            rowStr += aJsonNode["channel"];
+            rowStr += '</td><td>';
+            rowStr += aJsonNode["encryption"];
+            rowStr += '</td></tr>';
+
+            return rowStr;
         }
 
         function updateInfoDev(aInfo) {
