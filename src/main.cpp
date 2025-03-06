@@ -292,10 +292,8 @@ auto SerializeRespondJSON(JsonDocument&& aDoc, const String& aMsgType, bool aVal
     // drop request json
     aDoc.clear();
 
-    aDoc.add("message");
-    aDoc.add(aMsgType.c_str());
-    aDoc.add("valid");
-    aDoc.add((aValidated) ? "true" : "false");
+    aDoc["message"] = aMsgType.c_str();
+    aDoc["valid"] = (aValidated) ? "true" : "false";
 
     String serial;
     serializeJson(aDoc, serial);
