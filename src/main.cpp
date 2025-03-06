@@ -263,22 +263,15 @@ auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType, bool a
     // drop request json
     aDoc.clear();
 
-    aDoc.add("message");
-    aDoc.add("FormFillStoredData");
-    aDoc.add("WifiSsid");
-    aDoc.add(GetWifiSSID());
-    aDoc.add("WiFiPassword");
+    aDoc["message"] = "FormFillStoredData";
+    aDoc["WifiSsid"] = GetWifiSSID();
     // [ ]TODO: need to think about this
-    // aDoc.add(GetWiFiPassword());
-    aDoc.add("");
-    aDoc.add("Longitude");
-    aDoc.add("[ ]TODO: longitude");
-    aDoc.add("Latitude");
-    aDoc.add("[ ]TODO: latitude");
-    aDoc.add("IpGeolocKey");
-    aDoc.add(GetIpGeoKey());
-    aDoc.add("OpenWeatherKey");
-    aDoc.add(GetOpenWeatherKey());
+    // aDoc["WiFiPassword"] = GetWiFiPassword();
+    aDoc["WiFiPassword"] = "";
+    aDoc["Longitude"] = "[ ]TODO: longitude";
+    aDoc["Latitude"] = "[ ]TODO: latitude";
+    aDoc["IpGeolocKey"] = GetIpGeoKey();
+    aDoc["OpenWeatherKey"] = GetOpenWeatherKey();
 
     String serial;
     serializeJson(aDoc, serial);
@@ -365,6 +358,9 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
         const String respond = SerializeFormStoredData(std::move(doc), "", "");
         log_d("Ready to send %s", respond.c_str());
         websocket.textAll(respond.c_str());
+
+        auto s = wifiscan();
+        websocket.textAll(s.c_str());
     }
     else
         log_w("Unknown message");
@@ -459,8 +455,6 @@ void setup()
         SetupWiFiAccessPoint();
 
     PrintWifiStatus();
-
-    wifiscan();
 
     InitWebSocket();
     InitWebServer();
