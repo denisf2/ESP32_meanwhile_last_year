@@ -248,7 +248,7 @@ auto LockingWiFiConnection() -> bool
 auto PrintWifiStatus() -> void
 {
     // Print local IP address and start web server
-    log_i("WiFi status:\r\nConnected to SSID: %s \r\nIP Address: %s\r\nSignal strength (RSSI): %d dBm"
+    log_i("WiFi status: Connected to SSID: %s  IP Address: %s Signal strength (RSSI): %d dBm"
             , WiFi.SSID().c_str()
             , WiFi.localIP().toString().c_str()
             , WiFi.RSSI()
