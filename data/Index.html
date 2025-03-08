@@ -232,12 +232,11 @@
 
         let gateway = `ws://${window.location.hostname}/ws`;
         let websocket;
-        window.addEventListener('load', onLoad)
 
-        function onLoad(aEvent) {
-            initWebSocket();
-            setTimeout(RequestFormData, 2000);
-        }
+        window.addEventListener('load', (aEvent) => {
+                initWebSocket();
+                setTimeout(RequestFormData, 2000);
+            });
 
         function initWebSocket(){
             console.log('Trying to open WebSocket connection...');
