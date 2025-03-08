@@ -208,6 +208,25 @@
     <!-- <script async="true" type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script> -->
     <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
     <script type='text/javascript'>
+
+        // String format helper
+        // https://stackoverflow.com/questions/1038746/equivalent-of-string-format-in-jquery/2648463#2648463
+        String.prototype.format = String.prototype.f = function() {
+            let s = this,
+                i = arguments.length;
+
+            while (i--) {
+                s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+            }
+            return s;
+        };
+
+
+        function onClickToggle() {
+            document.querySelectorAll('.hideable')
+                .forEach(h => h.classList.toggle('hidden'));
+        }
+
         google.charts.load('current', { 'packages': ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
 
@@ -306,23 +325,34 @@
         }
 
         function CreateTableHeader() {
-            return '<th>SSID</th><th>RSSI</th><th>Channel</th><th>Encryption</th>';
+            return '<th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th>'.format('SSID', 'RSSI', 'Channel', 'Encryption');
         }
 
         function CreateTableRaw(aJsonNode) {
-            let rowStr = '<tr><td>';
-            rowStr += '<button type="submit" class="btn">';
-            rowStr += aJsonNode["ssid"];
-            rowStr += '</button>';
-            rowStr += '</td><td>';
-            rowStr += aJsonNode["rssi"];
-            rowStr += '</td><td>';
-            rowStr += aJsonNode["channel"];
-            rowStr += '</td><td>';
-            rowStr += aJsonNode["encryption"];
-            rowStr += '</td></tr>';
+            let template = '<tr>\n'
+                        +    '<td><button class="ssid-button"\n'
+                        +                'type="button"\n'
+                        +                'onclick="SsidButtonOnClick(\'{0}\')">\n'
+                        +            '{0}\n'
+                        +        '</button>\n'
+                        +    '</td>\n'
+                        +    '<td class="td-right">{1}</td>\n'
+                        +    '<td class="td-right">{2}</td>\n'
+                        +    '<td class="td-left">{3}</td>\n'
+                        +  '</tr>\n';
 
-            return rowStr;
+            return template.format(aJsonNode["ssid"]
+                                    , aJsonNode["rssi"]
+                                    , aJsonNode["channel"]
+                                    , aJsonNode["encryption"]
+                                );
+        }
+
+        function SsidButtonOnClick(aButtonName) {
+            let input = document.getElementById("wifiSsid");
+            input.value = aButtonName;
+
+            onClickToggle();
         }
 
         function updateInfoDev(aInfo) {
