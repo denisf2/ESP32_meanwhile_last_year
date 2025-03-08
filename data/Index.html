@@ -238,7 +238,7 @@
                 setTimeout(RequestFormData, 2000);
             });
 
-        function initWebSocket(){
+        function initWebSocket() {
             console.log('Trying to open WebSocket connection...');
             websocket = new WebSocket(gateway);
             websocket.onopen = onOpen;
