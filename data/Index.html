@@ -96,7 +96,7 @@
         .form-settings input[type="text"],
         .form-settings input[type="password"],
         .form-settings button {
-            width: 95%;
+            width: 94%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -121,6 +121,28 @@
             background-color: #007bff;
         }
 
+        .survey-table td {
+            font-size: 16px;
+        }
+
+        .survey-table td.td-right {
+            padding: 10px;
+            text-align: right;
+        }
+
+        .survey-table td.td-left {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .hideable {
+            display: default;
+        }
+
+        .hideable.hidden {
+            display: none;
+        }
+
         /* developer styles */
         .info-dev {
             display: none;
@@ -129,6 +151,7 @@
         .dev-todo {
             display: none;
         }
+
     </style>
 </head>
 
@@ -148,32 +171,60 @@
         <!-- <h3 style='color:brown'>Room Temperature</h1> -->
 
         <!-- <form action="/" method="post">-->
-        <form class="form-settings chart-width" action="/" method="post" accept-charset="utf-8">
-            <div id='temp-chart' style='width:600px; height: 400px;'></div>
-            <button class="button_sys" type="submit" name="button1" id="button1" value="button1" onclick='update()'>CLICK FOR UPDATE</button>
+        <form class="form-settings chart-width"
+              action="/"
+              method="post"
+              accept-charset="utf-8">
+            <!-- [ ]TODO: scale for small screen -->
+            <div id='temp-chart'
+                 style='width:600px; height: 400px;'>
+            </div>
+            <!-- [ ]TODO: remove button -->
+            <button class="button_sys"
+                    type="submit"
+                    id="button1"
+                    onclick='update()'>
+                CLICK FOR UPDATE
+            </button>
         </form>
     </div>
 
     <div id="Settings" class="tab-content">
         <!-- <h3>Settings</h3> -->
         <p class="dev-todo">Here should be some description.</p>
-        <form class="form-settings settings-width" id="SettingsForm" action="/update" accept-charset="utf-8">
+        <form class="form-settings settings-width"
+              id="SettingsForm"
+              action="/update"
+              accept-charset="utf-8">
             <div class="form-group">
                 <label for="wifiSsid">WiFi SSID:</label>
-                <input class="inputbox" type="text" id="wifiSsid" name="wifiSsid" title="WiFi SSID">
-                <button class="testbutton-marg-top" type="button" name="testButton" onclick="">Survey</button>
-                <span class="info-dev" id="info-wifiSsid">status</span>
+                <input class="inputbox"
+                        type="text"
+                        id="wifiSsid"
+                        name="wifiSsid"
+                        title="WiFi SSID">
+                <button type="button"
+                        class="testbutton-marg-top"
+                        id="toggle-button"
+                        onclick="onClickToggle()">
+                    Survey
+                </button>
+                <table class="survey-table hideable hidden" id="table-content"></table>
+                <!-- <span class="info-dev" id="info-wifiSsid">status</span> -->
             </div>
+
             <div class="form-group">
                 <label for="wifiPassword">WiFi Password:</label>
                 <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="WiFi Password">
-                <span class="info-dev" id="info-wifiPass">status</span>
+                <!-- <span class="info-dev" id="info-wifiPass">status</span> -->
             </div>
+
             <div class="form-group">
                 <label for="longitude">Longitude:</label>
                 <input class="inputbox" type="text" id="longitude" name="longitude" title="Longitude">
                 <span class="info-dev" id="info-longitude">status</span>
             </div>
+
             <div class="form-group">
                 <label for="latitude">Latitude:</label>
                 <input class="inputbox" type="text" id="latitude" name="latitude" title="Latitude">
@@ -181,27 +232,57 @@
             </div>
             <div class="form-group">
                 <label for="openWeatherKey">Openweather Key:</label>
-                <input class="inputbox" type="text" id="openWeatherKey" name="openWeatherKey" title="OpenWeather API Key">
-                <button class="testbutton-marg-top" type="button" name="testButton" onclick="return OnTestButtonClick(openWeatherKey)">Check Key</button>
+                <input class="inputbox"
+                        type="text"
+                        id="openWeatherKey"
+                        name="openWeatherKey"
+                        title="OpenWeather API Key">
+                <button class="testbutton-marg-top"
+                        type="button"
+                        name="testButton"
+                        onclick="return OnTestButtonClick(openWeatherKey)">
+                    Check Key
+                </button>
                 <span class="info-dev" id="info-opwKey">status</span>
             </div>
+
             <div class="form-group">
                 <label for="ip2geoKey">IpGeolocation Key:</label>
                 <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="IpGeolocation API Key">
-                <button class="testbutton-marg-top" type="button" name="testButton" onclick="return OnTestButtonClick(ip2geoKey)">Check Key</button>
+                <button class="testbutton-marg-top"
+                        type="button"
+                        name="testButton"
+                        onclick="return OnTestButtonClick(ip2geoKey)">
+                    Check Key
+                </button>
                 <span class="info-dev" id="info-ip2geoKey">status</span>
             </div>
 
-            <button class="button_sys" type="submit" name="button2" id="button2" onclick='return submitSettings()'>Submit</button>
+            <button class="button_sys"
+                    type="submit"
+                    id="settings-submit-button"
+                    onclick='return submitSettings()'>
+                Submit
+            </button>
         </form>
     </div>
 
     <div id="System" class="tab-content">
-        <!-- [ ]:TODO what is meaning name\id\value -->
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width" id="SystemForm">
-            <button class="button_sys" type="submit" id="buttonResetDefault" formaction="/default">Reset to Default</button><br>
-            <button class="button_sys" type="submit" id="buttonRestart" formaction="/restart">Restart</button>
+            <button class="button_sys"
+                    type="submit"
+                    id="buttonResetDefault"
+                    formaction="/default">
+                Reset to Default
+            </button>
+            <br>
+            <button class="button_sys"
+                    type="submit"
+                    id="buttonRestart"
+                    formaction="/restart">
+                Restart
+            </button>
         </form>
     </div>
 
