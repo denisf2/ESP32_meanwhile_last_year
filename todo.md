@@ -19,3 +19,4 @@
 [ ]TODO: update coordinates button on web page
 [ ]TODO: scan wifi networks
 [ ]TODO: the web page cannot get APs list in device AP mode
+[ ]TODO: move websocket broadcast to direct message
