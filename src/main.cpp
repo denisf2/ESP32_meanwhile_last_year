@@ -110,6 +110,7 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
             SaveWifiPassword(value);
     }
 
+    // [ ]TODO: why do we need send in response whole page?
     SendWebPageResponse(aRequest);
 }
 
@@ -359,6 +360,7 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
         log_d("Ready to send %s", respond.c_str());
         websocket.textAll(respond.c_str());
 
+        // [ ]TODO: handle this in different way
         auto s = wifiscan();
         websocket.textAll(s.c_str());
     }
