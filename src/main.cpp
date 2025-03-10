@@ -37,7 +37,7 @@ AsyncWebSocket websocket("/ws");
 // ---------------------------------------------------
 
 
-auto wifiscan() -> String;
+auto ScanWiFiAPsJSON() -> String;
 
 
 // ==================================================
@@ -121,7 +121,7 @@ auto SetupWiFiAccessPoint() -> void
     log_i("Setting default AP (Access Point) ssid: %s, pass: %s", ssid, pass);
     WiFi.mode(wifi_mode_t::WIFI_MODE_AP);
     WiFi.disconnect();
-    wifiscan();
+    ScanWiFiAPsJSON();
     WiFi.softAP(ssid, pass);
 
     const auto ip = WiFi.softAPIP();
@@ -170,17 +170,17 @@ auto PrintWiFiAPPrettyTable(const int16_t aTotal) -> void
     }
 }
 
-auto WiFiAPtoJSON(const int16_t aTotal) -> String
+auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
 {
     JsonDocument doc;
     doc["message"] = "wifiAps";
 
     for (auto i = 0; i < aTotal; ++i)
     {
-        doc["APs"][i]["ssid"] = WiFi.SSID(i).c_str();
-        doc["APs"][i]["rssi"] = WiFi.RSSI(i);
-        doc["APs"][i]["channel"] = WiFi.channel(i);
-        doc["APs"][i]["encryption"] = to_string(WiFi.encryptionType(i)).c_str();
+        doc["APs"][i]["ssid"] = aWiFi.SSID(i).c_str();
+        doc["APs"][i]["rssi"] = aWiFi.RSSI(i);
+        doc["APs"][i]["channel"] = aWiFi.channel(i);
+        doc["APs"][i]["encryption"] = to_string(aWiFi.encryptionType(i)).c_str();
     }
 
     String serial;
@@ -190,7 +190,7 @@ auto WiFiAPtoJSON(const int16_t aTotal) -> String
     return serial;
 }
 
-auto wifiscan() -> String
+auto ScanWiFiAPsJSON() -> String
 {
     // WiFi.scanNetworks will return the number of networks found.
     const auto n = WiFi.scanNetworks();
@@ -201,7 +201,7 @@ auto wifiscan() -> String
     {
         log_i("%d networks found", n);
         PrintWiFiAPPrettyTable(n);
-        const auto json = WiFiAPtoJSON(n);
+        const auto json = WiFiAPtoJSON(WiFi, n);
         // [x]TODO: wrap into JSON
 
         // Delete the scan result to free memory for code below.
@@ -331,28 +331,31 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
 
     const auto msgType = doc["message"].as<String>();
 
-    if (doc["apikey"].is<String>())
+    if (String("ip2geoTest") == msgType)
     {
-        const auto key = doc["apikey"].as<String>();
-        // [ ]TODO: split function
-        if (String("ip2geoTest") == msgType)
+        if (doc["apikey"].is<String>())
         {
+            const auto key = doc["apikey"].as<String>();
+            // [ ]TODO: split function
             const auto res = GetLocationCoordinates(key);
             log_d("IpToGeo key check is %s ", (res) ? "Ok": "failed");
 
             const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
             websocket.textAll(respond.c_str());
         }
-        else if (String("openWeatherTest") == msgType)
+    }
+    else if (String("openWeatherTest") == msgType)
+    {
+        if (doc["apikey"].is<String>())
         {
+            const auto key = doc["apikey"].as<String>();
+            // [ ]TODO: split function
             const auto res = GetForecast(key, String("0"), String("0"));
             log_d("OpenWeather key check is %s ", (res) ? "Ok": "failed");
 
             const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
             websocket.textAll(respond.c_str());
         }
-        else
-            log_w("Unknown message");
     }
     else if (String("FormFill") == msgType)
     {
@@ -360,10 +363,10 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
         const String respond = SerializeFormStoredData(std::move(doc), "", "");
         log_d("Ready to send %s", respond.c_str());
         websocket.textAll(respond.c_str());
-
-        // [ ]TODO: handle this in different way
-        auto s = wifiscan();
-        websocket.textAll(s.c_str());
+    }
+    else if (String("AcquireWiFiAPs") == msgType)
+    {
+        websocket.textAll(ScanWiFiAPsJSON().c_str());
     }
     else
         log_w("Unknown message");

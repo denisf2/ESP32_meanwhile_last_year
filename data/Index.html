@@ -323,7 +323,8 @@
 
         window.addEventListener('load', (aEvent) => {
                 initWebSocket();
-                setTimeout(RequestFormData, 2000);
+                setTimeout(RequestFormData, 1000);
+                setTimeout(AcquireWiFiAPs, 1000);
             });
 
         function initWebSocket() {
@@ -484,6 +485,14 @@
             websocket.send(jsonString);
         }
 
+        function AcquireWiFiAPs() {
+            var obj = new Object();
+            obj.message = "AcquireWiFiAPs";
+
+            var jsonString = JSON.stringify(obj);
+            websocket.send(jsonString);
+        }
+
         // SettingsForm.onsubmit = async (e) => {
         //     e.preventDefault();
         //     let host = window.location.host + "/update";
@@ -531,6 +540,7 @@
         function openTabSettings(evt, tabLabel) {
             openTab(evt, tabLabel);
             RequestFormData();
+            AcquireWiFiAPs();
         }
 
         function openTab(evt, tabLabel) {
