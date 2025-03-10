@@ -160,7 +160,8 @@ auto PrintWiFiAPPrettyTable(const int16_t aTotal) -> void
     for (auto i = 0; i < aTotal; ++i)
     {
         // Print SSID and RSSI for each network found
-        log_i("%2d | %-32.32s | %4d | %2d | %s", i + 1
+        log_i("%2d | %-32.32s | %4d | %2d | %s"
+                , i + 1
                 , WiFi.SSID(i).c_str()
                 , WiFi.RSSI(i)
                 , WiFi.channel(i)
