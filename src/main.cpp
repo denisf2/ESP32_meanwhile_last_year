@@ -25,6 +25,8 @@
 #include "IpGeolocationApi.h"
 #include "OpenWeatherApi.h"
 #include "WebServerHandlers.h"
+#include "WifiAux.h"
+#include "JsonAux.h"
 
 unsigned long oldmil = 0UL;
 unsigned long oldmil2 = 0UL;
@@ -128,32 +130,6 @@ auto SetupWiFiAccessPoint() -> void
     log_i("AP IP address: %s", ip.toString().c_str());
 }
 
-auto to_string(const wifi_auth_mode_t aMode) -> String {
-    switch (aMode)
-    {
-    case WIFI_AUTH_OPEN:
-        return String("open");
-    case WIFI_AUTH_WEP:
-        return String("WEP");
-    case WIFI_AUTH_WPA_PSK:
-        return String("WPA");
-    case WIFI_AUTH_WPA2_PSK:
-        return String("WPA2");
-    case WIFI_AUTH_WPA_WPA2_PSK:
-        return String("WPA+WPA2");
-    case WIFI_AUTH_WPA2_ENTERPRISE:
-        return String("WPA2-EAP");
-    case WIFI_AUTH_WPA3_PSK:
-        return String("WPA3");
-    case WIFI_AUTH_WPA2_WPA3_PSK:
-        return String("WPA2+WPA3");
-    case WIFI_AUTH_WAPI_PSK:
-        return String("WAPI");
-    default:
-        return String("unknown");
-    }
-};
-
 auto LogPrintWiFiAPsPrettyTable(const int16_t aTotal) -> void
 {
     log_i("Nr | SSID                             | RSSI | CH | Encryption");
@@ -168,26 +144,6 @@ auto LogPrintWiFiAPsPrettyTable(const int16_t aTotal) -> void
                 , to_string(WiFi.encryptionType(i)).c_str()
             );
     }
-}
-
-auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
-{
-    JsonDocument doc;
-    doc["message"] = "wifiAps";
-
-    for (auto i = 0; i < aTotal; ++i)
-    {
-        doc["APs"][i]["ssid"] = aWiFi.SSID(i).c_str();
-        doc["APs"][i]["rssi"] = aWiFi.RSSI(i);
-        doc["APs"][i]["channel"] = aWiFi.channel(i);
-        doc["APs"][i]["encryption"] = to_string(aWiFi.encryptionType(i)).c_str();
-    }
-
-    String serial;
-    serializeJson(doc, serial);
-    log_d("Available WiFi APs response json %s", serial.c_str());
-
-    return serial;
 }
 
 auto ScanWiFiAPsJSON() -> String
@@ -256,46 +212,6 @@ auto PrintWifiStatus() -> void
             , WiFi.localIP().toString().c_str()
             , WiFi.RSSI()
         );
-}
-
-auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType, bool aValidated) -> String
-{
-    // [x]TODO: rename and implement
-    // [ ]TODO: need interface refactoring
-
-    // drop request json
-    aDoc.clear();
-
-    aDoc["message"] = "FormFillStoredData";
-    aDoc["WifiSsid"] = GetWifiSSID();
-    // [ ]TODO: need to think about this
-    // aDoc["WiFiPassword"] = GetWiFiPassword();
-    aDoc["WiFiPassword"] = "";
-    aDoc["Longitude"] = "[ ]TODO: longitude";
-    aDoc["Latitude"] = "[ ]TODO: latitude";
-    aDoc["IpGeolocKey"] = GetIpGeoKey();
-    aDoc["OpenWeatherKey"] = GetOpenWeatherKey();
-
-    String serial;
-    serializeJson(aDoc, serial);
-    log_d("Check response json %s", serial.c_str());
-
-    return serial;
-}
-
-auto SerializeRespondJSON(JsonDocument&& aDoc, const String& aMsgType, bool aValidated) -> String
-{
-    // drop request json
-    aDoc.clear();
-
-    aDoc["message"] = aMsgType.c_str();
-    aDoc["valid"] = (aValidated) ? "true" : "false";
-
-    String serial;
-    serializeJson(aDoc, serial);
-    log_d("Check response json %s", serial.c_str());
-
-    return serial;
 }
 
 auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const aData) -> void
