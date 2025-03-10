@@ -154,7 +154,7 @@ auto to_string(const wifi_auth_mode_t aMode) -> String {
     }
 };
 
-auto PrintWiFiAPPrettyTable(const int16_t aTotal) -> void
+auto LogPrintWiFiAPsPrettyTable(const int16_t aTotal) -> void
 {
     log_i("Nr | SSID                             | RSSI | CH | Encryption");
     for (auto i = 0; i < aTotal; ++i)
@@ -200,7 +200,8 @@ auto ScanWiFiAPsJSON() -> String
     else
     {
         log_i("%d networks found", n);
-        PrintWiFiAPPrettyTable(n);
+        LogPrintWiFiAPsPrettyTable(n);
+
         const auto json = WiFiAPtoJSON(WiFi, n);
         // [x]TODO: wrap into JSON
 
