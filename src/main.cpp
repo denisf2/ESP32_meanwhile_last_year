@@ -234,10 +234,16 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
         const String respond = SerializeFormStoredData(std::move(doc), "", "");
         log_d("Ready to send %s", respond.c_str());
         websocket.textAll(respond.c_str());
+
+        //[ ]TODO: remove from here after WDT fix
+        websocket.textAll(ScanWiFiAPsJSON(WiFi).c_str());
     }
     else if (String("AcquireWiFiAPs") == msgType)
     {
-        websocket.textAll(ScanWiFiAPsJSON(WiFi).c_str());
+        log_d("nothing to do");
+        // [ ]TODO: core1 WDT restart device here.
+        // proposal cannont scan in wifi client mode
+        // websocket.textAll(ScanWiFiAPsJSON(WiFi).c_str());
     }
     else
         log_w("Unknown message");
