@@ -112,52 +112,6 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
     SendWebPageResponse(aRequest);
 }
 
-auto SetupWiFiAccessPoint() -> void
-{
-    const auto ssid = GetWifiSSID(SettingsType::factory);
-    const auto pass = GetWiFiPassword(SettingsType::factory);
-    log_i("Setting default AP (Access Point) ssid: %s, pass: %s", ssid, pass);
-    WiFi.mode(wifi_mode_t::WIFI_MODE_AP);
-    WiFi.disconnect();
-    ScanWiFiAPsJSON(WiFi);
-    WiFi.softAP(ssid, pass);
-
-    const auto ip = WiFi.softAPIP();
-    log_i("AP IP address: %s", ip.toString().c_str());
-}
-
-auto LockingWiFiConnection() -> bool
-{
-    const auto wifiSSID = GetWifiSSID();
-    const auto wifiPass = GetWiFiPassword();
-
-    // Connect to Wi-Fi network with SSID and password
-    constexpr uint32_t WIFI_RECON_DELAY_MILLISEC{10000};
-    constexpr uint32_t WIFI_PROGRESS_DELAY_MILLISEC{500};
-
-    auto status = wl_status_t::WL_IDLE_STATUS;
-    for(int count{0}; count < 2 && wl_status_t::WL_CONNECTED != status; ++count)
-    {
-        log_i("Attempting to connect to SSID: %s", wifiSSID.c_str());
-
-        status = WiFi.begin(wifiSSID, wifiPass);
-        for(int split{0}
-                ; wl_status_t::WL_CONNECTED != status && split < 10
-                ; ++split, status = WiFi.status())
-        {
-            log_i("Waiting");
-            delay(WIFI_PROGRESS_DELAY_MILLISEC);
-        }
-
-        if(wl_status_t::WL_CONNECTED != status )
-            delay(WIFI_RECON_DELAY_MILLISEC);
-        else
-            return true;
-    }
-
-    return false;
-}
-
 auto PrintWifiStatus() -> void
 {
     // Print local IP address and start web server
@@ -334,8 +288,8 @@ void setup()
 
     RestoreStoredData();
 
-    if (IsColdStart() || !LockingWiFiConnection())
-        SetupWiFiAccessPoint();
+    if (IsColdStart() || !LockingWiFiConnection(WiFi))
+        SetupWiFiAccessPoint(WiFi);
 
     PrintWifiStatus();
 
