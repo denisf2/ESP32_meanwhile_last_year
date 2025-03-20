@@ -136,12 +136,12 @@ auto GetLongitude() -> String
 
 auto GetWifiSSID(SettingsType aType) -> String
 {
-    return (SettingsType::factory == aType) ? defaultSSID : wifiSSID;
+    return {(SettingsType::factory == aType) ? defaultSSID : wifiSSID};
 }
 
 auto GetWiFiPassword(SettingsType aType) -> String
 {
-    return (SettingsType::factory == aType) ? defaultPass : wifiPassword;
+    return {(SettingsType::factory == aType) ? defaultPass : wifiPassword};
 }
 
 auto IsColdStart() -> bool
