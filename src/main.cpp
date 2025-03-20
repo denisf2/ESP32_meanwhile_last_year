@@ -130,22 +130,6 @@ auto SetupWiFiAccessPoint() -> void
     log_i("AP IP address: %s", ip.toString().c_str());
 }
 
-auto LogPrintWiFiAPsPrettyTable(const int16_t aTotal) -> void
-{
-    log_i("Nr | SSID                             | RSSI | CH | Encryption");
-    for (auto i = 0; i < aTotal; ++i)
-    {
-        // Print SSID and RSSI for each network found
-        log_i("%2d | %-32.32s | %4d | %2d | %s"
-                , i + 1
-                , WiFi.SSID(i).c_str()
-                , WiFi.RSSI(i)
-                , WiFi.channel(i)
-                , to_string(WiFi.encryptionType(i)).c_str()
-            );
-    }
-}
-
 auto ScanWiFiAPsJSON() -> String
 {
     // WiFi.scanNetworks will return the number of networks found.
@@ -156,7 +140,7 @@ auto ScanWiFiAPsJSON() -> String
     else
     {
         log_i("%d networks found", n);
-        LogPrintWiFiAPsPrettyTable(n);
+        LogPrintWiFiAPsPrettyTable(WiFi, n);
 
         const auto json = WiFiAPtoJSON(WiFi, n);
         // [x]TODO: wrap into JSON
