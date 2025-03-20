@@ -13,13 +13,18 @@ auto RestoreStoredData() -> void;
 
 auto SaveIpGeolocation(const String &aValue) -> void;
 auto SaveOpenWeather(const String &aValue) -> void;
+auto SaveLatitude(const String &aValue) -> void;
+auto SaveLongitude(const String &aValue) -> void;
 auto SaveWifiSSID(const String &aValue) -> void;
 auto SaveWifiPassword(const String &aValue) -> void;
 
 auto GetIpGeoKey() -> String;
 auto GetOpenWeatherKey() -> String;
+auto GetLatitude() -> String;
+auto GetLongitude() -> String;
 auto GetWifiSSID(SettingsType aType = SettingsType::user) -> String;
 auto GetWiFiPassword(SettingsType aType = SettingsType::user) -> String;
+
 auto IsColdStart() -> bool;
 
 extern Preferences nvsPrefs;

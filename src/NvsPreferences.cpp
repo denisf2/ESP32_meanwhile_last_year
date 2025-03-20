@@ -10,11 +10,15 @@ const char AppNamespace[]{"AppNamespace"};
 
 const char varNameOpenWeatherKey[]{"OpenWeather"};
 const char varNameIpGeolocationKey[]{"ipGeolocation"};
+const char varNameLatitude[]{"Latitude"};
+const char varNameLongitude[]{"Longitude"};
 const char varNameWiFiSsid[]{"wifiSSID"};
 const char varNameWiFiPassword[]{"wifiPassword"};
 
 String ip2geo;
 String opwthr;
+String latitude;
+String longitude;
 String wifiSSID;
 String wifiPassword;
 
@@ -31,6 +35,8 @@ auto RestoreDefaultData() -> void
     nvsPrefs.putString(varNameOpenWeatherKey, "");
     // https://api.ipgeolocation.io/ipgeo
     nvsPrefs.putString(varNameIpGeolocationKey, "");
+    nvsPrefs.putString(varNameLatitude, "");
+    nvsPrefs.putString(varNameLongitude, "");
     nvsPrefs.putString(varNameWiFiSsid, defaultSSID);
     nvsPrefs.putString(varNameWiFiPassword, defaultPass);
 
@@ -55,6 +61,8 @@ auto RestoreStoredData() -> void
     // store in app values
     opwthr = nvsPrefs.getString(varNameOpenWeatherKey);
     ip2geo = nvsPrefs.getString(varNameIpGeolocationKey);
+    latitude = nvsPrefs.getString(varNameLatitude);
+    longitude = nvsPrefs.getString(varNameLongitude);
     wifiSSID = nvsPrefs.getString(varNameWiFiSsid);
     wifiPassword = nvsPrefs.getString(varNameWiFiPassword);
 
@@ -82,6 +90,18 @@ auto SaveOpenWeather(const String &aValue) -> void
     opwthr = aValue;
 }
 
+auto SaveLatitude(const String &aValue) -> void
+{
+    Save(varNameLatitude, aValue);
+    latitude = aValue;
+}
+
+auto SaveLongitude(const String &aValue) -> void
+{
+    Save(varNameLongitude, aValue);
+    longitude = aValue;
+}
+
 auto SaveWifiSSID(const String &aValue) -> void
 {
     Save(varNameWiFiSsid, aValue);
@@ -102,6 +122,16 @@ auto GetIpGeoKey() -> String
 auto GetOpenWeatherKey() -> String
 {
     return opwthr;
+}
+
+auto GetLatitude() -> String
+{
+    return latitude;
+}
+
+auto GetLongitude() -> String
+{
+    return longitude;
 }
 
 auto GetWifiSSID(SettingsType aType) -> String
