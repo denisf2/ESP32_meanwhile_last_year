@@ -112,16 +112,6 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
     SendWebPageResponse(aRequest);
 }
 
-auto PrintWifiStatus() -> void
-{
-    // Print local IP address and start web server
-    log_i("WiFi status: Connected to SSID: %s  IP Address: %s Signal strength (RSSI): %d dBm"
-            , WiFi.SSID().c_str()
-            , WiFi.localIP().toString().c_str()
-            , WiFi.RSSI()
-        );
-}
-
 auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const aData) -> void
 {
     // taking care only JSON
@@ -291,7 +281,7 @@ void setup()
     if (IsColdStart() || !LockingWiFiConnection(WiFi))
         SetupWiFiAccessPoint(WiFi);
 
-    PrintWifiStatus();
+    PrintWifiStatus(WiFi);
 
     InitWebSocket();
     InitWebServer();
