@@ -5,6 +5,14 @@ Preferences nvsPrefs;
 constexpr bool RO_MODE = true;
 constexpr bool RW_MODE = false;
 
+const char defaultValuesKey[]{"nvsInit"};
+const char AppNamespace[]{"AppNamespace"};
+
+const char varNameOpenWeatherKey[]{"OpenWeather"};
+const char varNameIpGeolocationKey[]{"ipGeolocation"};
+const char varNameWiFiSsid[]{"wifiSSID"};
+const char varNameWiFiPassword[]{"wifiPassword"};
+
 String ip2geo;
 String opwthr;
 String wifiSSID;
@@ -13,47 +21,42 @@ String wifiPassword;
 const char defaultSSID[] = "esp32";
 const char defaultPass[] = "esp32pass";
 
-auto RestoreDefaultData() -> void //[ ]TODO: why do I need these default values?
+auto RestoreDefaultData() -> void
 {
-    log_i("Restore default values : ");
-    nvsPrefs.begin("AppNamespace", RW_MODE);
+    log_i("Restoring default values");
+    nvsPrefs.begin(AppNamespace, RW_MODE);
 
     // init storage by default values
-    // [x]TODO: add default serveces api key zero values
     // https://api.openweathermap.org
-    nvsPrefs.putString("OpenWeather", "");
+    nvsPrefs.putString(varNameOpenWeatherKey, "");
     // https://api.ipgeolocation.io/ipgeo
-    nvsPrefs.putString("ipGeolocation", "");
-    // [x]TODO: add default wifi ssid and wifipass zero values
-    nvsPrefs.putString("wifiSSID", defaultSSID);
-    nvsPrefs.putString("wifiPassword", defaultPass);
+    nvsPrefs.putString(varNameIpGeolocationKey, "");
+    nvsPrefs.putString(varNameWiFiSsid, defaultSSID);
+    nvsPrefs.putString(varNameWiFiPassword, defaultPass);
 
-    nvsPrefs.putBool("nvsInit", true);
+    nvsPrefs.putBool(defaultValuesKey, true);
 
     nvsPrefs.end();
-    log_i("Done");
+    log_d("Restoring default values has been done");
 }
 
 auto RestoreStoredData() -> void
 {
     log_i("Loading stored data");
-    nvsPrefs.begin("AppNamespace", RO_MODE);
+    nvsPrefs.begin(AppNamespace, RO_MODE);
 
-    if (false == nvsPrefs.isKey("nvsInit"))
+    if (false == nvsPrefs.isKey(defaultValuesKey))
     {
         nvsPrefs.end();
         RestoreDefaultData();
-        nvsPrefs.begin("AppNamespace", RO_MODE);
+        nvsPrefs.begin(AppNamespace, RO_MODE);
     }
 
     // store in app values
-    // [ ]TODO: make global variables
-    // [x]TODO: restore serveces api key values
-    opwthr = nvsPrefs.getString("OpenWeather");
-    ip2geo = nvsPrefs.getString("ipGeolocation");
-    // [x]TODO: add default wifi ssid and wifi pass values
-    wifiSSID = nvsPrefs.getString("wifiSSID");
-    wifiPassword = nvsPrefs.getString("wifiPassword");
+    opwthr = nvsPrefs.getString(varNameOpenWeatherKey);
+    ip2geo = nvsPrefs.getString(varNameIpGeolocationKey);
+    wifiSSID = nvsPrefs.getString(varNameWiFiSsid);
+    wifiPassword = nvsPrefs.getString(varNameWiFiPassword);
 
     nvsPrefs.end();
 }
@@ -62,32 +65,32 @@ auto Save(const String &aKey, const String &aValue) -> void
 {
     log_d("Saving [%s, %s]", aKey.c_str(), aValue.c_str());
 
-    nvsPrefs.begin("AppNamespace", RW_MODE);
     nvsPrefs.putString(aKey.c_str(), aValue.c_str());
+    nvsPrefs.begin(AppNamespace, RW_MODE);
     nvsPrefs.end();
 }
 
 auto SaveIpGeolocation(const String &aValue) -> void
 {
-    Save("ipGeolocation", aValue);
+    Save(varNameIpGeolocationKey, aValue);
     ip2geo = aValue;
 }
 
 auto SaveOpenWeather(const String &aValue) -> void
 {
-    Save("OpenWeather", aValue);
+    Save(varNameOpenWeatherKey, aValue);
     opwthr = aValue;
 }
 
 auto SaveWifiSSID(const String &aValue) -> void
 {
-    Save("wifiSSID", aValue);
+    Save(varNameWiFiSsid, aValue);
     wifiSSID = aValue;
 }
 
 auto SaveWifiPassword(const String &aValue) -> void
 {
-    Save("wifiPassword", aValue);
+    Save(varNameWiFiPassword, aValue);
     wifiPassword = aValue;
 }
 
