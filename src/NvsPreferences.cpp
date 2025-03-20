@@ -146,5 +146,5 @@ auto GetWiFiPassword(SettingsType aType) -> String
 
 auto IsColdStart() -> bool
 {
-    return defaultSSID == wifiSSID.c_str() && defaultPass == wifiPassword.c_str();
+    return wifiSSID.equals(defaultSSID) && wifiPassword.equals(defaultPass);
 }
