@@ -69,12 +69,12 @@ auto RestoreStoredData() -> void
     nvsPrefs.end();
 }
 
-auto Save(const String &aKey, const String &aValue) -> void
+auto Save(const char aKey[], const String &aValue) -> void
 {
-    log_d("Saving [%s, %s]", aKey.c_str(), aValue.c_str());
+    log_d("Saving [%s, %s]", aKey, aValue.c_str());
 
-    nvsPrefs.putString(aKey.c_str(), aValue.c_str());
     nvsPrefs.begin(AppNamespace, RW_MODE);
+    nvsPrefs.putString(aKey, aValue.c_str());
     nvsPrefs.end();
 }
 
