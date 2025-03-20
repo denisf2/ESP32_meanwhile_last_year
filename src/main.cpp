@@ -38,10 +38,6 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 AsyncWebSocket websocket("/ws");
 // ---------------------------------------------------
 
-
-auto ScanWiFiAPsJSON() -> String;
-
-
 // ==================================================
 // Handle submit form
 // ==================================================
@@ -123,37 +119,11 @@ auto SetupWiFiAccessPoint() -> void
     log_i("Setting default AP (Access Point) ssid: %s, pass: %s", ssid, pass);
     WiFi.mode(wifi_mode_t::WIFI_MODE_AP);
     WiFi.disconnect();
-    ScanWiFiAPsJSON();
+    ScanWiFiAPsJSON(WiFi);
     WiFi.softAP(ssid, pass);
 
     const auto ip = WiFi.softAPIP();
     log_i("AP IP address: %s", ip.toString().c_str());
-}
-
-auto ScanWiFiAPsJSON() -> String
-{
-    // WiFi.scanNetworks will return the number of networks found.
-    const auto n = WiFi.scanNetworks();
-    log_i("Scan done");
-    if (0 == n)
-        log_i("No networks found");
-    else
-    {
-        log_i("%d networks found", n);
-        LogPrintWiFiAPsPrettyTable(WiFi, n);
-
-        const auto json = WiFiAPtoJSON(WiFi, n);
-        // [x]TODO: wrap into JSON
-
-        // Delete the scan result to free memory for code below.
-        WiFi.scanDelete();
-
-        return json;
-    }
-
-    // Delete the scan result to free memory for code below.
-    WiFi.scanDelete();
-    return {};
 }
 
 auto LockingWiFiConnection() -> bool
@@ -267,7 +237,7 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
     }
     else if (String("AcquireWiFiAPs") == msgType)
     {
-        websocket.textAll(ScanWiFiAPsJSON().c_str());
+        websocket.textAll(ScanWiFiAPsJSON(WiFi).c_str());
     }
     else
         log_w("Unknown message");

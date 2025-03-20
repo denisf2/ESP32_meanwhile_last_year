@@ -1,4 +1,5 @@
 #include "WifiAux.h"
+#include "JsonAux.h"
 
 auto to_string(const wifi_auth_mode_t aMode) -> String {
     switch (aMode)
@@ -40,4 +41,30 @@ auto LogPrintWiFiAPsPrettyTable(WiFiClass& aWiFi, const int16_t aTotal) -> void
                 , to_string(aWiFi.encryptionType(i)).c_str()
             );
     }
+}
+
+auto ScanWiFiAPsJSON(WiFiClass& aWiFi) -> String
+{
+    // WiFi.scanNetworks will return the number of networks found.
+    const auto n = aWiFi.scanNetworks();
+    log_i("Scan done");
+    if (0 == n)
+        log_i("No networks found");
+    else
+    {
+        log_i("%d networks found", n);
+        LogPrintWiFiAPsPrettyTable(aWiFi, n);
+
+        const auto json = WiFiAPtoJSON(aWiFi, n);
+        // [x]TODO: wrap into JSON
+
+        // Delete the scan result to free memory for code below.
+        aWiFi.scanDelete();
+
+        return json;
+    }
+
+    // Delete the scan result to free memory for code below.
+    aWiFi.scanDelete();
+    return {};
 }

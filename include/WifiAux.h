@@ -5,5 +5,6 @@
 
 auto to_string(const wifi_auth_mode_t aMode) -> String;
 auto LogPrintWiFiAPsPrettyTable(WiFiClass& aWiFi, const int16_t aTotal) -> void;
+auto ScanWiFiAPsJSON(WiFiClass& aWiFi) -> String;
 
 #endif /*WIFIAUX_H__*/
