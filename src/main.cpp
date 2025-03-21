@@ -95,16 +95,22 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
         if (value.isEmpty())
             continue;
 
-        if (name == "ip2geoKey")
+        if (name.equals("ip2geoKey"))
             SaveIpGeolocation(value);
 
-        if (name == "openWeatherKey")
+        if (name.equals("openWeatherKey"))
             SaveOpenWeather(value);
 
-        if (name == "wifiSsid")
+        if (name.equals("latitude"))
+            SaveLatitude(value);
+
+        if (name.equals("longitude"))
+            SaveLongitude(value);
+
+        if (name.equals("wifiSsid"))
             SaveWifiSSID(value);
 
-        if (name == "wifiPassword")
+        if (name.equals("wifiPassword"))
             SaveWifiPassword(value);
     }
 
@@ -146,7 +152,7 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
 
     const auto msgType = doc["message"].as<String>();
 
-    if (String("ip2geoTest") == msgType)
+    if (msgType.equals("ip2geoTest"))
     {
         if (doc["apikey"].is<String>())
         {
@@ -159,7 +165,7 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
             websocket.textAll(respond.c_str());
         }
     }
-    else if (String("openWeatherTest") == msgType)
+    else if (msgType.equals("openWeatherTest"))
     {
         if (doc["apikey"].is<String>())
         {
@@ -172,7 +178,7 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
             websocket.textAll(respond.c_str());
         }
     }
-    else if (String("FormFill") == msgType)
+    else if (msgType.equals("openWeatherTest"))
     {
         // [x]TODO: update form with stored data
         const String respond = SerializeFormStoredData(std::move(doc), "", "");
@@ -182,7 +188,7 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
         //[ ]TODO: remove from here after WDT fix
         websocket.textAll(ScanWiFiAPsJSON(WiFi).c_str());
     }
-    else if (String("AcquireWiFiAPs") == msgType)
+    else if (msgType.equals("AcquireWiFiAPs"))
     {
         log_d("nothing to do");
         // [ ]TODO: core1 WDT restart device here.
