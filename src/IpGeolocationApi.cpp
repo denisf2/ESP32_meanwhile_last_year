@@ -4,13 +4,13 @@
 #include <ArduinoJson.h>
 #include <optional>
 
-Coordinates Coordinates_;
+Coordinates_t coordinates;
 
 /*
 api description: https://ipgeolocation.io/ip-location-api.html#documentation-overview
 */
 
-auto ParseJson(const String &aData) -> std::optional<Coordinates>
+auto ParseJson(const String &aData) -> std::optional<Coordinates_t>
 {
     // Allocate the JSON document
     JsonDocument doc;
@@ -29,12 +29,12 @@ auto ParseJson(const String &aData) -> std::optional<Coordinates>
         return std::nullopt;
     }
 
-    Coordinates coord;
+    Coordinates_t coord;
     // Fetch values
     coord.latitude = doc["latitude"].as<double>();
     coord.longitude = doc["longitude"].as<double>();
 
-    return std::make_optional<Coordinates>(std::move(coord));
+    return std::make_optional<Coordinates_t>(std::move(coord));
 }
 
 auto GetApiUrl(const String& aApiKey)-> String {
@@ -81,9 +81,9 @@ auto GetLocationCoordinates(const String &aApiKey) -> bool
     if (!res)
         return false;
 
-    Coordinates_ = res.value();
+    coordinates = res.value();
     // Print values.
-    log_i("Acquired coordinates: [%3.3f, %3.3f]", Coordinates_.latitude, Coordinates_.longitude);
+    log_i("Acquired coordinates: [%3.3f, %3.3f]", coordinates.latitude, coordinates.longitude);
 
     return true;
 }

@@ -322,8 +322,8 @@ void loop()
         {
             GetLocationCoordinates(GetIpGeoKey());
             GetForecast(GetOpenWeatherKey()
-                        , String(Coordinates_.latitude)
-                        , String(Coordinates_.longitude));
+                        , String(coordinates.latitude)
+                        , String(coordinates.longitude));
         }
         else
         {

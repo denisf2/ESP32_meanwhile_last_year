@@ -4,11 +4,11 @@
 #include <Arduino.h>
 
 auto GetLocationCoordinates(const String &aApiKey) -> bool;
-struct Coordinates
+struct Coordinates_t
 {
     double latitude{0.0};
     double longitude{0.0};
 };
 
-extern Coordinates Coordinates_;
+extern Coordinates_t coordinates;
 #endif /* IPGEOLOCATIONAPI_H__ */
