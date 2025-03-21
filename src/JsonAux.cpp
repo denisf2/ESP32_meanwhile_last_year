@@ -50,8 +50,8 @@ auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType, bool a
     // [ ]TODO: need to think about this
     // aDoc["WiFiPassword"] = GetWiFiPassword();
     aDoc["WiFiPassword"] = "";
-    aDoc["Longitude"] = "[ ]TODO: longitude";
-    aDoc["Latitude"] = "[ ]TODO: latitude";
+    aDoc["Longitude"] = GetLongitude();
+    aDoc["Latitude"] = GetLatitude();
     aDoc["IpGeolocKey"] = GetIpGeoKey();
     aDoc["OpenWeatherKey"] = GetOpenWeatherKey();
 
