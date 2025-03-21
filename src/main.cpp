@@ -320,6 +320,7 @@ void loop()
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
         {
+            // [ ]TODO: chose user/automatic coordinates
             GetLocationCoordinates(GetIpGeoKey());
             GetForecast(GetOpenWeatherKey()
                         , String(coordinates.latitude)
