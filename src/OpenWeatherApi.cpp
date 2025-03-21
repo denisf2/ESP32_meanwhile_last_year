@@ -106,7 +106,7 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
     weather = res.value();
 
     // Print values.
-    log_d("Acquired temperature: [ %4.1f ]", weather.temp);
+    log_i("Acquired temperature: [ %4.1f ]", weather.temp);
 
     return true;
 }
