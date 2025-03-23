@@ -14,6 +14,7 @@ const char varNameLatitude[]{"Latitude"};
 const char varNameLongitude[]{"Longitude"};
 const char varNameWiFiSsid[]{"wifiSSID"};
 const char varNameWiFiPassword[]{"wifiPassword"};
+const char varNameAutomaticLocation[]{"AutoLocation"};
 
 String ip2geo;
 String opwthr;
@@ -21,6 +22,7 @@ String latitude;
 String longitude;
 String wifiSSID;
 String wifiPassword;
+bool autoLocation{true};
 
 const char defaultSSID[] = "esp32";
 const char defaultPass[] = "esp32pass";
@@ -39,6 +41,7 @@ auto RestoreDefaultData() -> void
     nvsPrefs.putString(varNameLongitude, "");
     nvsPrefs.putString(varNameWiFiSsid, defaultSSID);
     nvsPrefs.putString(varNameWiFiPassword, defaultPass);
+    nvsPrefs.putBool(varNameAutomaticLocation, true);
 
     nvsPrefs.putBool(defaultValuesKey, true);
 
@@ -65,6 +68,7 @@ auto RestoreStoredData() -> void
     longitude = nvsPrefs.getString(varNameLongitude);
     wifiSSID = nvsPrefs.getString(varNameWiFiSsid);
     wifiPassword = nvsPrefs.getString(varNameWiFiPassword);
+    autoLocation = nvsPrefs.getBool(varNameAutomaticLocation);
 
     nvsPrefs.end();
 }
@@ -75,6 +79,15 @@ auto Save(const char aKey[], const String &aValue) -> void
 
     nvsPrefs.begin(AppNamespace, RW_MODE);
     nvsPrefs.putString(aKey, aValue.c_str());
+    nvsPrefs.end();
+}
+
+auto Save(const char aKey[], bool aValue) -> void
+{
+    log_d("Saving [%s, %s]", aKey, aValue ? "true" : "false");
+
+    nvsPrefs.begin(AppNamespace, RW_MODE);
+    nvsPrefs.putBool(aKey, aValue);
     nvsPrefs.end();
 }
 
@@ -114,6 +127,12 @@ auto SaveWifiPassword(const String &aValue) -> void
     wifiPassword = aValue;
 }
 
+auto SaveAutoLocation(bool aValue) -> void
+{
+    Save(varNameAutomaticLocation, aValue);
+    autoLocation = aValue;
+}
+
 auto GetIpGeoKey() -> String
 {
     return ip2geo;
@@ -142,6 +161,11 @@ auto GetWifiSSID(SettingsType aType) -> String
 auto GetWiFiPassword(SettingsType aType) -> String
 {
     return {(SettingsType::factory == aType) ? defaultPass : wifiPassword};
+}
+
+auto GetAutoLocation() -> bool
+{
+    return autoLocation;
 }
 
 auto IsColdStart() -> bool

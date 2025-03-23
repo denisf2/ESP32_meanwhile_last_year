@@ -19,6 +19,8 @@
 #include <ArduinoJson.h>
 
 #include <functional>
+#include <string>
+#include <exception>
 
 #include "NvsPreferences.h"
 #include "resources.h"
@@ -102,10 +104,16 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
             SaveOpenWeather(value);
 
         if (name.equals("latitude"))
+        {
             SaveLatitude(value);
+            SaveAutoLocation(false);
+        }
 
         if (name.equals("longitude"))
+        {
             SaveLongitude(value);
+            SaveAutoLocation(false);
+        }
 
         if (name.equals("wifiSsid"))
             SaveWifiSSID(value);
@@ -268,6 +276,44 @@ auto InitWebServer() -> void
     server.begin();
 }
 
+auto acquire_coordinates_rename_me() -> void
+{
+    // [ ]TODO: chose user/automatic coordinates
+    if (GetAutoLocation())
+    {
+        // case automatic
+        GetLocationCoordinates(GetIpGeoKey());
+    }
+    else
+    {
+        const char msg[] = "coordinate update failed";
+        // case manual
+        try
+        {
+            Coordinates_t tmp{coordinates};
+
+            // use std::stod to catch exceptions
+            // String::toDouble() does not provide this functionality
+            tmp.latitude = std::stod(GetLatitude().c_str());
+            tmp.longitude = std::stod(GetLongitude().c_str());
+
+            coordinates = tmp;
+        }
+        catch (const std::invalid_argument &aExc)
+        {
+            log_w("%s %s", msg, aExc.what());
+        }
+        catch (const std::out_of_range &aExc)
+        {
+            log_w("%s %s", msg, aExc.what());
+        }
+        catch (const std::exception &aExc)
+        {
+            log_w("%s %s", msg, aExc.what());
+        }
+    }
+}
+
 // ===================================================
 // Setup
 // ===================================================
@@ -320,8 +366,7 @@ void loop()
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
         {
-            // [ ]TODO: chose user/automatic coordinates
-            GetLocationCoordinates(GetIpGeoKey());
+            acquire_coordinates_rename_me();
             GetForecast(GetOpenWeatherKey()
                         , String(coordinates.latitude)
                         , String(coordinates.longitude));
