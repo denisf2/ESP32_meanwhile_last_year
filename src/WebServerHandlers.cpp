@@ -1,6 +1,7 @@
 #include "WebServerHandlers.h"
 
 #include "resources.h"
+#include "NvsPreferences.h"
 
 constexpr int listenPort{80};
 AsyncWebServer server(listenPort);
@@ -62,3 +63,89 @@ auto handleNotFound(AsyncWebServerRequest *aRequest) -> void
 {
     SendWebPageResponse(aRequest);
 }
+
+auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
+{
+    const size_t paramsNr = aRequest->params();
+
+    log_i("Params total: %d", paramsNr);
+
+    for (size_t i = 0; i < paramsNr; i++)
+    {
+        const AsyncWebParameter *const p = aRequest->getParam(i);
+        const auto name = p->name();
+        const auto value = p->value();
+
+        log_i("Param [name, value] : [%s, %s]", name.c_str(), value.c_str());
+
+        if (value.isEmpty())
+            continue;
+
+        if (name.equals("ip2geoKey"))
+            SaveIpGeolocation(value);
+
+        if (name.equals("openWeatherKey"))
+            SaveOpenWeather(value);
+
+        if (name.equals("latitude"))
+        {
+            SaveLatitude(value);
+            SaveAutoLocation(false);
+        }
+
+        if (name.equals("longitude"))
+        {
+            SaveLongitude(value);
+            SaveAutoLocation(false);
+        }
+
+        if (name.equals("wifiSsid"))
+            SaveWifiSSID(value);
+
+        if (name.equals("wifiPassword"))
+            SaveWifiPassword(value);
+    }
+
+    // [ ]TODO: why do we need send in response whole page?
+    SendWebPageResponse(aRequest);
+}
+
+// ==================================================
+// Handle submit form
+// ==================================================
+auto handleSubmit(AsyncWebServerRequest *aRequest) -> void
+{
+    // [ ]TODO: do something with button1
+    if (aRequest->hasArg("button1"))
+    {
+        log_i("button1 was pressed");
+    }
+
+    SendWebPageResponse(aRequest); // Response to the HTTP request
+}
+
+// ===================================================
+// Handle root
+// ===================================================
+auto handleRoot(AsyncWebServerRequest *aRequest) -> void
+{
+    if (aRequest->args())
+    {
+        handleSubmit(aRequest);
+    }
+    else
+    {
+        SendWebPageResponse(aRequest);
+    }
+}
+/*******************
+handleRoot->has arguments->handleSubmit->has "button1"->print to serial sensor data
+                         |              |              |                          |------>|
+                         |              |              |--------------------------------->|
+                         |              |------------------------------------------------>|
+                         |--------------------------------------------------------------->|
+                                                                                          |
+onNotFound->handleNotFound                                                                |
+                         |--------------------------------------------------------------->|
+                                                                                          |->getPage()
+********************/

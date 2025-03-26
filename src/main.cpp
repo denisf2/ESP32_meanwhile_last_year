@@ -40,93 +40,7 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 AsyncWebSocket websocket("/ws");
 // ---------------------------------------------------
 
-// ==================================================
-// Handle submit form
-// ==================================================
-void handleSubmit(AsyncWebServerRequest *aRequest)
-{
-    // [ ]TODO: do something with button1
-    if (aRequest->hasArg("button1"))
-    {
-        log_i("button1 was pressed");
-    }
-
-    SendWebPageResponse(aRequest); // Response to the HTTP request
-}
-
-// ===================================================
-// Handle root
-// ===================================================
-void handleRoot(AsyncWebServerRequest *aRequest)
-{
-    if (aRequest->args())
-    {
-        handleSubmit(aRequest);
-    }
-    else
-    {
-        SendWebPageResponse(aRequest);
-    }
-}
-/*******************
-handleRoot->has arguments->handleSubmit->has "button1"->print to serial sensor data
-                         |              |              |                          |------>|
-                         |              |              |--------------------------------->|
-                         |              |------------------------------------------------>|
-                         |--------------------------------------------------------------->|
-                                                                                          |
-onNotFound->handleNotFound                                                                |
-                         |--------------------------------------------------------------->|
-                                                                                          |->getPage()
-********************/
-
-auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
-{
-    const size_t paramsNr = aRequest->params();
-
-    log_i("Params total: %d", paramsNr);
-
-    for (size_t i = 0; i < paramsNr; i++)
-    {
-        const AsyncWebParameter *const p = aRequest->getParam(i);
-        const auto name = p->name();
-        const auto value = p->value();
-
-        log_i("Param [name, value] : [%s, %s]", name.c_str(), value.c_str());
-
-        if (value.isEmpty())
-            continue;
-
-        if (name.equals("ip2geoKey"))
-            SaveIpGeolocation(value);
-
-        if (name.equals("openWeatherKey"))
-            SaveOpenWeather(value);
-
-        if (name.equals("latitude"))
-        {
-            SaveLatitude(value);
-            SaveAutoLocation(false);
-        }
-
-        if (name.equals("longitude"))
-        {
-            SaveLongitude(value);
-            SaveAutoLocation(false);
-        }
-
-        if (name.equals("wifiSsid"))
-            SaveWifiSSID(value);
-
-        if (name.equals("wifiPassword"))
-            SaveWifiPassword(value);
-    }
-
-    // [ ]TODO: why do we need send in response whole page?
-    SendWebPageResponse(aRequest);
-}
-
-auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const aData) -> void
+auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
 {
     // taking care only JSON
     if (AwsFrameType::WS_TEXT != aFrameInfo->opcode)
@@ -135,7 +49,7 @@ auto ProcessWSData(const AwsFrameInfo * const aFrameInfo, const uint8_t * const 
         return;
     }
 
-    String json(reinterpret_cast<const char* const >(aData));
+    String json(reinterpret_cast<const char* const>(aData));
     log_d("Incoming JSON %s", json.c_str());
 
     // Allocate the JSON document
