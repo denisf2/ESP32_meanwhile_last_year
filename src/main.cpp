@@ -314,6 +314,39 @@ auto acquire_coordinates_rename_me() -> void
     }
 }
 
+auto job_working_led_blink(unsigned long aCurrent) -> void
+{
+    if (aCurrent - oldmil >= UPDATE_INTERVAL_MILLISEC)
+    {
+        digitalWrite(BUILDIN_LED_PIN, ledState);
+        ledState = 1 - ledState;
+
+        oldmil = aCurrent;
+    }
+}
+
+auto job_request_weather_data(unsigned long aCurrent) -> void
+{
+    // [ ]TODO: make run at start and once per hour
+    static bool once = false;
+    if (aCurrent - oldmil2 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
+    {
+        // Check WiFi connection status
+        if (WL_CONNECTED == WiFi.status())
+        {
+            acquire_coordinates_rename_me();
+            GetForecast(GetOpenWeatherKey()
+            , String(coordinates.latitude)
+            , String(coordinates.longitude));
+        }
+        else
+        {
+            log_i("WiFi Disconnected");
+        }
+        oldmil2 = aCurrent;
+        once = true;
+    }
+}
 // ===================================================
 // Setup
 // ===================================================
@@ -352,32 +385,9 @@ void loop()
     websocket.cleanupClients();
 
     const auto newmil = millis();
-    if (newmil - oldmil >= UPDATE_INTERVAL_MILLISEC)
-    {
-        digitalWrite(BUILDIN_LED_PIN, ledState);
-        ledState = 1 - ledState;
 
-        oldmil = newmil;
-    }
-
-    static bool once = false;
-    if (newmil - oldmil2 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
-    {
-        // Check WiFi connection status
-        if (WL_CONNECTED == WiFi.status())
-        {
-            acquire_coordinates_rename_me();
-            GetForecast(GetOpenWeatherKey()
-                        , String(coordinates.latitude)
-                        , String(coordinates.longitude));
-        }
-        else
-        {
-            log_i("WiFi Disconnected");
-        }
-        oldmil2 = newmil;
-        once = true;
-    }
+    job_working_led_blink(newmil);
+    job_request_weather_data(newmil);
 }
 
 //===========================================================
