@@ -190,6 +190,7 @@ auto InitWebServer() -> void
     server.begin();
 }
 
+// [ ]TODO: rename
 auto acquire_coordinates_rename_me() -> void
 {
     // [ ]TODO: chose user/automatic coordinates
@@ -323,3 +324,9 @@ get forcast by coordinate   |
     v                       |
 print city/forecast info <--|
 *************************/
+
+// show user a page with plot
+// current temperature
+// meanwhile this day last year min/max temp per day
+// last 3 days and 3 days before today current temp and min/max for last year
+// plot graph current temp as line min/max as bar
