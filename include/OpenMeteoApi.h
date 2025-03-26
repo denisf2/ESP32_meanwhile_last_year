@@ -1,0 +1,23 @@
+#ifndef OPENMETEOAPI_H__
+#define OPENMETEOAPI_H__
+
+#include <Arduino.h>
+
+constexpr size_t days{7};
+
+struct WeatherHistory_t
+{
+    struct TempPoint
+    {
+        uint8_t Tmin{0};
+        uint8_t Tmax{0};
+    };
+
+    TempPoint points[days]{};
+};
+
+auto GetWeatherHistory() -> void;
+
+extern WeatherHistory_t weatherHistory;
+
+#endif /*OPENMETEOAPI_H__*/
