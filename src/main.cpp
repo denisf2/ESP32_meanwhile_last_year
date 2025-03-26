@@ -81,7 +81,7 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
             const auto key = doc["apikey"].as<String>();
             // [ ]TODO: split function
             const auto res = GetLocationCoordinates(key);
-            log_d("IpToGeo key check is %s ", (res) ? "Ok": "failed");
+            log_d("IpToGeo key check is %s ", (res) ? "Ok" : "failed");
 
             const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
             websocket.textAll(respond.c_str());
@@ -94,7 +94,7 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
             const auto key = doc["apikey"].as<String>();
             // [ ]TODO: split function
             const auto res = GetForecast(key, String("0"), String("0"));
-            log_d("OpenWeather key check is %s ", (res) ? "Ok": "failed");
+            log_d("OpenWeather key check is %s ", (res) ? "Ok" : "failed");
 
             const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
             websocket.textAll(respond.c_str());

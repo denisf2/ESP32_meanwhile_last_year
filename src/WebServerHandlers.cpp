@@ -31,12 +31,12 @@ auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
             <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=2.5, user-scalable=1">
             <title>Temperature Forecast Linechart demo</title>
         </head>
-        <body>         
+        <body>
         <h2>Restarting...</h2>
         </body>
         </html>
     )rawhtml";
-    
+
     aRequest->send(200, String("text/html"), webpage);
 
     ESP.restart();
