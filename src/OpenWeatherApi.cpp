@@ -60,7 +60,7 @@ auto ParseJsonOwtr(const String& aData) -> std::optional<Weather_t>
 
 auto GetApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-> String
 {
-    const String units{"metric"};
+    constexpr char units[]{"metric"};
     return String("https://api.openweathermap.org/data/2.5/weather")
                 + "?lat=" + aLat
                 + "&lon=" + aLon

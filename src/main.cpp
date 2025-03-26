@@ -32,7 +32,7 @@
 
 unsigned long oldmil = 0UL;
 unsigned long oldmil2 = 0UL;
-const unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
+constexpr unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
@@ -286,7 +286,7 @@ auto acquire_coordinates_rename_me() -> void
     }
     else
     {
-        const char msg[] = "coordinate update failed";
+        constexpr char msg[] = "coordinate update failed";
         // case manual
         try
         {

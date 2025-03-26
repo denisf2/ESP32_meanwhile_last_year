@@ -5,16 +5,16 @@ Preferences nvsPrefs;
 constexpr bool RO_MODE = true;
 constexpr bool RW_MODE = false;
 
-const char defaultValuesKey[]{"nvsInit"};
-const char AppNamespace[]{"AppNamespace"};
+constexpr char defaultValuesKey[]{"nvsInit"};
+constexpr char AppNamespace[]{"AppNamespace"};
 
-const char varNameOpenWeatherKey[]{"OpenWeather"};
-const char varNameIpGeolocationKey[]{"ipGeolocation"};
-const char varNameLatitude[]{"Latitude"};
-const char varNameLongitude[]{"Longitude"};
-const char varNameWiFiSsid[]{"wifiSSID"};
-const char varNameWiFiPassword[]{"wifiPassword"};
-const char varNameAutomaticLocation[]{"AutoLocation"};
+constexpr char varNameOpenWeatherKey[]{"OpenWeather"};
+constexpr char varNameIpGeolocationKey[]{"ipGeolocation"};
+constexpr char varNameLatitude[]{"Latitude"};
+constexpr char varNameLongitude[]{"Longitude"};
+constexpr char varNameWiFiSsid[]{"wifiSSID"};
+constexpr char varNameWiFiPassword[]{"wifiPassword"};
+constexpr char varNameAutomaticLocation[]{"AutoLocation"};
 
 String ip2geo;
 String opwthr;
@@ -24,8 +24,8 @@ String wifiSSID;
 String wifiPassword;
 bool autoLocation{true};
 
-const char defaultSSID[] = "esp32";
-const char defaultPass[] = "esp32pass";
+constexpr char defaultSSID[] = "esp32";
+constexpr char defaultPass[] = "esp32pass";
 
 auto RestoreDefaultData() -> void
 {
