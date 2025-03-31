@@ -28,6 +28,7 @@
 #include "resources.h"
 #include "IpGeolocationApi.h"
 #include "OpenWeatherApi.h"
+#include "OpenMeteoApi.h"
 #include "WebServerHandlers.h"
 #include "WifiAux.h"
 #include "JsonAux.h"
@@ -262,6 +263,9 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         if (WL_CONNECTED == WiFi.status())
         {
             acquire_coordinates_rename_me();
+            GetWeatherHistory(String(coordinates.latitude)
+            , String(coordinates.longitude)
+            , timeClient.getEpochTime());
             GetForecast(GetOpenWeatherKey()
             , String(coordinates.latitude)
             , String(coordinates.longitude));

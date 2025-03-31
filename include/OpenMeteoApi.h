@@ -11,12 +11,13 @@ struct WeatherHistory_t
     {
         uint8_t Tmin{0};
         uint8_t Tmax{0};
+        String days;
     };
 
     TempPoint points[days]{};
 };
 
-auto GetWeatherHistory() -> void;
+auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> bool;
 
 extern WeatherHistory_t weatherHistory;
 
