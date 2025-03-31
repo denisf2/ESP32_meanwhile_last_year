@@ -17,6 +17,8 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 #include <functional>
 #include <string>
@@ -32,12 +34,16 @@
 
 unsigned long oldmil1 = 0UL;
 unsigned long oldmil2 = 0UL;
+unsigned long oldmil3 = 0UL;
 constexpr unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
 
 AsyncWebSocket websocket("/ws");
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org");
 // ---------------------------------------------------
 
 auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
@@ -190,6 +196,12 @@ auto InitWebServer() -> void
     server.begin();
 }
 
+auto InitNTPClient() -> void
+{
+    timeClient.begin();
+    timeClient.setTimeOffset(0); // UTC time
+}
+
 // [ ]TODO: rename
 auto acquire_coordinates_rename_me() -> void
 {
@@ -262,6 +274,19 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         once = true;
     }
 }
+
+auto job_update_time(unsigned long aCurrent) -> void
+{
+    static bool once = false;
+    if (aCurrent - oldmil3 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
+    {
+        timeClient.update();
+
+        oldmil3 = aCurrent;
+        once = true;
+    }
+}
+
 // ===================================================
 // Setup
 // ===================================================
@@ -283,6 +308,8 @@ void setup()
 
     PrintWifiStatus(WiFi);
 
+    InitNTPClient();
+
     InitWebSocket();
     InitWebServer();
 }
@@ -301,6 +328,7 @@ void loop()
 
     const auto newmil = millis();
 
+    job_update_time(newmil);
     job_working_led_blink(newmil);
     job_request_weather_data(newmil);
 }
