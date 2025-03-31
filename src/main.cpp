@@ -30,7 +30,7 @@
 #include "WifiAux.h"
 #include "JsonAux.h"
 
-unsigned long oldmil = 0UL;
+unsigned long oldmil1 = 0UL;
 unsigned long oldmil2 = 0UL;
 constexpr unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
@@ -231,12 +231,12 @@ auto acquire_coordinates_rename_me() -> void
 
 auto job_working_led_blink(unsigned long aCurrent) -> void
 {
-    if (aCurrent - oldmil >= UPDATE_INTERVAL_MILLISEC)
+    if (aCurrent - oldmil1 >= UPDATE_INTERVAL_MILLISEC)
     {
         digitalWrite(BUILDIN_LED_PIN, ledState);
         ledState = 1 - ledState;
 
-        oldmil = aCurrent;
+        oldmil1 = aCurrent;
     }
 }
 
