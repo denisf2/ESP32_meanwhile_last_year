@@ -70,7 +70,7 @@ auto GetApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-> 
 
 auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) -> bool // [ ]FIXME:rename
 {
-    const String serverPath = GetApiUrl(aLat, aLon, aApiKey);
+    const String serverPath = GetApiUrl(aApiKey, aLat, aLon);
     log_d("%s", serverPath.c_str());
 
     HTTPClient http;
