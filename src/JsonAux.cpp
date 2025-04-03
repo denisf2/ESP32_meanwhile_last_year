@@ -6,13 +6,14 @@ auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
 {
     JsonDocument doc;
     doc["message"] = "wifiAps";
-
+    auto APs = doc["APs"];
     for (auto i = 0; i < aTotal; ++i)
     {
-        doc["APs"][i]["ssid"] = aWiFi.SSID(i).c_str();
-        doc["APs"][i]["rssi"] = aWiFi.RSSI(i);
-        doc["APs"][i]["channel"] = aWiFi.channel(i);
-        doc["APs"][i]["encryption"] = to_string(aWiFi.encryptionType(i)).c_str();
+        auto AP = APs.add<JsonObject>();
+        AP["ssid"] = aWiFi.SSID(i).c_str();
+        AP["rssi"] = aWiFi.RSSI(i);
+        AP["channel"] = aWiFi.channel(i);
+        AP["encryption"] = to_string(aWiFi.encryptionType(i)).c_str();
     }
 
     String serial;
