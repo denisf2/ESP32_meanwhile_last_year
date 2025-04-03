@@ -514,9 +514,9 @@
 //                %ARRAYPLACEHOLDER%
 //                        ];
 
-            let tmp = [['Time', 'Temp']];
+            let tmp = [['Date', 'Tmin', 'Tmax', 'T']];
             for (let i = 0; i < 20; ++i)
-                tmp.push([i, Math.sin(i)]);
+                tmp.push([i, Math.sin(i), Math.cos(i), Math.log10(i)]);
 
             var chartData = google.visualization.arrayToDataTable(tmp);
 
