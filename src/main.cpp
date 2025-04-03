@@ -56,7 +56,7 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
         return;
     }
 
-    String json(reinterpret_cast<const char* const>(aData));
+    String json(reinterpret_cast<const char* const>(aData), aFrameInfo->len);
     log_d("Incoming JSON %s", json.c_str());
 
     // Allocate the JSON document
@@ -107,7 +107,7 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
             websocket.textAll(respond.c_str());
         }
     }
-    else if (msgType.equals("openWeatherTest"))
+    else if (msgType.equals("FormFill"))
     {
         // [x]TODO: update form with stored data
         const String respond = SerializeFormStoredData(std::move(doc), "", "");
