@@ -36,6 +36,7 @@
 unsigned long oldmil1 = 0UL;
 unsigned long oldmil2 = 0UL;
 unsigned long oldmil3 = 0UL;
+unsigned long oldmil4 = 0UL;
 constexpr unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
@@ -203,42 +204,50 @@ auto InitNTPClient() -> void
     timeClient.setTimeOffset(0); // UTC time
 }
 
-// [ ]TODO: rename
-auto acquire_coordinates_rename_me() -> void
+auto job_acquire_coordinates(unsigned long aCurrent) -> void
 {
-    // [ ]TODO: chose user/automatic coordinates
-    if (GetAutoLocation())
+    // [ ]TODO: make run at start and once per hour
+    static bool once = false;
+    if (aCurrent - oldmil4 >= 4 * UPDATE_INTERVAL_MILLISEC && false == once)
     {
-        // case automatic
-        GetLocationCoordinates(GetIpGeoKey());
-    }
-    else
-    {
-        constexpr char msg[] = "coordinate update failed";
-        // case manual
-        try
+        // [ ]TODO: chose user/automatic coordinates
+        // if (GetAutoLocation())
+        if (true)
         {
-            Coordinates_t tmp{coordinates};
+            // case automatic
+            GetLocationCoordinates(GetIpGeoKey());
+        }
+        else
+        {
+            constexpr char msg[] = "coordinate update failed";
+            // case manual
+            try
+            {
+                Coordinates_t tmp{coordinates};
 
-            // use std::stod to catch exceptions
-            // String::toDouble() does not provide this functionality
-            tmp.latitude = std::stod(GetLatitude().c_str());
-            tmp.longitude = std::stod(GetLongitude().c_str());
+                // use std::stod to catch exceptions
+                // String::toDouble() does not provide this functionality
+                tmp.latitude = std::stod(GetLatitude().c_str());
+                tmp.longitude = std::stod(GetLongitude().c_str());
 
-            coordinates = tmp;
+                coordinates = tmp;
+            }
+            catch (const std::invalid_argument &aExc)
+            {
+                log_e("%s. Invalid argument: %s", msg, aExc.what());
+            }
+            catch (const std::out_of_range &aExc)
+            {
+                log_e("%s. Out of range: %s", msg, aExc.what());
+            }
+            catch (const std::exception &aExc)
+            {
+                log_e("%s. Other exception: %s", msg, aExc.what());
+            }
         }
-        catch (const std::invalid_argument &aExc)
-        {
-            log_e("%s. Invalid argument: %s", msg, aExc.what());
-        }
-        catch (const std::out_of_range &aExc)
-        {
-            log_e("%s. Out of range: %s", msg, aExc.what());
-        }
-        catch (const std::exception &aExc)
-        {
-            log_e("%s. Other exception: %s", msg, aExc.what());
-        }
+
+        oldmil4 = aCurrent;
+        once = true;
     }
 }
 
@@ -262,13 +271,12 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
         {
-            acquire_coordinates_rename_me();
             GetWeatherHistory(String(coordinates.latitude)
-            , String(coordinates.longitude)
-            , timeClient.getEpochTime());
+                            , String(coordinates.longitude)
+                            , timeClient.getEpochTime());
             GetForecast(GetOpenWeatherKey()
-            , String(coordinates.latitude)
-            , String(coordinates.longitude));
+                            , String(coordinates.latitude)
+                            , String(coordinates.longitude));
         }
         else
         {
@@ -332,6 +340,7 @@ void loop()
 
     const auto newmil = millis();
 
+    job_acquire_coordinates(newmil);
     job_update_time(newmil);
     job_working_led_blink(newmil);
     job_request_weather_data(newmil);
