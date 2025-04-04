@@ -104,6 +104,9 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 
         if (name.equals("wifiPassword"))
             SaveWifiPassword(value);
+
+        if (name.equals("autolocation"))
+            SaveAutoLocation(value.equals("true") ? true : false);
     }
 
     // [ ]TODO: why do we need send in response whole page?
