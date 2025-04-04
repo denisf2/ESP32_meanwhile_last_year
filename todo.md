@@ -20,3 +20,5 @@
 [x]TODO: scan wifi networks
 [ ]TODO: the web page cannot get APs list in device AP mode
 [ ]TODO: move websocket broadcast to direct message
+[ ]TODO: obtain certificate authority for https requests
+[ ]TODO: display api keys verification status
