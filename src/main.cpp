@@ -229,15 +229,15 @@ auto acquire_coordinates_rename_me() -> void
         }
         catch (const std::invalid_argument &aExc)
         {
-            log_w("%s %s", msg, aExc.what());
+            log_e("%s. Invalid argument: %s", msg, aExc.what());
         }
         catch (const std::out_of_range &aExc)
         {
-            log_w("%s %s", msg, aExc.what());
+            log_e("%s. Out of range: %s", msg, aExc.what());
         }
         catch (const std::exception &aExc)
         {
-            log_w("%s %s", msg, aExc.what());
+            log_e("%s. Other exception: %s", msg, aExc.what());
         }
     }
 }
