@@ -1,7 +1,9 @@
 #include "OpenMeteoApi.h"
 
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
+
 #include <optional>
 
 #include "timeaux.h"
@@ -71,32 +73,36 @@ auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSi
     const String serverPath = GetApiUrl(aLat, aLon, aSinceEpoch);
     log_d("%s", serverPath.c_str());
 
-    HTTPClient http;
+    WiFiClientSecure client;
+    // Skip certificate verification only in dev
+    client.setInsecure();
+
+    HTTPClient https;
     // Your Domain name with URL path or IP address with path
-    http.begin(serverPath.c_str());
+    https.begin(client, serverPath.c_str());
 
     // If you need server authentication, insert user and password below
-    // http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
+    // https.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
 
     // Send HTTP GET request
-    int httpResponseCode = http.GET();
+    int httpResponseCode = https.GET();
 
     if (httpResponseCode <= 0)
     {
         log_d("Error code: %d", httpResponseCode);
-        http.end();
+        https.end();
         return false;
     }
 
     // [ ]TODO: handle response codes and JSONs 200 400 401 404
     log_d("HTTP Response code: %d", httpResponseCode);
-    const String payload = http.getString();
+    const String payload = https.getString();
     // log_d("%s", payload.c_str());
 
     auto res = ParseJsonOpmet(payload);
 
     // Free resources
-    http.end();
+    https.end();
 
     if(!res)
         return false;

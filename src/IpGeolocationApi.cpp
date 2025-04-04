@@ -1,7 +1,9 @@
 #include "IpGeolocationApi.h"
 
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
+
 #include <optional>
 
 Coordinates_t coordinates;
@@ -48,21 +50,32 @@ auto GetLocationCoordinates(const String &aApiKey) -> bool
     const String serverPath = GetApiUrl(aApiKey);
     log_d("%s", serverPath.c_str());
 
-    HTTPClient http;
+    WiFiClientSecure client;
+    // Skip certificate verification only in dev
+    client.setInsecure();
+
+    HTTPClient https;
     // Your Domain name with URL path or IP address with path
-    http.begin(serverPath);
+    https.begin(client, serverPath);
+
+    // const char* apiKeyHeader = "x-api-key";  // or "Authorization"
+    // const char* apiKeyValue = "your_actual_api_key";
+
+    // Add API key to headers
+    // https.addHeader(apiKeyHeader, aApiKey);
+    // https.addHeader("Content-Type", "application/json");
 
     // [ ]FIXME:remove
     // If you need server authentication, insert user and password below
-    // http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
+    // https.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
 
     // Send HTTP GET request
-    int httpResponseCode = http.GET();
+    int httpResponseCode = https.GET();
     if (httpResponseCode <= 0)
     {
         log_w("Error code: %d", httpResponseCode);
         // Free resources
-        http.end();
+        https.end();
 
         return false;
     }
@@ -70,13 +83,13 @@ auto GetLocationCoordinates(const String &aApiKey) -> bool
     // [ ]TODO: handle response codes and JSONs 200 401 404
     log_d("HTTP Response code: %d", httpResponseCode);
 
-    const String payload = http.getString();
+    const String payload = https.getString();
     // log_d("%s", payload.c_str());
 
     const auto res = ParseJson(payload);
 
     // Free resources
-    http.end();
+    https.end();
 
     if (!res)
         return false;
