@@ -238,8 +238,8 @@
                         name="openWeatherKey"
                         title="OpenWeather API Key">
                 <button class="testbutton-marg-top"
+                        id="openWeatherKeyCheck"
                         type="button"
-                        name="testButton"
                         onclick="return OnTestButtonClick(openWeatherKey)">
                     Check Key
                 </button>
@@ -250,8 +250,8 @@
                 <label for="ip2geoKey">IpGeolocation Key:</label>
                 <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="IpGeolocation API Key">
                 <button class="testbutton-marg-top"
+                        id="ip2geoKeyCheck"
                         type="button"
-                        name="testButton"
                         onclick="return OnTestButtonClick(ip2geoKey)">
                     Check Key
                 </button>
@@ -351,17 +351,17 @@
                 {
                     case "ip2geoTest":
                     {
-                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
-                        document.getElementById("info-ip2geoKey").innerText = keyStatus;
+                        PasteRemoveCheckMark("ip2geoKeyCheck", json['valid']);
 
+                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
                         console.log('IpGeoloc Key status: %s', keyStatus)
                         break;
                     }
                     case "openWeatherTest":
                     {
-                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
-                        document.getElementById("info-opwKey").innerText = keyStatus;
+                        PasteRemoveCheckMark("openWeatherKeyCheck", json['valid']);
 
+                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
                         console.log('Openweather Key status: %s', keyStatus)
                         break;
                     }
@@ -434,6 +434,20 @@
                                     , aJsonNode["channel"]
                                     , aJsonNode["encryption"]
                                 );
+        }
+
+        function PasteRemoveCheckMark(aButtonName, aState) {
+            let checkMark = '\u{2713}';
+            let obj = document.getElementById(aButtonName);
+            if ("true" == aState)
+            {
+                if (!obj.textContent.endsWith(checkMark))
+                    obj.textContent += " " + checkMark;
+            }
+            else
+            {
+                obj.textContent = obj.textContent.replace(" " + checkMark, "");
+            }
         }
 
         function SsidButtonOnClick(aButtonName) {
