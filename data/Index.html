@@ -13,6 +13,13 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
+        .chart-container {
+            /* width: 600px; */
+            /* height: 400px; */
+            width: 100%;
+            min-height: 400px;
+        }
+
         /* Style the tab */
         .tab {
             overflow: hidden;
@@ -176,8 +183,7 @@
               method="post"
               accept-charset="utf-8">
             <!-- [ ]TODO: scale for small screen -->
-            <div id='temp-chart'
-                 style='width:600px; height: 400px;'>
+            <div id='chart-div' class="chart-container">
             </div>
             <!-- [ ]TODO: remove button -->
             <button class="button_sys"
@@ -320,6 +326,7 @@
 
         let gateway = `ws://${window.location.hostname}/ws`;
         let websocket;
+        let currentChart;
 
         window.addEventListener('load', (aEvent) => {
                 initWebSocket();
@@ -522,33 +529,52 @@
         //     alert(true);
         // };
 
-        function drawChart() {
+        function generateTestValues() {
+            let testValues = [['Date', 'Tmin', 'Tmax', 'T']];
 
-//            let tmp = [['Time', 'Temp']
-//                %ARRAYPLACEHOLDER%
-//                        ];
-
-            let tmp = [['Date', 'Tmin', 'Tmax', 'T']];
             for (let i = 0; i < 20; ++i)
-                tmp.push([i, Math.sin(i), Math.cos(i), Math.log10(i)]);
+                testValues.push([i, Math.sin(i), Math.cos(i), Math.log10(i)]);
 
-            var chartData = google.visualization.arrayToDataTable(tmp);
-
-            var chartoptions =
-            {
-                title: 'Local Temperature Log',
-                legend: { position: 'bottom' },
-                width: 600,
-                height: 400,
-                chartArea: { width: '90%', height: '75%' }
-            };
-
-            var chart = new google.visualization.LineChart(document.getElementById('temp-chart'));
-            chart.draw(chartData, chartoptions);
+            return testValues;
         }
 
+        function getChartOptions() {
+            return {
+                title: 'Local Temperature Log',
+                legend: { position: 'bottom' },
+                chartArea: {
+                            width: '90%',
+                            height: '75%'
+                        },
+                backgroundColor: 'transparent'
+            };
+        }
+
+        function drawChart() {
+            let testValues = generateTestValues();
+
+            var data = google.visualization.arrayToDataTable(testValues);
+
+            var options = getChartOptions();
+
+            const chart = new google.visualization.LineChart(document.getElementById('chart-div'));
+            chart.draw(data, options);
+
+            currentChart = chart;
+            currentChart.data = data;
+            currentChart.options = options;
+            // currentChart.getOptions = getChartOptions;
+
+            // Add event listener for window resize
+            window.addEventListener('resize', update);
+        }
+
+        // Handle window resize event
         function update() {
-            chart.draw(chartData, chartoptions);
+            if (currentChart) {
+                // currentChart.options = currentChart.getChartOptions();
+                currentChart.draw(currentChart.data, currentChart.options);
+            }
         }
 
         function openTabSettings(evt, tabLabel) {
