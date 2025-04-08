@@ -343,9 +343,9 @@ void loop()
 
     const auto newmil = millis();
 
+    job_working_led_blink(newmil);
     job_acquire_coordinates(newmil);
     job_update_time(newmil);
-    job_working_led_blink(newmil);
     job_request_weather_data(newmil);
 }
 
