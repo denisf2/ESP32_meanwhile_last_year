@@ -540,6 +540,10 @@
         }
 
         function OnTestButtonClick(aCtrlID) {
+            if(WebSocket.OPEN != websocket.readyState){
+                console.warn('WebSocket has not opened yet');
+                return false;
+            }
 
             var obj = new Object();
             obj.message = CtrlToMessageID(aCtrlID);
@@ -552,6 +556,11 @@
         }
 
         function RequestFormData() {
+            if(WebSocket.OPEN != websocket.readyState){
+                console.warn('WebSocket has not opened yet');
+                return;
+            }
+
             var obj = new Object();
             obj.message = "FormFill";
 
@@ -560,6 +569,11 @@
         }
 
         function AcquireWiFiAPs() {
+            if(WebSocket.OPEN != websocket.readyState){
+                console.warn('WebSocket has not opened yet');
+                return;
+            }
+
             var obj = new Object();
             obj.message = "AcquireWiFiAPs";
 
