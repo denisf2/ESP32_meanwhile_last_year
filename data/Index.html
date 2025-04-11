@@ -18,6 +18,12 @@
             min-height: 400px;
         }
 
+        @media (max-width: 768px) {
+            .chart-container {
+                min-height: 300px;
+            }
+        }
+
         /* Style the tab */
         .tab {
             overflow: hidden;
@@ -596,6 +602,22 @@
         //     alert(true);
         // };
 
+        function debounce(func, wait) {
+            let timeout;
+            return function () {
+                const context = this;
+                const args = arguments;
+
+                clearTimeout(timeout);
+                timeout = setTimeout(
+                    () => {
+                        func.apply(context, args);
+                    }
+                    , wait
+                );
+            };
+        }
+
         function generateTestValues() {
             let testValues = [['Date', 'Tmin', 'Tmax', 'T']];
 
@@ -606,13 +628,16 @@
         }
 
         function getChartOptions() {
+            const isMobile = window.innerWidth < 768;
+
             return {
                 title: 'Local Temperature Log',
-                legend: { position: 'bottom' },
+                legend: { position: isMobile ? 'bottom' : 'top' },
                 chartArea: {
-                            width: '90%',
-                            height: '75%'
-                        },
+                    width: isMobile ? '80%' : '90%',
+                    height: isMobile ? '65%' : '75%'
+                },
+                fontSize : isMobile ? 10 : 12,
                 backgroundColor: 'transparent'
             };
         }
@@ -622,25 +647,45 @@
 
             var data = google.visualization.arrayToDataTable(testValues);
 
+            // Get dynamic options based on screen size
             var options = getChartOptions();
 
+            // Instantiate and draw our chart
             const chart = new google.visualization.LineChart(document.getElementById('chart-div'));
             chart.draw(data, options);
 
+            // Store reference to current chart
             currentChart = chart;
             currentChart.data = data;
-            currentChart.options = options;
-            // currentChart.getOptions = getChartOptions;
+            currentChart.getOptions = getChartOptions;
 
             // Add event listener for window resize
             window.addEventListener('resize', update);
+
+            // Setup ResizeObserver for container changes
+            setupResizeObserver();
         }
 
         // Handle window resize event
         function update() {
             if (currentChart) {
-                // currentChart.options = currentChart.getChartOptions();
-                currentChart.draw(currentChart.data, currentChart.options);
+                const options = currentChart.getOptions();
+                currentChart.draw(currentChart.data, options);
+            }
+        }
+
+        function setupResizeObserver() {
+            if (typeof ResizeObserver !== 'undefined') {
+                const chartElement = document.getElementById('chart-div');
+                const resizeObserver = new ResizeObserver(
+                    debounce(
+                        () => {
+                            update();
+                        }
+                        , 150
+                    )
+                );
+                resizeObserver.observe(chartElement);
             }
         }
 
