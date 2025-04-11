@@ -12,7 +12,7 @@
 [x]TODO: soft restart button on web page
 [ ]TODO: add status of coordinates acquisition
 [ ]TODO: add status of forecast acquisition
-[ ]TODO: in wifi AP mode web page freezes couse google charts js
+[x]TODO: in wifi AP mode web page freezes couse google charts js
 [x]TODO: set default SSID and pass in case "no connection to router". now it is last
 [x]TODO: setup and run default wifi access point on cold start
 [x]TODO: store coordinates

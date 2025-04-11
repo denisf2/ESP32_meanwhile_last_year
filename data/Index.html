@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=2.5, user-scalable=1">
     <title>Temperature Forecast Linechart demo</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
     <style>
         body {
             background-color: powderblue;
@@ -292,8 +290,6 @@
         </form>
     </div>
 
-    <!-- <script async="true" type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script> -->
-    <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
     <script type='text/javascript'>
 
         // String format helper
@@ -308,6 +304,61 @@
             return s;
         };
 
+        async function checkScriptAvailability(url) {
+            try {
+                const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+                return response.ok || response.type === 'opaque';
+            } catch {
+                return false;
+            }
+        }
+
+        let fontAwesomStyleUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
+
+        // try to get font awesom style
+        checkScriptAvailability(fontAwesomStyleUrl)
+            .then((available) => {
+                if (available) {
+                    const script = document.createElement('link');
+                    script.href = fontAwesomStyleUrl;
+                    script.rel = 'stylesheet';
+                    script.type = 'text/css';
+                    script.async = true;
+                    script.onload = () => {
+                        console.log('Font awesome loaded');
+                    };
+                    script.onerror = () => {
+                        console.error('Font awesome failed to load');
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    console.warn('Script unavailable, loading fallback');
+                    // Load fallback script
+                }
+            });
+
+            let googleChartssUrl = 'https://www.gstatic.com/charts/loader.js';
+
+            // try to get google chart script
+            checkScriptAvailability(googleChartssUrl)
+                .then((available) => {
+                    if (available) {
+                        const script = document.createElement('script');
+                        script.src = googleChartssUrl;
+                        script.async = true;
+                        script.onload = () => {
+                            console.log('Google charts script loaded')
+                            onLoadGoogleCharts();
+                        };
+                        script.onerror = () => {
+                            console.error('Failed to load Google charts script')
+                        };
+                        document.body.appendChild(script);
+                    } else {
+                        console.warn('Script unavailable, loading fallback');
+                        // Load fallback script
+                    }
+                });
 
         // document.getElementById('toggle')
         //     ?.addEventListener('click', (e) => {
@@ -321,8 +372,10 @@
                 .forEach(h => h.classList.toggle('hidden'));
         }
 
-        google.charts.load('current', { 'packages': ['corechart'] });
-        google.charts.setOnLoadCallback(drawChart);
+        function onLoadGoogleCharts() {
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+        }
 
         let gateway = `ws://${window.location.hostname}/ws`;
         let websocket;
