@@ -18,7 +18,8 @@
 [x]TODO: store coordinates
 [ ]TODO: update coordinates button on web page
 [x]TODO: scan wifi networks
-[ ]TODO: the web page cannot get APs list in device AP mode
+[x]TODO: the web page cannot get APs list in device AP mode
 [ ]TODO: move websocket broadcast to direct message
 [ ]TODO: obtain certificate authority for https requests
 [x]TODO: display api keys verification status
+[ ]TODO: display note to restart device after submite settings
