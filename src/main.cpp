@@ -1,16 +1,18 @@
 // ======================================================
 // Webserver program that gets own coordinates by IP address
-// and acquiring weather forecast info hourly for today and
-// historical weather for several days back.
+// and acquiring weather forecast info for today and
+// historical weather for several days back and before today.
 
 // Using services:
 // https://ipgeolocation.io/
 // https://openweathermap.org/
+// https://open-meteo.com/
 
 // https://ipgeolocation.io/ip-location-api.html
 // https://openweathermap.org/api
 // https://openweathermap.org/history
 // https://openweathermap.org/api/geocoding-api
+// https://open-meteo.com/en/docs
 // ======================================================
 
 #include <Arduino.h>
