@@ -8,5 +8,6 @@ auto LogPrintWiFiAPsPrettyTable(WiFiClass& aWiFi, const int16_t aTotal) -> void;
 auto ScanWiFiAPsJSON(WiFiClass& aWiFi) -> String;
 auto SetupWiFiAccessPoint(WiFiClass& aWiFi) -> void;
 auto LockingWiFiConnection(WiFiClass aWiFi) -> bool;
+auto PrintWifiStatus(WiFiClass& aWiFi) -> void;
 
 #endif /*WIFIAUX_H__*/
