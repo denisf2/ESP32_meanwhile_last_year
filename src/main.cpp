@@ -137,19 +137,25 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
     switch (aType)
     {
         case AwsEventType::WS_EVT_CONNECT:
+        {
             log_i("WebSocket[%s][%u] connected from %s"
-                    , aServer->url()
-                    , aClient->id()
-                    , aClient->remoteIP().toString().c_str());
+                , aServer->url()
+                , aClient->id()
+                , aClient->remoteIP().toString().c_str());
+
             aClient->ping();
-        break;
+            break;
+        }
 
         case AwsEventType::WS_EVT_DISCONNECT:
-        log_i("WebSocket[%s][%u] disconnect: %s"
-                    , aServer->url()
-                    , aClient->id()
-                    , aClient->remoteIP().toString().c_str());
-        break;
+        {
+            log_i("WebSocket[%s][%u] disconnect: %s"
+                , aServer->url()
+                , aClient->id()
+                , aClient->remoteIP().toString().c_str());
+
+            break;
+        }
 
         case AwsEventType::WS_EVT_DATA:
         {
@@ -159,26 +165,33 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
                 , aClient->id()
                 , (AwsFrameType::WS_TEXT == info->opcode) ? "text" : "binary"
                 , info->len);
+
             // [ ] TODO: what if multiframe data?
             ProcessWSData(info, aData);
             break;
         }
 
         case AwsEventType::WS_EVT_PONG:
+        {
             log_i("WebSocket[%s][%u] pong[%u]: %s"
-                    , aServer->url()
-                    , aClient->id()
-                    , aLen
-                    , (0 < aLen) ? reinterpret_cast<char*>(aData) : "");
-                    break;
+                , aServer->url()
+                , aClient->id()
+                , aLen
+                , (0 < aLen) ? reinterpret_cast<char*>(aData) : "");
+
+            break;
+        }
 
         case AwsEventType::WS_EVT_ERROR:
+        {
             log_e("WebSocket[%s][%u] error(%u): %s"
-                    , aServer->url()
-                    , aClient->id()
-                    , *(static_cast<uint16_t*>(aArg))
-                    , reinterpret_cast<char*>(aData));
-        break;
+                , aServer->url()
+                , aClient->id()
+                , *(static_cast<uint16_t*>(aArg))
+                , reinterpret_cast<char*>(aData));
+
+            break;
+        }
 
         default:
             break;
