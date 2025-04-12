@@ -35,10 +35,12 @@
 #include "WifiAux.h"
 #include "JsonAux.h"
 
+// [ ]TODO: need refactoring to prev time stamps
 unsigned long oldmil1 = 0UL;
 unsigned long oldmil2 = 0UL;
 unsigned long oldmil3 = 0UL;
 unsigned long oldmil4 = 0UL;
+
 constexpr unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
@@ -74,8 +76,7 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
         return;
     }
 
-    // [ ]TODO: need refactoring
-    // messages dispatching
+    // [ ]TODO: messages dispatching needs refactoring
     if (!doc["message"].is<String>())
     {
         log_w("Unknown JSON format");
@@ -303,6 +304,7 @@ auto job_update_time(unsigned long aCurrent) -> void
         once = true;
     }
 }
+
 
 // ===================================================
 // Setup
