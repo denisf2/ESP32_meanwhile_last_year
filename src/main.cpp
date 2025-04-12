@@ -52,7 +52,7 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org");
 // ---------------------------------------------------
 
-auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
+auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
 {
     // taking care only JSON
     if (AwsFrameType::WS_TEXT != aFrameInfo->opcode)
@@ -95,7 +95,7 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
             log_d("IpToGeo key check is %s ", (res) ? "Ok" : "failed");
 
             const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
-            websocket.textAll(respond.c_str());
+            aServer->textAll(respond);
         }
     }
     else if (msgType.equals("openWeatherTest"))
@@ -108,7 +108,7 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
             log_d("OpenWeather key check is %s ", (res) ? "Ok" : "failed");
 
             const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
-            websocket.textAll(respond.c_str());
+            aServer->textAll(respond);
         }
     }
     else if (msgType.equals("FormFill"))
@@ -116,17 +116,17 @@ auto ProcessWSData(const AwsFrameInfo* const aFrameInfo, const uint8_t* const aD
         // [x]TODO: update form with stored data
         const String respond = SerializeFormStoredData(std::move(doc), "", "");
         log_d("Ready to send %s", respond.c_str());
-        websocket.textAll(respond.c_str());
+        aServer->textAll(respond);
 
         //[ ]TODO: remove from here after WDT fix
-        websocket.textAll(ScanWiFiAPsJSON(WiFi).c_str());
+        aServer->textAll(ScanWiFiAPsJSON(WiFi));
     }
     else if (msgType.equals("AcquireWiFiAPs"))
     {
         log_d("nothing to do");
         // [ ]TODO: core1 WDT restart device here.
         // proposal cannont scan in wifi client mode
-        // websocket.textAll(ScanWiFiAPsJSON(WiFi).c_str());
+        // aServer->textAll(ScanWiFiAPsJSON(WiFi));
     }
     else
         log_w("Unknown message");
@@ -167,7 +167,7 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
                 , info->len);
 
             // [ ] TODO: what if multiframe data?
-            ProcessWSData(info, aData);
+            ProcessWSData(aServer, info, aData);
             break;
         }
 
