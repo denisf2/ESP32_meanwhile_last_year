@@ -69,7 +69,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     else if (msgType.equals("FormFill"))
     {
         // [x]TODO: update form with stored data
-        const String respond = SerializeFormStoredData(std::move(doc), "", "");
+        const String respond = SerializeFormStoredData(std::move(doc), "");
         log_d("Ready to send %s", respond.c_str());
         aServer->textAll(respond);
 

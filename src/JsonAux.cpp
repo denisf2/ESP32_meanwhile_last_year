@@ -38,7 +38,7 @@ auto SerializeRespondJSON(JsonDocument&& aDoc, const String& aMsgType, bool aVal
     return serial;
 }
 
-auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType, bool aValidated) -> String
+auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType) -> String
 {
     // [x]TODO: rename and implement
     // [ ]TODO: need interface refactoring
