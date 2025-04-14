@@ -45,18 +45,15 @@ auto GetApiUrl(const String& aApiKey)-> String {
             + aApiKey;
 }
 
-auto GetLocationCoordinates(const String &aApiKey) -> bool
+auto SendGetRequest(const String& aUrl) -> std::optional<String>
 {
-    const String serverPath = GetApiUrl(aApiKey);
-    log_d("%s", serverPath.c_str());
-
     WiFiClientSecure client;
     // Skip certificate verification only in dev
     client.setInsecure();
 
     HTTPClient https;
     // Your Domain name with URL path or IP address with path
-    https.begin(client, serverPath);
+    https.begin(client, aUrl);
 
     // const char* apiKeyHeader = "x-api-key";  // or "Authorization"
     // const char* apiKeyValue = "your_actual_api_key";
@@ -77,19 +74,30 @@ auto GetLocationCoordinates(const String &aApiKey) -> bool
         // Free resources
         https.end();
 
-        return false;
+        return std::nullopt;
     }
 
     // [ ]TODO: handle response codes and JSONs 200 401 404
     log_d("HTTP Response code: %d", httpResponseCode);
 
     const String payload = https.getString();
-    // log_d("%s", payload.c_str());
-
-    const auto res = ParseJson(payload);
 
     // Free resources
     https.end();
+
+    return std::make_optional(payload);
+}
+
+auto GetLocationCoordinates(const String &aApiKey) -> bool
+{
+    const String serverPath = GetApiUrl(aApiKey);
+    log_d("%s", serverPath.c_str());
+
+    auto ress = SendGetRequest(serverPath);
+    if(!ress)
+        return false;
+
+    const auto res = ParseJson(ress.value());
 
     if (!res)
         return false;
