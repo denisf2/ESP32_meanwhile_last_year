@@ -1,4 +1,5 @@
 #include "OpenWeatherApi.h"
+#include "HttpClientAux.h"
 
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
@@ -75,42 +76,16 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
     const String serverPath = GetApiUrl(aApiKey, aLat, aLon);
     log_d("%s", serverPath.c_str());
 
-    WiFiClientSecure client;
-    // Skip certificate verification only in dev
-    client.setInsecure();
-
-    HTTPClient https;
-    // Your Domain name with URL path or IP address with path
-    https.begin(client, serverPath.c_str());
-
-    // If you need server authentication, insert user and password below
-    // https.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
-
-    // Send HTTP GET request
-    int httpResponseCode = https.GET();
-
-    if (httpResponseCode <= 0)
-    {
-        log_d("Error code: %d", httpResponseCode);
-        https.end();
+    auto ress = SendGetRequest(serverPath);
+    if(!ress)
         return false;
-    }
 
-    // [ ]TODO: handle response codes and JSONs 200 400 401 404
-    log_d("HTTP Response code: %d", httpResponseCode);
-    const String payload = https.getString();
-    // log_d("%s", payload.c_str());
+    const auto res = ParseJsonOwtr(ress.value());
 
-    auto res = ParseJsonOwtr(payload);
-
-    // Free resources
-    https.end();
-
-    if(!res)
+    if (!res)
         return false;
 
     weather = res.value();
-
     // Print values.
     log_i("Acquired temperature: [ %4.1f ]", weather.temp);
 
