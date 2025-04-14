@@ -7,6 +7,8 @@
 #include "WifiAux.h"
 #include "JsonAux.h"
 
+// --------------------------------------------------------
+// Dispatching web application level messages
 auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
 {
     // taking care only JSON
@@ -87,6 +89,8 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
         log_w("Unknown message");
 }
 
+// --------------------------------------------------------
+// Dispatching web socket level message types
 auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventType aType, void *aArg, uint8_t *aData, size_t aLen) -> void
 {
     switch (aType)
