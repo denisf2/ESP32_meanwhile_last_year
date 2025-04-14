@@ -7,6 +7,26 @@
 #include "WifiAux.h"
 #include "JsonAux.h"
 
+auto TestIpGeolocationKey(const JsonDocument& aDoc) -> bool
+{
+    const auto keyNode = aDoc["apikey"];
+    if (!keyNode.is<String>())
+        return false;
+
+    const auto key = keyNode.as<String>();
+    return GetLocationCoordinates(key);
+}
+
+auto TestOpenweatherKey(const JsonDocument& aDoc) -> bool
+{
+    const auto keyNode = aDoc["apikey"];
+    if (!keyNode.is<String>())
+        return false;
+
+    const auto key = keyNode.as<String>();
+    return GetForecast(key, String("0"), String("0"));
+}
+
 // --------------------------------------------------------
 // Dispatching web application level messages
 auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
@@ -34,39 +54,31 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     }
 
     // [ ]TODO: messages dispatching needs refactoring
-    if (!doc["message"].is<String>())
+    const auto msg = doc["message"];
+    if (!msg.is<String>())
     {
         log_w("Unknown JSON format");
         return;
     }
 
-    const auto msgType = doc["message"].as<String>();
+    const auto msgType = msg.as<String>();
+    log_d("Web socket message type is %s", msgType.c_str());
 
     if (msgType.equals("ip2geoTest"))
     {
-        if (doc["apikey"].is<String>())
-        {
-            const auto key = doc["apikey"].as<String>();
-            // [ ]TODO: split function
-            const auto res = GetLocationCoordinates(key);
-            log_d("IpToGeo key check is %s ", (res) ? "Ok" : "failed");
+        const auto res = TestIpGeolocationKey(doc);
+        log_d("IpGeolocation.io key check: %svalid", (res) ? "" : "In");
 
-            const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
-            aServer->textAll(respond);
-        }
+        const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
+        aServer->textAll(respond);
     }
     else if (msgType.equals("openWeatherTest"))
     {
-        if (doc["apikey"].is<String>())
-        {
-            const auto key = doc["apikey"].as<String>();
-            // [ ]TODO: split function
-            const auto res = GetForecast(key, String("0"), String("0"));
-            log_d("OpenWeather key check is %s ", (res) ? "Ok" : "failed");
+        const auto res = TestOpenweatherKey(doc);
+        log_d("OpenWeathermap.org key check: %svalid", (res) ? "" : "In");
 
-            const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
-            aServer->textAll(respond);
-        }
+        const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
+        aServer->textAll(respond);
     }
     else if (msgType.equals("FormFill"))
     {
