@@ -46,14 +46,14 @@ auto GetApiUrl(const String& aApiKey)-> String {
 
 auto GetLocationCoordinates(const String &aApiKey) -> bool
 {
-    const String serverPath = GetApiUrl(aApiKey);
-    log_d("%s", serverPath.c_str());
+    const String requestUrl = GetApiUrl(aApiKey);
+    log_d("%s", requestUrl.c_str());
 
-    auto ress = SendGetRequest(serverPath);
-    if(!ress)
+    auto respond = SendGetRequest(requestUrl);
+    if(!respond)
         return false;
 
-    const auto res = ParseJson(ress.value());
+    const auto res = ParseJson(respond.value());
 
     if (!res)
         return false;

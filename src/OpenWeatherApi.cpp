@@ -73,14 +73,14 @@ auto GetApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-> 
 
 auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) -> bool // [ ]FIXME:rename
 {
-    const String serverPath = GetApiUrl(aApiKey, aLat, aLon);
-    log_d("%s", serverPath.c_str());
+    const String requestUrl = GetApiUrl(aApiKey, aLat, aLon);
+    log_d("%s", requestUrl.c_str());
 
-    auto ress = SendGetRequest(serverPath);
-    if(!ress)
+    auto respond = SendGetRequest(requestUrl);
+    if(!respond)
         return false;
 
-    const auto res = ParseJsonOwtr(ress.value());
+    const auto res = ParseJsonOwtr(respond.value());
 
     if (!res)
         return false;

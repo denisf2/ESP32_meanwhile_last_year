@@ -70,15 +70,14 @@ auto GetApiUrl(const String &aLat, const String &aLon, unsigned long aSinceEpoch
 
 auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> bool
 {
-    const String serverPath = GetApiUrl(aLat, aLon, aSinceEpoch);
-    log_d("%s", serverPath.c_str());
+    const String requestUrl = GetApiUrl(aLat, aLon, aSinceEpoch);
+    log_d("%s", requestUrl.c_str());
 
-    auto ress = SendGetRequest(serverPath);
-    if(!ress)
+    auto respond = SendGetRequest(requestUrl);
+    if(!respond)
         return false;
 
-    auto res = ParseJsonOpmet(ress.value());
-
+    auto res = ParseJsonOpmet(respond.value());
     if(!res)
         return false;
 
