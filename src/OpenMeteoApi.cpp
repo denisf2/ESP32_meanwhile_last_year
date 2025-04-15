@@ -24,18 +24,23 @@ auto ParseJsonOpmet(const String& aData) -> std::optional<WeatherHistory_t>
         return std::nullopt;
     }
 
-    if(!doc["cod"].is<int>())
+    const auto hasError = doc["error"];
+    if (hasError.is<bool>() && hasError.as<bool>())
+    {
+        const auto reason = doc["reason"];
+        if (reason.is<String>())
+            log_w("OpenMeteo.com API request failed. The reason is \"%s\"", reason.as<String>().c_str());
+
         return std::nullopt;
+    }
 
-    constexpr int respondOK{200};
-    constexpr int respondGoodKeyInvalidData{400};
-
-    const int code = doc["generationtime_ms"].as<double>();
-
-    if (!(respondOK == code || respondGoodKeyInvalidData == code))
+    if (!doc["generationtime_ms"].is<double>())
+    {
+        log_w("OpenMeteo.com API request failed. Invalid JSON format");
         return std::nullopt;
+    }
 
-    // Fetch values.
+    // Fetch values
     JsonObject daily = doc["daily"];
     JsonArray days = daily["time"];
     JsonArray Tmax = daily["temperature_2m_max"];
