@@ -10,6 +10,7 @@ auto SendGetRequest(const String& aUrl) -> std::optional<String>
     client.setInsecure();
 
     HTTPClient https;
+    https.useHTTP10(true);
     // Your Domain name with URL path or IP address with path
     https.begin(client, aUrl);
 
@@ -37,7 +38,6 @@ auto SendGetRequest(const String& aUrl) -> std::optional<String>
 
     // [ ]TODO: handle response codes and JSONs 200 400 401 404
     log_d("HTTP Response code: %d", httpResponseCode);
-
     const String payload = https.getString();
 
     // Free resources
