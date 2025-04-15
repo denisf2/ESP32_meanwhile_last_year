@@ -43,16 +43,17 @@ auto ParseJsonOpmet(const String& aData) -> std::optional<WeatherHistory_t>
 
     auto size = days.size();
     if(days < size)
-        log_w("Recieved info for %d days", size);
-    WeatherHistory_t w;
+        log_i("Recieved info for %d days", size);
+
+    WeatherHistory_t weatherData;
     for(auto i{0u}; i < days; ++i)
     {
-        w.points[i].Tmax = Tmax[i].as<double>();
-        w.points[i].Tmin = Tmin[i].as<double>();
-        w.points[i].days = days[i].as<const char*>();
+        weatherData.points[i].Tmax = Tmax[i].as<double>();
+        weatherData.points[i].Tmin = Tmin[i].as<double>();
+        weatherData.points[i].days = days[i].as<const char*>();
     }
 
-    return std::make_optional(std::move(w));
+    return std::make_optional(std::move(weatherData));
 }
 
 auto GetApiUrl(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> String
