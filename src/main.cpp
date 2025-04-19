@@ -18,8 +18,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
-#include <NTPClient.h>
-#include <WiFiUdp.h>
+#include <esp_sntp.h>
 
 #include <functional>
 #include <string>
@@ -33,6 +32,7 @@
 #include "WebServerHandlers.h"
 #include "WebSocketHandlers.h"
 #include "WifiAux.h"
+#include "timeAux.h"
 
 // [ ]TODO: need refactoring to prev time stamps
 unsigned long oldmil1 = 0UL;
@@ -47,8 +47,6 @@ uint8_t ledState{static_cast<uint8_t>(LOW)};
 
 AsyncWebSocket websocket("/ws");
 
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org");
 // ---------------------------------------------------
 
 auto InitWebSocket() -> void
@@ -67,10 +65,41 @@ auto InitWebServer() -> void
     server.begin();
 }
 
+auto PreWiFiSNTPInit() -> void
+{
+    /**
+     * NTP server address could be acquired via DHCP,
+     *
+     * NOTE: This call should be made BEFORE esp32 acquires IP address via DHCP,
+     * otherwise SNTP option 42 would be rejected by default.
+     * NOTE: configTime() function call if made AFTER DHCP-client run
+     * will OVERRIDE acquired NTP server address
+     */
+    esp_sntp_servermode_dhcp(true);  // (optional)
+}
+
 auto InitNTPClient() -> void
 {
-    timeClient.begin();
-    timeClient.setTimeOffset(0); // UTC time
+    // ntpTimeClient.begin();
+    // ntpTimeClient.setTimeOffset(0); // UTC time
+
+    // =================
+    // set notification call-back function
+    sntp_set_time_sync_notification_cb(timeavailable);
+
+    /**
+     * This will set configured ntp servers and constant TimeZone/daylightOffset
+     * should be OK if your time zone does not need to adjust daylightOffset twice a year,
+     * in such a case time adjustment won't be handled automagically.
+     */
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer1, ntpServer2);
+
+    /**
+     * A more convenient approach to handle TimeZones with daylightOffset
+     * would be to specify a environment variable with TimeZone definition including daylight adjustmnet rules.
+     * A list of rules for your zone could be obtained from https://github.com/esp8266/Arduino/blob/master/cores/esp8266/TZ.h
+     */
+    //configTzTime(time_zone, ntpServer1, ntpServer2);
 }
 
 auto job_acquire_coordinates(unsigned long aCurrent) -> void
@@ -145,7 +174,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         {
             GetWeatherHistory(String(coordinates.latitude)
                             , String(coordinates.longitude)
-                            , timeClient.getEpochTime());
+                            , 0);
             GetForecast(GetOpenWeatherKey()
                             , String(coordinates.latitude)
                             , String(coordinates.longitude));
@@ -158,19 +187,6 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         once = true;
     }
 }
-
-auto job_update_time(unsigned long aCurrent) -> void
-{
-    static bool once = false;
-    if (aCurrent - oldmil3 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
-    {
-        timeClient.update();
-
-        oldmil3 = aCurrent;
-        once = true;
-    }
-}
-
 
 // ===================================================
 // Setup
@@ -187,6 +203,8 @@ void setup()
     pinMode(BUILDIN_LED_PIN, OUTPUT);
 
     RestoreStoredData();
+
+    // PreWiFiSNTPInit();
 
     if (IsColdStart() || !LockingWiFiConnection(WiFi))
         SetupWiFiAccessPoint(WiFi);
@@ -215,7 +233,6 @@ void loop()
 
     job_working_led_blink(newmil);
     job_acquire_coordinates(newmil);
-    job_update_time(newmil);
     job_request_weather_data(newmil);
 }
 
