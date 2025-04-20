@@ -4,8 +4,6 @@
 #include <iomanip>
 #include <sstream>
 
-constexpr char TAG[] ="time";
-
 const char ntpServer1[] = "pool.ntp.org";
 const char ntpServer2[] = "time.nist.gov";
 const long gmtOffset_sec = 3600;
@@ -32,16 +30,16 @@ auto printLocalTime() -> void
     tm timeinfo;
     if (!getLocalTime(&timeinfo))
     {
-        ESP_LOGI(TAG, "No time available (yet)");
+        log_i("No time available (yet)");
         return;
     }
 
-    ESP_LOGI(TAG, "%s", print(&timeinfo, "%A, %B %d %Y %H:%M:%S").c_str());
+    log_i("%s", print(&timeinfo, "%A, %B %d %Y %H:%M:%S").c_str());
 }
 
 auto timeavailable(timeval * aTimeVal) -> void
 {
-    ESP_LOGI(TAG, "Got time adjustment from NTP!");
+    log_i("Got time adjustment from NTP!");
     printLocalTime();
 }
 
@@ -74,7 +72,7 @@ auto GetDateRangeEnds(uint64_t aNTPEpochTime) -> std::pair<String, String>
     DatePlusDays(&timeInfoLastYear, +6);
     const auto threeDaysBeforeTodayLastYear = print(&timeInfoLastYear, "%F");
 
-    ESP_LOGD(TAG, "Date range is from %s till %s"
+    log_d("Date range is from %s till %s"
                 , threeDaysPastTodayLastYear.c_str()
                 , threeDaysBeforeTodayLastYear.c_str());
 
