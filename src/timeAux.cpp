@@ -10,6 +10,21 @@ const long gmtOffset_sec = 3600;
 const int daylightOffset_sec = 3600;
 
 // [ ]TODO: TimeZone rule for Europe/Rome including daylight adjustment rules (optional)
+
+// ex. CET-1CEST,M3.5.0,M10.5.0/3:
+//     The standard timezone is CET (Central European Time)
+//     The offset from UTC is −1
+//     The DST timezone is CEST (Central European Summer Time)
+//     DST starts at:
+//         3: the third month of the year (March)
+//         5: the last…
+//         0: …Sunday of the month
+//         (no time specifier, defaults to 2 AM)
+//     DST ends at:
+//         10: the tenth month of the year (October)
+//         5: the last…
+//         0: …Sunday of the month
+//         3: at 3 AM
 const char time_zone[] = "CET-1CEST,M3.5.0,M10.5.0/3";
 
 auto print(tm *aTimeInfo, const char *aFormat) -> String
