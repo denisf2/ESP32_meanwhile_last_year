@@ -732,7 +732,7 @@
         // Handle window resize event
         function update() {
             if (currentChart) {
-                const data = currentChart.getChartData();
+                const data = currentChart.getData();
                 const options = currentChart.getOptions();
                 currentChart.draw(data, options);
             }
