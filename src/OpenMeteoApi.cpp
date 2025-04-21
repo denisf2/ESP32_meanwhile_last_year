@@ -91,6 +91,7 @@ auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSi
 
     // Print values.
     // log_i("Acquired temperature: [ %4.1f ]", weather.temp);
+    log_d("Acquired history temperature");
 
     return true;
 }
