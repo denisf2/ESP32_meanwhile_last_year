@@ -108,7 +108,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
     static bool once = false;
     if (aCurrent - oldmil4 >= 4 * UPDATE_INTERVAL_MILLISEC && false == once)
     {
-        // [ ]TODO: chose user/automatic coordinates
+        // [ ]TODO: choose user stored/automatic coordinates
         // if (GetAutoLocation())
         if (true)
         {
