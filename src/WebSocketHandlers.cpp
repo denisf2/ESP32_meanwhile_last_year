@@ -90,6 +90,19 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
         //[ ]TODO: remove from here after WDT fix
         aServer->textAll(ScanWiFiAPsJSON(WiFi));
     }
+    else if (msgType.equals("ChartDataRequest"))
+    {
+        // [ ]TODO: collect chart data and send
+        log_d("Update chart weather data");
+        auto respond = String("{\"message\" : \"ChartDataResponse\",\
+\"daily\":{\
+\"time\":[\
+\"2024-04-08\",\"2024-04-09\",\"2024-04-10\",\"2024-04-11\",\"2024-04-12\",\"2024-04-13\",\"2024-04-14\"],\
+\"temperature_2m_max\":[16.4,18.4,19.2,18.3,14.3,12.3,12.6],\
+\"temperature_2m_min\":[7.0,8.2,9.8,7.8,6.3,2.9,4.0]}}"
+        );
+        aServer->textAll(respond);
+    }
     else if (msgType.equals("AcquireWiFiAPs"))
     {
         log_d("nothing to do");

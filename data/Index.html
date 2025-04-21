@@ -355,6 +355,7 @@
                         script.onload = () => {
                             console.log('Google charts script loaded')
                             onLoadGoogleCharts();
+                            RequstChartData();
                         };
                         script.onerror = () => {
                             console.error('Failed to load Google charts script')
@@ -390,6 +391,7 @@
         window.addEventListener('load', (aEvent) => {
                 initWebSocket();
                 setTimeout(RequestFormData, 1000);
+                setTimeout(RequstChartData, 1000);
                 setTimeout(AcquireWiFiAPs, 1000);
             });
 
@@ -454,6 +456,13 @@
                             str += CreateTableRaw(node[i]);
 
                         document.getElementById('table-content').innerHTML = str;
+
+                        break;
+                    }
+                    case "ChartDataResponse":
+                    {
+                        // [ ]TODO: update chart
+                        console.debug('ChartDataResponse');
                         break;
                     }
                     default:
@@ -584,6 +593,22 @@
 
             var jsonString = JSON.stringify(obj);
             websocket.send(jsonString);
+        }
+
+        function RequstChartData() {
+            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
+                console.warn('WebSocket has not opened yet');
+                return false;
+            }
+
+            var obj = new Object();
+            // request chart data if available
+            obj.message = 'ChartDataRequest';
+
+            var jsonString = JSON.stringify(obj);
+            websocket.send(jsonString);
+
+            return true;
         }
 
         // SettingsForm.onsubmit = async (e) => {
