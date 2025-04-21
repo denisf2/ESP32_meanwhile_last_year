@@ -27,6 +27,18 @@ auto TestOpenweatherKey(const JsonDocument& aDoc) -> bool
     return GetForecast(key, String("0"), String("0"));
 }
 
+auto getTestResponse() -> String
+{
+    return String("{\"message\" : \"ChartDataResponse\",\
+\"current\":[14.3,12.2,15.1,14.8],\
+\"daily\":{\
+\"time\":[\
+\"2024-04-08\",\"2024-04-09\",\"2024-04-10\",\"2024-04-11\",\"2024-04-12\",\"2024-04-13\",\"2024-04-14\"],\
+\"temperature_2m_max\":[16.4,18.4,19.2,18.3,14.3,12.3,12.6],\
+\"temperature_2m_min\":[7.0,8.2,9.8,7.8,6.3,2.9,4.0]}}"
+    );
+}
+
 // --------------------------------------------------------
 // Dispatching web application level messages
 auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
@@ -94,13 +106,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     {
         // [ ]TODO: collect chart data and send
         log_d("Update chart weather data");
-        auto respond = String("{\"message\" : \"ChartDataResponse\",\
-\"daily\":{\
-\"time\":[\
-\"2024-04-08\",\"2024-04-09\",\"2024-04-10\",\"2024-04-11\",\"2024-04-12\",\"2024-04-13\",\"2024-04-14\"],\
-\"temperature_2m_max\":[16.4,18.4,19.2,18.3,14.3,12.3,12.6],\
-\"temperature_2m_min\":[7.0,8.2,9.8,7.8,6.3,2.9,4.0]}}"
-        );
+        auto respond = getTestResponse();
         aServer->textAll(respond);
     }
     else if (msgType.equals("AcquireWiFiAPs"))
