@@ -232,13 +232,13 @@
             <div class="form-group">
                 <label for="longitude">Longitude:</label>
                 <input class="inputbox" type="text" id="longitude" name="longitude" title="Longitude">
-                <span class="info-dev" id="info-longitude">status</span>
+                <!-- <span class="info-dev" id="info-longitude">status</span> -->
             </div>
 
             <div class="form-group">
                 <label for="latitude">Latitude:</label>
                 <input class="inputbox" type="text" id="latitude" name="latitude" title="Latitude">
-                <span class="info-dev" id="info-latitude">status</span>
+                <!-- <span class="info-dev" id="info-latitude">status</span> -->
             </div>
             <div class="form-group">
                 <label for="openWeatherKey">Openweather Key:</label>
@@ -253,7 +253,7 @@
                         onclick="return OnTestButtonClick(openWeatherKey)">
                     Check Key
                 </button>
-                <span class="info-dev" id="info-opwKey">status</span>
+                <!-- <span class="info-dev" id="info-opwKey">status</span> -->
             </div>
 
             <div class="form-group">
@@ -265,7 +265,7 @@
                         onclick="return OnTestButtonClick(ip2geoKey)">
                     Check Key
                 </button>
-                <span class="info-dev" id="info-ip2geoKey">status</span>
+                <!-- <span class="info-dev" id="info-ip2geoKey">status</span> -->
             </div>
 
             <button class="button_sys"
@@ -445,8 +445,6 @@
                     }
                     case "wifiAps":
                     {
-                        // [ ] TODO:deserialize json
-                        // console.log(json["APs"][0]);
                         console.log('Available WiFi access points');
 
                         let str = CreateTableHeader();
@@ -458,7 +456,7 @@
                         break;
                     }
                     default:
-                        console.log('JSON message: %s', aEvent.data)
+                        console.log('JSON message: %s', aEvent.data);
                 }
 
                 switch (aEvent.data)
@@ -619,6 +617,7 @@
         }
 
         function generateTestValues() {
+            // [ ]TODO: remove
             let testValues = [['Date', 'Tmin', 'Tmax', 'T']];
 
             for (let i = 0; i < 20; ++i)
