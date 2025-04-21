@@ -448,10 +448,11 @@
                         console.log('Available WiFi access points');
 
                         let str = CreateTableHeader();
-                        for(let i = 0; i < json["APs"].length; ++i)
-                        {
-                            str += CreateTableRaw(json["APs"][i]);
-                        }
+
+                        let node = json["APs"];
+                        for(let i = 0; i < node.length; ++i)
+                            str += CreateTableRaw(node[i]);
+
                         document.getElementById('table-content').innerHTML = str;
                         break;
                     }
