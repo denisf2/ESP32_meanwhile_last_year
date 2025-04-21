@@ -544,7 +544,7 @@
         }
 
         function OnTestButtonClick(aCtrlID) {
-            if(WebSocket.OPEN != websocket.readyState){
+            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
                 console.warn('WebSocket has not opened yet');
                 return false;
             }
@@ -560,7 +560,7 @@
         }
 
         function RequestFormData() {
-            if(WebSocket.OPEN != websocket.readyState){
+            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
                 console.warn('WebSocket has not opened yet');
                 return;
             }
@@ -573,7 +573,7 @@
         }
 
         function AcquireWiFiAPs() {
-            if(WebSocket.OPEN != websocket.readyState){
+            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
                 console.warn('WebSocket has not opened yet');
                 return;
             }
