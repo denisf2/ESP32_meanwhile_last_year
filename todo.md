@@ -16,7 +16,7 @@
 [x]TODO: set default SSID and pass in case "no connection to router". now it is last
 [x]TODO: setup and run default wifi access point on cold start
 [x]TODO: store coordinates
-[ ]TODO: update coordinates button on web page
+[x]TODO: update coordinates button on web page
 [x]TODO: scan wifi networks
 [x]TODO: the web page cannot get APs list in device AP mode
 [ ]TODO: move websocket broadcast to direct message
