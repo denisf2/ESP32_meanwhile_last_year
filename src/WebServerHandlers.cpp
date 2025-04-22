@@ -118,10 +118,10 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 // ==================================================
 auto handleSubmit(AsyncWebServerRequest *aRequest) -> void
 {
-    // [ ]TODO: do something with button1
-    if (aRequest->hasArg("button1"))
+    // [ ]TODO: do something with updateChartButton
+    if (aRequest->hasArg("updateChartButton"))
     {
-        log_i("button1 was pressed");
+        log_i("updateChartButton was pressed");
     }
 
     SendWebPageResponse(aRequest); // Response to the HTTP request
@@ -142,7 +142,7 @@ auto handleRoot(AsyncWebServerRequest *aRequest) -> void
     }
 }
 /*******************
-handleRoot->has arguments->handleSubmit->has "button1"->print to serial sensor data
+handleRoot->has arguments->handleSubmit->has "updateChartButton"->print to serial sensor data
                          |              |              |                          |------>|
                          |              |              |--------------------------------->|
                          |              |------------------------------------------------>|
