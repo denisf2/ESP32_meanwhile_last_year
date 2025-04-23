@@ -188,10 +188,8 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
     }
 }
 
-// ===================================================
-// Setup
-// ===================================================
-void setup()
+
+auto InitSerialMonitor() -> void
 {
     constexpr unsigned long SERIAL_MONITOR_SPEED{115200};
     Serial.begin(SERIAL_MONITOR_SPEED);
@@ -199,8 +197,20 @@ void setup()
     {
         ; // wait for serial port to connect. Needed for native USB port only
     }
+}
 
+auto InitBlinkingLED() -> void
+{
     pinMode(BUILDIN_LED_PIN, OUTPUT);
+}
+
+// ===================================================
+// Setup
+// ===================================================
+void setup()
+{
+    InitSerialMonitor();
+    InitBlinkingLED();
 
     RestoreStoredData();
 
