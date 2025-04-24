@@ -47,6 +47,18 @@ auto LogPrintWiFiAPsPrettyTable(WiFiClass& aWiFi, const int16_t aTotal) -> void
 auto ScanWiFiAPsJSON(WiFiClass& aWiFi) -> String
 {
     // WiFi.scanNetworks will return the number of networks found.
+
+    // [ ]TODO: run in async mode.
+    // aWiFi.scanNetworks(true); // to start detouched
+    //
+    // int16_t n = aWiFi.scanComplete(); // to check periodically
+    // if (n >= 0) {
+    //    "finished"
+    //     WiFi.scanDelete();
+    // }else{
+    //      "in progress"
+    // }
+
     const auto n = aWiFi.scanNetworks();
     log_i("Scan done");
     if (0 == n)
