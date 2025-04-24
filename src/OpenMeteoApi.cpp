@@ -42,20 +42,20 @@ auto ParseJsonOpmet(const String& aData) -> std::optional<WeatherHistory_t>
 
     // Fetch values
     JsonObject daily = doc["daily"];
-    JsonArray days = daily["time"];
+    JsonArray time = daily["time"];
     JsonArray Tmax = daily["temperature_2m_max"];
     JsonArray Tmin = daily["temperature_2m_min"];
 
-    auto size = days.size();
+    auto size = time.size();
     if(days < size)
         log_i("Recieved info for %d days", size);
 
     WeatherHistory_t weatherData;
-    for(auto i{0u}; i < days; ++i)
+    for(auto i{0u}; i < std::min(days, size); ++i)
     {
         weatherData.points[i].Tmax = Tmax[i].as<double>();
         weatherData.points[i].Tmin = Tmin[i].as<double>();
-        weatherData.points[i].days = days[i].as<const char*>();
+        weatherData.points[i].days = time[i].as<const char*>();
     }
 
     return std::make_optional(std::move(weatherData));
