@@ -10,10 +10,8 @@ On the first run, the ESP32 enables a WiFi access point and web server. You need
 ### What about the graph?
 It displays the current temperature history for the last 3 days, along with the min/max temperatures for the same day last year (for 3 days before and after).
 
-### Pseudo graph
-```
-current     T     T     T     T
-last year   Tmax  Tmax  Tmax  Tmax  Tmax  Tmax  Tmax
-last year   Tmin  Tmin  Tmin  Tmin  Tmin  Tmin  Tmin
-            day-3 day-2 day-1 today day+1 day+2 day+3
-```
+<p align="center">
+    <img src="images/chart.png" alt="Diagram" width="400">
+    <img src="images/settings.png" alt="Settings" width="400">
+    <img src="images/system.png" alt="System" width="400">
+</p>
