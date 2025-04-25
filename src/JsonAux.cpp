@@ -1,6 +1,8 @@
 #include "JsonAux.h"
 #include "WifiAux.h"
 #include "NvsPreferences.h"
+#include "OpenMeteoApi.h"
+#include "OpenWeatherApi.h"
 
 auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
 {
@@ -59,6 +61,35 @@ auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType) -> Str
     String serial;
     serializeJson(aDoc, serial);
     log_d("Check response json %s", serial.c_str());
+
+    return serial;
+}
+
+auto GetChartData() -> String
+{
+    JsonDocument doc;
+    doc["message"] = "ChartDataResponse";
+
+    auto daily = doc["daily"].to<JsonObject>();
+    JsonArray time = daily["time"].to<JsonArray>();
+    JsonArray Tmax = daily["temperature_2m_max"].to<JsonArray>();
+    JsonArray Tmin = daily["temperature_2m_min"].to<JsonArray>();
+
+    for(auto i = 0; i < days; ++i)
+    {
+        Tmax.add(weatherHistory.points[i].Tmax);
+        Tmin.add(weatherHistory.points[i].Tmin);
+        time.add(weatherHistory.points[i].days);
+    }
+
+    auto current = doc["current"].to<JsonArray>();
+    // fake data for now
+    for(auto i = 0; i < 4; ++i)
+        current.add(weather.temp);
+
+    String serial;
+    serializeJson(doc, serial);
+    log_d("Collected chart data %s", serial.c_str());
 
     return serial;
 }

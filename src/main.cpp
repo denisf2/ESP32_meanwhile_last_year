@@ -33,6 +33,7 @@
 #include "WebSocketHandlers.h"
 #include "WifiAux.h"
 #include "timeAux.h"
+#include "JsonAux.h"
 
 // [ ]TODO: need refactoring to prev time stamps
 unsigned long oldmil1 = 0UL;
@@ -188,6 +189,16 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
     }
 }
 
+auto job_update_chart_data(unsigned long aCurrent) -> void
+{
+    if(chartDataRequested && chartDataReady)
+    {
+        auto respond = GetChartData();
+        websocket.textAll(respond);
+
+        chartDataRequested = false;
+    }
+}
 
 auto InitSerialMonitor() -> void
 {
@@ -244,6 +255,7 @@ void loop()
     job_working_led_blink(newmil);
     job_acquire_coordinates(newmil);
     job_request_weather_data(newmil);
+    job_update_chart_data(newmil);
 }
 
 //===========================================================

@@ -20,5 +20,6 @@ struct WeatherHistory_t
 auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> bool;
 
 extern WeatherHistory_t weatherHistory;
+extern bool chartDataReady;
 
 #endif /*OPENMETEOAPI_H__*/

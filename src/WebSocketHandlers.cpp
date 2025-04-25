@@ -7,6 +7,8 @@
 #include "WifiAux.h"
 #include "JsonAux.h"
 
+bool chartDataRequested{false};
+
 auto TestIpGeolocationKey(const JsonDocument& aDoc) -> bool
 {
     const auto keyNode = aDoc["apikey"];
@@ -104,10 +106,9 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     }
     else if (msgType.equals("ChartDataRequest"))
     {
-        // [ ]TODO: collect chart data and send
         log_d("Update chart weather data");
-        auto respond = getTestResponse();
-        aServer->textAll(respond);
+
+        chartDataRequested = true;
     }
     else if (msgType.equals("AcquireWiFiAPs"))
     {

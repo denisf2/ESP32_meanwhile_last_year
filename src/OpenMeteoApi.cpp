@@ -9,6 +9,7 @@
 #include <optional>
 
 WeatherHistory_t weatherHistory;
+bool chartDataReady{false};
 
 auto ParseJsonOpmet(const String& aData) -> std::optional<WeatherHistory_t>
 {
@@ -92,6 +93,7 @@ auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSi
     // Print values.
     // log_i("Acquired temperature: [ %4.1f ]", weather.temp);
     log_d("Acquired history temperature");
+    chartDataReady = true;
 
     return true;
 }
