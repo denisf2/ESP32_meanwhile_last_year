@@ -2,10 +2,11 @@
 #include "JsonAux.h"
 #include "NvsPreferences.h"
 
-auto to_string(const wifi_auth_mode_t aMode) -> String {
 const char TAG[] = "[WiFi]";
 bool scanInProgress{false};
 
+auto to_string(const wifi_auth_mode_t aMode) -> String
+{
     switch (aMode)
     {
     case WIFI_AUTH_OPEN:
@@ -31,13 +32,14 @@ bool scanInProgress{false};
     }
 }
 
-auto LogPrintWiFiAPsPrettyTable(WiFiClass& aWiFi, const int16_t aTotal) -> void
+auto LogPrintWiFiAPsPrettyTable(WiFiClass &aWiFi, const int16_t aTotal) -> void
 {
-    log_i("Nr | SSID                             | RSSI | CH | Encryption");
+    log_i("%s Nr | SSID                             | RSSI | CH | Encryption", TAG);
     for (auto i = 0; i < aTotal; ++i)
     {
         // Print SSID and RSSI for each network found
-        log_i("%2d | %-32.32s | %4d | %2d | %s"
+        log_i("%s %2d | %-32.32s | %4d | %2d | %s"
+                , TAG
                 , i + 1
                 , aWiFi.SSID(i).c_str()
                 , aWiFi.RSSI(i)
@@ -125,14 +127,14 @@ auto SetupWiFiAccessPoint(WiFiClass &aWiFi) -> void
 {
     const auto ssid = GetWifiSSID(SettingsType::factory);
     const auto pass = GetWiFiPassword(SettingsType::factory);
-    log_i("Setting default AP (Access Point) ssid: %s, pass: %s", ssid, pass);
+    log_i("%s Setting default AP (Access Point) ssid: %s, pass: %s", TAG, ssid, pass);
     aWiFi.mode(wifi_mode_t::WIFI_MODE_AP);
     aWiFi.disconnect();
     ScanWiFiAPsJSON(aWiFi);
     aWiFi.softAP(ssid, pass);
 
     const auto ip = aWiFi.softAPIP();
-    log_i("AP IP address: %s", ip.toString().c_str());
+    log_i("%s AP IP address: %s", TAG, ip.toString().c_str());
 }
 
 auto LockingWiFiConnection(WiFiClass aWiFi) -> bool
@@ -145,20 +147,20 @@ auto LockingWiFiConnection(WiFiClass aWiFi) -> bool
     constexpr uint32_t WIFI_PROGRESS_DELAY_MILLISEC{500};
 
     auto status = wl_status_t::WL_IDLE_STATUS;
-    for(int count{0}; count < 2 && wl_status_t::WL_CONNECTED != status; ++count)
+    for (int count{0}; count < 2 && wl_status_t::WL_CONNECTED != status; ++count)
     {
-        log_i("Attempting to connect to SSID: %s", wifiSSID.c_str());
+        log_i("%s Attempting to connect to SSID: %s", TAG, wifiSSID.c_str());
 
         status = aWiFi.begin(wifiSSID, wifiPass);
         for(int split{0}
                 ; wl_status_t::WL_CONNECTED != status && split < 10
                 ; ++split, status = aWiFi.status())
         {
-            log_i("Waiting");
+            log_i("%s Waiting", TAG);
             delay(WIFI_PROGRESS_DELAY_MILLISEC);
         }
 
-        if(wl_status_t::WL_CONNECTED != status )
+        if (wl_status_t::WL_CONNECTED != status)
             delay(WIFI_RECON_DELAY_MILLISEC);
         else
             return true;
@@ -167,10 +169,11 @@ auto LockingWiFiConnection(WiFiClass aWiFi) -> bool
     return false;
 }
 
-auto PrintWifiStatus(WiFiClass& aWiFi) -> void
+auto PrintWifiStatus(WiFiClass &aWiFi) -> void
 {
     // Print local IP address and start web server
-    log_i("WiFi status: Connected to SSID: %s  IP Address: %s Signal strength (RSSI): %d dBm"
+    log_i("%s WiFi status: Connected to SSID: %s  IP Address: %s Signal strength (RSSI): %d dBm"
+            , TAG
             , aWiFi.SSID().c_str()
             , aWiFi.localIP().toString().c_str()
             , aWiFi.RSSI()
