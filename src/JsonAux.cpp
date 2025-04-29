@@ -20,7 +20,7 @@ auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
 
     String serial;
     serializeJson(doc, serial);
-    log_d("Available WiFi APs response json %s", serial.c_str());
+    log_d("Available WiFi APs response json \r\n%s", serial.c_str());
 
     return serial;
 }
@@ -89,7 +89,7 @@ auto GetChartData() -> String
 
     String serial;
     serializeJson(doc, serial);
-    log_d("Collected chart data %s", serial.c_str());
+    log_d("Collected chart data \r\n%s", serial.c_str());
 
     return serial;
 }
