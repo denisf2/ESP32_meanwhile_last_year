@@ -42,7 +42,7 @@ unsigned long oldmil3 = 0UL;
 unsigned long oldmil4 = 0UL;
 unsigned long oldmil5 = 0UL;
 
-constexpr unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
+constexpr unsigned long UPDATE_INTERVAL_10_S = 10000UL;
 constexpr unsigned long UPDATE_INTERVAL_1_S = 1000UL;
 constexpr unsigned long UPDATE_INTERVAL_05_S = 500UL;
 
@@ -110,7 +110,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
 {
     // [ ]TODO: make run at start and once per hour
     static bool once = false;
-    if (aCurrent - oldmil4 >= 4 * UPDATE_INTERVAL_MILLISEC && false == once)
+    if (aCurrent - oldmil4 >= 4 * UPDATE_INTERVAL_10_S && false == once)
     {
         // [ ]TODO: choose user stored/automatic coordinates
         // if (GetAutoLocation())
@@ -158,7 +158,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
 
 auto job_working_led_blink(unsigned long aCurrent) -> void
 {
-    if (aCurrent - oldmil1 >= UPDATE_INTERVAL_MILLISEC)
+    if (aCurrent - oldmil1 >= UPDATE_INTERVAL_10_S)
     {
         digitalWrite(BUILDIN_LED_PIN, ledState);
         ledState = 1 - ledState;
@@ -171,7 +171,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
 {
     // [ ]TODO: make run at start and once per hour
     static bool once = false;
-    if (aCurrent - oldmil2 >= 6 * UPDATE_INTERVAL_MILLISEC && false == once)
+    if (aCurrent - oldmil2 >= 6 * UPDATE_INTERVAL_10_S && false == once)
     {
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
