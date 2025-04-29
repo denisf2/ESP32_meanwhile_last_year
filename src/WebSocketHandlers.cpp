@@ -100,9 +100,6 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
         const String respond = SerializeFormStoredData(std::move(doc), "");
         log_d("Ready to send %s", respond.c_str());
         aServer->textAll(respond);
-
-        //[ ]TODO: remove from here after WDT fix
-        aServer->textAll(ScanWiFiAPsJSON(WiFi));
     }
     else if (msgType.equals("ChartDataRequest"))
     {
@@ -112,10 +109,10 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     }
     else if (msgType.equals("AcquireWiFiAPs"))
     {
-        log_d("nothing to do");
+        log_i("Start WiFi network scan");
         // [ ]TODO: core1 WDT restart device here.
         // proposal cannont scan in wifi client mode
-        // aServer->textAll(ScanWiFiAPsJSON(WiFi));
+        StartWiFiScanAsync(WiFi);
     }
     else
         log_w("Unknown message");

@@ -40,8 +40,11 @@ unsigned long oldmil1 = 0UL;
 unsigned long oldmil2 = 0UL;
 unsigned long oldmil3 = 0UL;
 unsigned long oldmil4 = 0UL;
+unsigned long oldmil5 = 0UL;
 
 constexpr unsigned long UPDATE_INTERVAL_MILLISEC = 10000UL;
+constexpr unsigned long UPDATE_INTERVAL_1_S = 1000UL;
+constexpr unsigned long UPDATE_INTERVAL_05_S = 500UL;
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
@@ -191,12 +194,32 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
 
 auto job_update_chart_data(unsigned long aCurrent) -> void
 {
+    // [ ]TODO: add some delay
     if(chartDataRequested && chartDataReady)
     {
         auto respond = GetChartData();
         websocket.textAll(respond);
 
         chartDataRequested = false;
+    }
+}
+
+auto job_check_wifi_scan(unsigned long aCurrent) -> auto
+{
+    if (!scanInProgress)
+        return;
+
+    if (aCurrent - oldmil5 >= UPDATE_INTERVAL_1_S)
+    {
+        // [x]TODO: add some delay
+        auto res = CheckWiFiScan(WiFi);
+        if (res.has_value())
+        {
+            websocket.textAll(res.value());
+            log_d("WiFi scan is ready");
+        }
+
+        oldmil5 = aCurrent;
     }
 }
 
@@ -256,6 +279,7 @@ void loop()
     job_acquire_coordinates(newmil);
     job_request_weather_data(newmil);
     job_update_chart_data(newmil);
+    job_check_wifi_scan(newmil);
 }
 
 //===========================================================

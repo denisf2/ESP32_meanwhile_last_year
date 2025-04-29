@@ -3,6 +3,9 @@
 #include "NvsPreferences.h"
 
 auto to_string(const wifi_auth_mode_t aMode) -> String {
+const char TAG[] = "[WiFi]";
+bool scanInProgress{false};
+
     switch (aMode)
     {
     case WIFI_AUTH_OPEN:
@@ -44,28 +47,17 @@ auto LogPrintWiFiAPsPrettyTable(WiFiClass& aWiFi, const int16_t aTotal) -> void
     }
 }
 
-auto ScanWiFiAPsJSON(WiFiClass& aWiFi) -> String
+// blocks call site to scan WiFi
+auto ScanWiFiAPsJSON(WiFiClass &aWiFi) -> String
 {
     // WiFi.scanNetworks will return the number of networks found.
-
-    // [ ]TODO: run in async mode.
-    // aWiFi.scanNetworks(true); // to start detouched
-    //
-    // int16_t n = aWiFi.scanComplete(); // to check periodically
-    // if (n >= 0) {
-    //    "finished"
-    //     WiFi.scanDelete();
-    // }else{
-    //      "in progress"
-    // }
-
     const auto n = aWiFi.scanNetworks();
-    log_i("Scan done");
+    log_i("%s Scan done", TAG);
     if (0 == n)
-        log_i("No networks found");
+        log_i("%s No networks found", TAG);
     else
     {
-        log_i("%d networks found", n);
+        log_i("%s Networks found: %d", TAG, n);
         LogPrintWiFiAPsPrettyTable(aWiFi, n);
 
         const auto json = WiFiAPtoJSON(aWiFi, n);
@@ -82,7 +74,54 @@ auto ScanWiFiAPsJSON(WiFiClass& aWiFi) -> String
     return {};
 }
 
-auto SetupWiFiAccessPoint(WiFiClass& aWiFi) -> void
+auto StartWiFiScanAsync(WiFiClass &aWiFi) -> void
+{
+    // [x]TODO: run in async mode.
+    aWiFi.scanNetworks(true); // to start detached
+    scanInProgress = true;
+}
+
+// must call the function time to time in the main loop
+auto CheckWiFiScan(WiFiClass &aWiFi) -> std::optional<String>
+{
+    const auto n = aWiFi.scanComplete(); // to check periodically
+    if (0 == n)
+    {
+        log_i("%s No networks found", TAG);
+    }
+    else if (n > 0)
+    {
+        // "finished"
+        log_i("%s Networks found: %d", TAG, n);
+        LogPrintWiFiAPsPrettyTable(aWiFi, n);
+
+        const auto json = WiFiAPtoJSON(aWiFi, n);
+
+        // Delete the scan result to free memory for code below.
+        aWiFi.scanDelete();
+
+        scanInProgress = false;
+
+        return std::make_optional(std::move(json));
+    }
+    else if(WIFI_SCAN_RUNNING == n)
+    {
+        // "in progress"
+        // [ ]TODO: how long will it take?
+        // [ ]TODO: when do we need release resources?
+        // aWiFi.scanDelete();
+        log_i("%s Scanning...", TAG);
+    }
+    else if(WIFI_SCAN_FAILED == n)
+    {
+        // scanInProgress = false;
+        log_w("%s Scanning failed", TAG);
+    }
+
+    return {};
+}
+
+auto SetupWiFiAccessPoint(WiFiClass &aWiFi) -> void
 {
     const auto ssid = GetWifiSSID(SettingsType::factory);
     const auto pass = GetWiFiPassword(SettingsType::factory);

@@ -9,5 +9,9 @@ auto ScanWiFiAPsJSON(WiFiClass& aWiFi) -> String;
 auto SetupWiFiAccessPoint(WiFiClass& aWiFi) -> void;
 auto LockingWiFiConnection(WiFiClass aWiFi) -> bool;
 auto PrintWifiStatus(WiFiClass& aWiFi) -> void;
+auto StartWiFiScanAsync(WiFiClass &aWiFi) -> void;
+auto CheckWiFiScan(WiFiClass &aWiFi) -> std::optional<String>;
+
+extern bool scanInProgress;
 
 #endif /*WIFIAUX_H__*/
