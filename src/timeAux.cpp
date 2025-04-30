@@ -71,20 +71,22 @@ auto DatePlusDays(struct tm *aDate, int aDays) -> void
     *aDate = *localtime(&dateInSec);
 }
 
-auto GetDateRangeEnds(uint64_t aNTPEpochTime) -> std::pair<String, String>
+auto GetDateRangeEnds(bool aForLastYear) -> std::pair<String, String>
 {
     tm timeInfo;
     if (!getLocalTime(&timeInfo))
         return {"Invalid time value", "Invalid time value"};
 
     auto timeInfoLastYear = timeInfo;
-    timeInfoLastYear.tm_year -= 1;
     // [ ]TODO: solution does not handle leap year. ex: yyyy-02-29
+    if (aForLastYear)
+        timeInfoLastYear.tm_year -= 1;
 
     DatePlusDays(&timeInfoLastYear, -3);
     const auto threeDaysPastTodayLastYear = print(&timeInfoLastYear, "%F");
 
-    DatePlusDays(&timeInfoLastYear, +6);
+    DatePlusDays(&timeInfoLastYear
+                , (aForLastYear) ? +6 : +3);
     const auto threeDaysBeforeTodayLastYear = print(&timeInfoLastYear, "%F");
 
     log_d("Date range is from %s till %s"

@@ -15,6 +15,6 @@ auto printLocalTime() -> void;
 
 // Callback function (gets called when time adjusts via NTP)
 auto timeavailable(timeval * aTimeVal) -> void;
-auto GetDateRangeEnds(uint64_t aEpochTime) -> std::pair<String, String>;
+auto GetDateRangeEnds(bool aForLastYear = true) -> std::pair<String, String>;
 
 #endif

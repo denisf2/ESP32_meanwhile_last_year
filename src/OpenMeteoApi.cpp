@@ -64,8 +64,8 @@ auto ParseJsonOpmet(const String& aData) -> std::optional<WeatherHistory_t>
 
 auto GetApiUrl(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> String
 {
-    auto [begin, end] = GetDateRangeEnds(aSinceEpoch);
     constexpr char requestedParams[]{"temperature_2m_max,temperature_2m_min"};
+    const auto [begin, end] = GetDateRangeEnds(true);
     return String("https://historical-forecast-api.open-meteo.com/v1/forecast")
                 + "?latitude=" + aLat
                 + "&longitude=" + aLon
