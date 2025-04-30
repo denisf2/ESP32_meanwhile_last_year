@@ -78,8 +78,8 @@ auto GetDateRangeEnds(uint64_t aNTPEpochTime) -> std::pair<String, String>
         return {"Invalid time value", "Invalid time value"};
 
     auto timeInfoLastYear = timeInfo;
-    // [ ]TODO: solution do not handle leap year. ex: yyyy-02-29
     timeInfoLastYear.tm_year -= 1;
+    // [ ]TODO: solution does not handle leap year. ex: yyyy-02-29
 
     DatePlusDays(&timeInfoLastYear, -3);
     const auto threeDaysPastTodayLastYear = print(&timeInfoLastYear, "%F");
