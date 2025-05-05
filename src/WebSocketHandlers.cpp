@@ -7,6 +7,8 @@
 #include "WifiAux.h"
 #include "JsonAux.h"
 
+const char TAG[] = "[WebSoc]";
+
 bool chartDataRequested{false};
 
 auto TestIpGeolocationKey(const JsonDocument& aDoc) -> bool
@@ -48,12 +50,12 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     // taking care only JSON
     if (AwsFrameType::WS_TEXT != aFrameInfo->opcode)
     {
-        log_i("Do not care binary formats");
+        log_i("%s Do not care binary formats", TAG);
         return;
     }
 
     String json(reinterpret_cast<const char* const>(aData), aFrameInfo->len);
-    log_d("Incoming JSON %s", json.c_str());
+    log_d("%s Incoming JSON %s", TAG, json.c_str());
 
     // Allocate the JSON document
     JsonDocument doc;
@@ -63,7 +65,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     // Test if parsing succeeds.
     if (error)
     {
-        log_w("JSON deserializition is failed. Error code: %s", error.f_str());
+        log_w("%s JSON deserializition is failed. Error code: %s",TAG , error.f_str());
         return;
     }
 
@@ -71,17 +73,17 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     const auto msg = doc["message"];
     if (!msg.is<String>())
     {
-        log_w("Unknown JSON format");
+        log_w("%s Unknown JSON format", TAG);
         return;
     }
 
     const auto msgType = msg.as<String>();
-    log_d("Web socket message type is %s", msgType.c_str());
+    log_d("%s Web socket message type is %s",TAG , msgType.c_str());
 
     if (msgType.equals("ip2geoTest"))
     {
         const auto res = TestIpGeolocationKey(doc);
-        log_d("IpGeolocation.io key check: %svalid", (res) ? "" : "In");
+        log_d("%s IpGeolocation.io key check: %svalid", TAG, (res) ? "" : "In");
 
         const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
         aServer->textAll(respond);
@@ -89,7 +91,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     else if (msgType.equals("openWeatherTest"))
     {
         const auto res = TestOpenweatherKey(doc);
-        log_d("OpenWeathermap.org key check: %svalid", (res) ? "" : "In");
+        log_d("%s OpenWeathermap.org key check: %svalid", TAG, (res) ? "" : "In");
 
         const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
         aServer->textAll(respond);
@@ -98,24 +100,24 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     {
         // [x]TODO: update form with stored data
         const String respond = SerializeFormStoredData(std::move(doc), "");
-        log_d("Ready to send %s", respond.c_str());
+        log_d("%s Ready to send %s", TAG, respond.c_str());
         aServer->textAll(respond);
     }
     else if (msgType.equals("ChartDataRequest"))
     {
-        log_d("Update chart weather data");
+        log_d("%s Update chart weather data", TAG);
 
         chartDataRequested = true;
     }
     else if (msgType.equals("AcquireWiFiAPs"))
     {
-        log_i("Start WiFi network scan");
+        log_i("%s Start WiFi network scan", TAG);
         // [ ]TODO: core1 WDT restart device here.
         // proposal cannont scan in wifi client mode
         StartWiFiScanAsync(WiFi);
     }
     else
-        log_w("Unknown message");
+        log_w("%s Unknown message", TAG);
 }
 
 // --------------------------------------------------------
@@ -126,7 +128,8 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
     {
         case AwsEventType::WS_EVT_CONNECT:
         {
-            log_i("WebSocket[%s][%u] connected from %s"
+            log_i("%s WebSocket[%s][%u] connected from %s"
+                , TAG
                 , aServer->url()
                 , aClient->id()
                 , aClient->remoteIP().toString().c_str());
@@ -137,7 +140,8 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
 
         case AwsEventType::WS_EVT_DISCONNECT:
         {
-            log_i("WebSocket[%s][%u] disconnect: %s"
+            log_i("%s WebSocket[%s][%u] disconnect: %s"
+                , TAG
                 , aServer->url()
                 , aClient->id()
                 , aClient->remoteIP().toString().c_str());
@@ -148,7 +152,8 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
         case AwsEventType::WS_EVT_DATA:
         {
             auto info = reinterpret_cast<const AwsFrameInfo * const>(aArg);
-            log_d("WebSocket[%s][%u] %s-message[%llu]: "
+            log_d("%s WebSocket[%s][%u] %s-message[%llu]: "
+                , TAG
                 , aServer->url()
                 , aClient->id()
                 , (AwsFrameType::WS_TEXT == info->opcode) ? "text" : "binary"
@@ -161,7 +166,8 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
 
         case AwsEventType::WS_EVT_PONG:
         {
-            log_i("WebSocket[%s][%u] pong[%u]: %s"
+            log_i("%s WebSocket[%s][%u] pong[%u]: %s"
+                , TAG
                 , aServer->url()
                 , aClient->id()
                 , aLen
@@ -172,7 +178,8 @@ auto OnEvent(AsyncWebSocket *aServer, AsyncWebSocketClient *aClient, AwsEventTyp
 
         case AwsEventType::WS_EVT_ERROR:
         {
-            log_e("WebSocket[%s][%u] error(%u): %s"
+            log_e("%s WebSocket[%s][%u] error(%u): %s"
+                , TAG
                 , aServer->url()
                 , aClient->id()
                 , *(static_cast<uint16_t*>(aArg))

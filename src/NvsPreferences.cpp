@@ -1,5 +1,7 @@
 #include "NvsPreferences.h"
 
+const char TAG[] = "[NVS]";
+
 Preferences nvsPrefs;
 
 constexpr bool RO_MODE = true;
@@ -29,7 +31,7 @@ constexpr char defaultPass[] = "esp32pass";
 
 auto RestoreDefaultData() -> void
 {
-    log_i("Restoring default values");
+    log_i("%s Restoring default values", TAG);
     nvsPrefs.begin(AppNamespace, RW_MODE);
 
     // init storage by default values
@@ -46,12 +48,12 @@ auto RestoreDefaultData() -> void
     nvsPrefs.putBool(defaultValuesKey, true);
 
     nvsPrefs.end();
-    log_d("Restoring default values has been done");
+    log_d("%s Restoring default values has been done", TAG);
 }
 
 auto RestoreStoredData() -> void
 {
-    log_i("Loading stored data");
+    log_i("%s Loading stored data", TAG);
     nvsPrefs.begin(AppNamespace, RO_MODE);
 
     if (false == nvsPrefs.isKey(defaultValuesKey))
@@ -75,7 +77,7 @@ auto RestoreStoredData() -> void
 
 auto Save(const char aKey[], const String &aValue) -> void
 {
-    log_d("Saving [%s, %s]", aKey, aValue.c_str());
+    log_d("%s Saving [%s, %s]", TAG, aKey, aValue.c_str());
 
     nvsPrefs.begin(AppNamespace, RW_MODE);
     nvsPrefs.putString(aKey, aValue.c_str());
@@ -84,7 +86,7 @@ auto Save(const char aKey[], const String &aValue) -> void
 
 auto Save(const char aKey[], bool aValue) -> void
 {
-    log_d("Saving [%s, %s]", aKey, aValue ? "true" : "false");
+    log_d("%s Saving [%s, %s]", TAG, aKey, aValue ? "true" : "false");
 
     nvsPrefs.begin(AppNamespace, RW_MODE);
     nvsPrefs.putBool(aKey, aValue);

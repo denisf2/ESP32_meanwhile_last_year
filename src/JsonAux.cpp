@@ -4,6 +4,8 @@
 #include "OpenMeteoApi.h"
 #include "OpenWeatherApi.h"
 
+const char TAG[] = "[JSON]";
+
 auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
 {
     JsonDocument doc;
@@ -20,7 +22,7 @@ auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
 
     String serial;
     serializeJson(doc, serial);
-    log_d("Available WiFi APs response json \r\n%s", serial.c_str());
+    log_d("%s Available WiFi APs response json \r\n%s", TAG, serial.c_str());
 
     return serial;
 }
@@ -35,7 +37,7 @@ auto SerializeRespondJSON(JsonDocument&& aDoc, const String& aMsgType, bool aVal
 
     String serial;
     serializeJson(aDoc, serial);
-    log_d("Check response json %s", serial.c_str());
+    log_d("%s Check response json %s", TAG, serial.c_str());
 
     return serial;
 }
@@ -60,7 +62,7 @@ auto SerializeFormStoredData(JsonDocument&& aDoc, const String& aMsgType) -> Str
 
     String serial;
     serializeJson(aDoc, serial);
-    log_d("Check response json %s", serial.c_str());
+    log_d("%s Check response json %s", TAG, serial.c_str());
 
     return serial;
 }
@@ -89,7 +91,7 @@ auto GetChartData() -> String
 
     String serial;
     serializeJson(doc, serial);
-    log_d("Collected chart data \r\n%s", serial.c_str());
+    log_d("%s Collected chart data \r\n%s", TAG, serial.c_str());
 
     return serial;
 }
