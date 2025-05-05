@@ -23,3 +23,4 @@
     [ ]TODO: obtain certificate authority for https requests
     [x]TODO: display api keys verification status
     [ ]TODO: display note to restart device after submite settings
+    [ ]TODO: filter somehow incoming invalid data
