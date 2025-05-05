@@ -17,9 +17,25 @@ struct WeatherHistory_t
     TempPoint points[days]{};
 };
 
-auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> bool;
+// [ ]TODO: eliminate this type
+struct WeatherHistory2_t
+{
+    struct TempPoint
+    {
+        uint8_t Tmean{0};
+        String days;
+    };
+
+    TempPoint points[days]{};
+    double current{0.};
+};
+
+auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool;
+auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool;
 
 extern WeatherHistory_t weatherHistory;
-extern bool chartDataReady;
+extern WeatherHistory2_t weatherWeek;
+extern bool chartHistoryDataReady;
+extern bool chartWeekDataReady;
 
 #endif /*OPENMETEOAPI_H__*/

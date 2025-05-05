@@ -7,11 +7,63 @@
 #include <ArduinoJson.h>
 
 #include <optional>
+#include <functional>
 
 WeatherHistory_t weatherHistory;
-bool chartDataReady{false};
+WeatherHistory2_t weatherWeek;
+bool chartHistoryDataReady{false};
+bool chartWeekDataReady{false};
 
-auto ParseJsonOpmet(const String& aData) -> std::optional<WeatherHistory_t>
+auto ParseHistory(JsonDocument& aJson) -> WeatherHistory_t
+{
+    // Fetch values
+    JsonObject daily = aJson["daily"];
+    JsonArray time = daily["time"];
+    JsonArray Tmax = daily["temperature_2m_max"];
+    JsonArray Tmin = daily["temperature_2m_min"];
+
+    auto size = time.size();
+    if(days < size)
+    log_i("Recieved info for %d days", size);
+
+    WeatherHistory_t weatherData;
+    for(auto i{0u}; i < std::min(days, size); ++i)
+    {
+        weatherData.points[i].Tmax = Tmax[i].as<double>();
+        weatherData.points[i].Tmin = Tmin[i].as<double>();
+        weatherData.points[i].days = time[i].as<const char*>();
+    }
+
+    return weatherData;
+}
+
+auto ParseLastWeek(JsonDocument& aJson) -> WeatherHistory2_t
+{
+    // Fetch values
+    JsonObject daily = aJson["daily"];
+    JsonArray time = daily["time"];
+    JsonArray Tmean = daily["temperature_2m_mean"];
+
+    auto size = time.size();
+    if(days < size)
+        log_i("Recieved info for %d days", size);
+
+    WeatherHistory2_t weatherData;
+    for(auto i{0u}; i < std::min(days, size); ++i)
+    {
+        weatherData.points[i].Tmean = Tmean[i].as<double>();
+        weatherData.points[i].days = time[i].as<const char*>();
+    }
+
+    weatherData.current = aJson["current"]["temperature_2m"].as<double>();
+
+    return weatherData;
+}
+
+template<typename T>
+auto ParseJsonOpmet(const String& aData
+                    , std::function<auto(JsonDocument& aJson) -> T> aParse
+                    ) -> std::optional<T>
 {
     // Allocate the JSON document
     JsonDocument doc;
@@ -41,59 +93,88 @@ auto ParseJsonOpmet(const String& aData) -> std::optional<WeatherHistory_t>
         return std::nullopt;
     }
 
-    // Fetch values
-    JsonObject daily = doc["daily"];
-    JsonArray time = daily["time"];
-    JsonArray Tmax = daily["temperature_2m_max"];
-    JsonArray Tmin = daily["temperature_2m_min"];
-
-    auto size = time.size();
-    if(days < size)
-        log_i("Recieved info for %d days", size);
-
-    WeatherHistory_t weatherData;
-    for(auto i{0u}; i < std::min(days, size); ++i)
-    {
-        weatherData.points[i].Tmax = Tmax[i].as<double>();
-        weatherData.points[i].Tmin = Tmin[i].as<double>();
-        weatherData.points[i].days = time[i].as<const char*>();
-    }
+    auto weatherData = aParse(doc);
 
     return std::make_optional(std::move(weatherData));
 }
 
-auto GetApiUrl(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> String
+auto GetWeekApiUrl(const String &aLat, const String &aLon) -> String
 {
-    constexpr char requestedParams[]{"temperature_2m_max,temperature_2m_min"};
-    const auto [begin, end] = GetDateRangeEnds(true);
-    return String("https://historical-forecast-api.open-meteo.com/v1/forecast")
-                + "?latitude=" + aLat
-                + "&longitude=" + aLon
-                + "&start_date=" + begin //aDate -3 days
-                + "&end_date=" + end  //aDate +3 days
-                + "&daily=" + requestedParams;
-                // + "&timezone=" + "Europe%2FBerlin";
+    const auto [begin, end] = GetDateRangeEnds(false);
+    constexpr char dailyParams[]{"temperature_2m_mean"};
+    constexpr char currentParams[]{"temperature_2m"};
+    return String("https://api.open-meteo.com/v1/forecast")
+                    + "?latitude=" + aLat
+                    + "&longitude=" + aLon
+                    + "&start_date=" + begin
+                    + "&end_date=" + end
+                    + "&daily=" + dailyParams
+                    + "&current=" + currentParams;
 }
 
-auto GetWeatherHistory(const String &aLat, const String &aLon, unsigned long aSinceEpoch) -> bool
+auto GetHistoryApiUrl(const String &aLat, const String &aLon) -> String
 {
-    const String requestUrl = GetApiUrl(aLat, aLon, aSinceEpoch);
+    const auto [begin, end] = GetDateRangeEnds(true);
+    constexpr char dailyParams[]{"temperature_2m_max,temperature_2m_min"};
+    return String("https://historical-forecast-api.open-meteo.com/v1/forecast")
+                    + "?latitude=" + aLat
+                    + "&longitude=" + aLon
+                    + "&start_date=" + begin
+                    + "&end_date=" + end
+                    + "&daily=" + dailyParams;
+                    // + "&timezone=" + "Europe%2FBerlin";
+}
+
+template<typename T>
+auto GetWeatherForPeriod(const String &aLat, const String &aLon
+                            , std::function<auto(const String &aLat, const String &aLon) -> String> aGetURL
+                            , std::function<auto(JsonDocument& aJson) -> T> aParser
+                        ) -> bool
+{
+    const String requestUrl = aGetURL(aLat, aLon);
     log_d("%s", requestUrl.c_str());
 
     auto respond = SendGetRequest(requestUrl);
     if(!respond)
         return false;
 
-    auto res = ParseJsonOpmet(respond.value());
+    auto res = ParseJsonOpmet<T>(respond.value(), aParser);
     if(!res)
         return false;
 
-    weatherHistory = res.value();
-
-    // Print values.
-    // log_i("Acquired temperature: [ %4.1f ]", weather.temp);
-    log_d("Acquired history temperature");
-    chartDataReady = true;
+    if constexpr (std::is_same_v<T, WeatherHistory_t>)
+        weatherHistory = res.value();
+    else
+        weatherWeek = res.value();
 
     return true;
+}
+
+auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
+{
+    if(GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, GetHistoryApiUrl, ParseHistory))
+    {
+        // Print values.
+        // log_i("Acquired temperature: [ %4.1f ]", weather.temp);
+        log_d("Acquired history temperature");
+        chartHistoryDataReady = true;
+
+        return true;
+    }
+
+    return false;
+}
+
+auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
+{
+    if(GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, GetWeekApiUrl, ParseLastWeek))
+    {
+        // Print values.
+        // log_i("Acquired temperature: [ %4.1f ]", weather.temp);
+        log_d("Acquired week temperature");
+        chartWeekDataReady = true;
+        return true;
+    }
+
+    return false;
 }

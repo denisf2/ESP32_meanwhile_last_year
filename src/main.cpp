@@ -176,9 +176,13 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
         {
-            GetWeatherHistory(String(coordinates.latitude)
-                            , String(coordinates.longitude)
-                            , 0);
+            // last year
+            GetWeatherLastYear(String(coordinates.latitude)
+                            , String(coordinates.longitude));
+            // last three days
+            GetWeatherLastWeek(String(coordinates.latitude)
+                            , String(coordinates.longitude));
+
             GetForecast(GetOpenWeatherKey()
                             , String(coordinates.latitude)
                             , String(coordinates.longitude));
@@ -195,7 +199,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
 auto job_update_chart_data(unsigned long aCurrent) -> void
 {
     // [ ]TODO: add some delay
-    if(chartDataRequested && chartDataReady)
+    if(chartDataRequested && chartHistoryDataReady)
     {
         auto respond = GetChartData();
         websocket.textAll(respond);

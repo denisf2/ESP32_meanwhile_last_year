@@ -85,9 +85,12 @@ auto GetChartData() -> String
     }
 
     auto current = doc["current"].to<JsonArray>();
-    // fake data for now
-    for(auto i = 0; i < 4; ++i)
-        current.add(weather.temp);
+
+    const size_t lastDays{3};
+    for(auto i = 0; i < lastDays; ++i)
+        current.add(weatherWeek.points[i].Tmean);
+
+    current.add(weatherWeek.current);
 
     String serial;
     serializeJson(doc, serial);
