@@ -699,7 +699,9 @@
                     height: isMobile ? '65%' : '75%'
                 },
                 fontSize : isMobile ? 10 : 12,
-                backgroundColor: 'transparent'
+                backgroundColor: 'transparent',
+                seriesType: 'line',
+                series: {2: {type: 'line'}}
             };
         }
 
@@ -716,7 +718,7 @@
             var options = getChartOptions();
 
             // Instantiate and draw our chart
-            const chart = new google.visualization.LineChart(document.getElementById('chart-div'));
+            const chart = new google.visualization.ComboChart(document.getElementById('chart-div'));
             chart.draw(data, options);
 
             // Store reference to current chart
