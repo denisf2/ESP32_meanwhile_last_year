@@ -98,6 +98,10 @@
             margin-bottom: 20px;
         }
 
+        .form-settings .form-input-group {
+            margin-bottom: 10px;
+        }
+
         .form-settings label {
             display: block;
             margin-bottom: 5px;
@@ -152,6 +156,40 @@
 
         .hideable.hidden {
             display: none;
+        }
+
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+
+        #coordinates {
+            /* position: absolute; */
+            bottom: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        #controls {
+            margin: 10px 0;
+        }
+
+        #mapModal {
+            min-width: 400px;
+            min-height: 300px;
+        }
+
+        .marker {
+            background-image: url('https://docs.maptiler.com/openlayers/default-marker/marker-icon.png');
+            background-size: cover;
+            width: 25px;
+            height: 41px;
+            cursor: pointer;
         }
 
         /* developer styles */
@@ -230,16 +268,24 @@
             </div>
 
             <div class="form-group">
-                <label for="longitude">Longitude:</label>
-                <input class="inputbox" type="text" id="longitude" name="longitude" title="Longitude">
-                <!-- <span class="info-dev" id="info-longitude">status</span> -->
+                <div class="form-input-group">
+                    <label for="longitude">Longitude:</label>
+                    <input class="inputbox" type="text" id="longitude" name="longitude" title="Longitude">
+                    <!-- <span class="info-dev" id="info-longitude">status</span> -->
+                </div>
+
+                <div class="_form-input-group">
+                    <label for="latitude">Latitude:</label>
+                    <input class="inputbox" type="text" id="latitude" name="latitude" title="Latitude">
+                    <!-- <span class="info-dev" id="info-latitude">status</span> -->
+                </div>
+                <button class="marg-top"
+                        id="openMap"
+                        type="button">
+                    Choose location
+                </button>
             </div>
 
-            <div class="form-group">
-                <label for="latitude">Latitude:</label>
-                <input class="inputbox" type="text" id="latitude" name="latitude" title="Latitude">
-                <!-- <span class="info-dev" id="info-latitude">status</span> -->
-            </div>
             <div class="form-group">
                 <a for="openWeatherKey" href="https://openweathermap.org/">OpenWeatherMap Key</a>
                 <input class="inputbox"
@@ -296,6 +342,18 @@
         </form>
     </div>
 
+    <!-- Map picker dialog -->
+    <dialog id="mapModal" class="modal">
+        <div id="controls">
+            <span id="coordinates">Click the map to select a location</span>
+        </div>
+        <div id="map"></div>
+        <div>
+            <button id="closeMap">Save</button>
+            <button id="cancelMap" onclick="onCancelClick()">Cancel</button>
+        </div>
+    </dialog>
+
     <script type='text/javascript'>
 
         // String format helper
@@ -319,6 +377,7 @@
             }
         }
 
+// Loading third party lib/css
         let fontAwesomStyleUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
 
         // try to get font awesom style
@@ -343,14 +402,14 @@
                 }
             });
 
-            let googleChartssUrl = 'https://www.gstatic.com/charts/loader.js';
+            let googleChartsUrl = 'https://www.gstatic.com/charts/loader.js';
 
             // try to get google chart script
-            checkScriptAvailability(googleChartssUrl)
+            checkScriptAvailability(googleChartsUrl)
                 .then((available) => {
                     if (available) {
                         const script = document.createElement('script');
-                        script.src = googleChartssUrl;
+                        script.src = googleChartsUrl;
                         script.async = true;
                         script.onload = () => {
                             console.log('Google charts script loaded')
@@ -361,6 +420,52 @@
                             console.error('Failed to load Google charts script')
                         };
                         document.body.appendChild(script);
+                    } else {
+                        console.warn('Script unavailable, loading fallback');
+                        // Load fallback script
+                    }
+                });
+
+            let openLayersUrl = 'https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js';
+
+            // try to get google chart script
+            checkScriptAvailability(openLayersUrl)
+                .then((available) => {
+                    if (available) {
+                        const script = document.createElement('script');
+                        script.src = openLayersUrl;
+                        script.async = true;
+                        script.onload = () => {
+                            console.log('OpenLayers script loaded')
+                            onLoadGoogleCharts();
+                            RequstChartData();
+                        };
+                        script.onerror = () => {
+                            console.error('Failed to load OpenLayers script')
+                        };
+                        document.body.appendChild(script);
+                    } else {
+                        console.warn('Script unavailable, loading fallback');
+                        // Load fallback script
+                    }
+                });
+
+            let openLayersCssUrl = 'https://cdn.jsdelivr.net/npm/ol/ol.css';
+            checkScriptAvailability(openLayersCssUrl)
+                .then((available) => {
+                    if (available) {
+                        const script = document.createElement('link');
+                        script.href = openLayersCssUrl;
+                        script.rel = 'stylesheet';
+                        script.type = 'text/css';
+                        script.async = true;
+                        script.onload = () => {
+                            console.log('OpenLayers CSS loaded');
+                        };
+                        script.onerror = () => {
+                            console.error('OpenLayers failed to load');
+                        };
+                        document.head.appendChild(script);
                     } else {
                         console.warn('Script unavailable, loading fallback');
                         // Load fallback script
@@ -801,6 +906,82 @@
             return validateKeyChars(form["openWeatherKey"].value, "Invalid Openweather API key")
                 && validateKeyChars(form["ip2geoKey"].value, "Invalid IpGeolocation API key");
         }
+
+        const $mapModal = document.querySelector('#mapModal');
+        const $openMap = document.querySelector('#openMap');
+        const $closeMap = document.querySelector('#closeMap');
+        const $latitude = document.querySelector('#latitude');
+        const $longitude = document.querySelector('#longitude');
+
+        let map;
+
+        // Variables for location picking
+        let marker = null;
+        let tmpCoordinate;
+
+        function onCancelClick() {
+            $mapModal.close('exit');
+        }
+
+        $openMap.addEventListener('click', function() {
+            $mapModal.showModal();
+
+            setTimeout(() => {
+                    // Create map with OSM layer
+                    if (!map) {
+                        map = new ol.Map({
+                            target: 'map',
+                            layers: [
+                                new ol.layer.Tile({
+                                    source: new ol.source.OSM()
+                                })
+                            ],
+                            view: new ol.View({
+                                center: ol.proj.fromLonLat([0, 0]), // Center at [0,0]
+                                zoom: 2
+                            })
+                        });
+
+                        const markerLayer = new ol.layer.Vector({
+                            source: new ol.source.Vector()
+                        });
+
+                        map.addLayer(markerLayer);
+
+                        // Handle map clicks
+                        map.on('click', onMapClick);
+
+                        function onMapClick(evt) {
+                            // Clear previous marker
+                            markerLayer.getSource().clear();
+
+                            // Create new marker
+                            const coordinate = evt.coordinate;
+                            marker = new ol.Feature({
+                                geometry: new ol.geom.Point(coordinate)
+                            });
+
+                            markerLayer.getSource().addFeature(marker);
+
+                            // Convert to lon/lat
+                            const lonLat = ol.proj.toLonLat(coordinate);
+                            tmpCoordinate = lonLat;
+
+                            // Display coordinates
+                            document.getElementById('coordinates').textContent =
+                                `Selected location: ${lonLat[1].toFixed(6)}°N, ${lonLat[0].toFixed(6)}°E`;
+                        }
+                    }
+                }
+                , 100);
+        });
+
+        $closeMap.addEventListener('click', () => {
+            $latitude.value = tmpCoordinate[1].toFixed(6);
+            $longitude.value = tmpCoordinate[0].toFixed(6);
+
+            $mapModal.close('exit');
+        });
     </script>
 </body>
 
