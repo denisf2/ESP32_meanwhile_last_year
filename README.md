@@ -1,5 +1,5 @@
 ### What is this?
-A pet project based on the ESP32-WROOM (with onboard WiFi). The ESP32 has a web server that displays weather information (mainly temperature) as a graph.
+A pet project based on the ESP32-WROOM (with onboard WiFi). The ESP32 has a web server that displays weather information (mainly temperature) as a graph. There is no particular application.
 
 ### Why?
 Just to try making an IoT device. A fusion of C++/Arduino framework, HTML, CSS, and JS under restricted conditions.
