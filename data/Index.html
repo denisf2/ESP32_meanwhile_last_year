@@ -209,9 +209,9 @@
     <!-- <p>Click on the buttons inside the tabbed menu:</p> -->
 
     <div class="tab">
-        <button class="tablinks active" onclick="openTab(event, 'Chart')"><i class="fa fa-bar-chart"></i> Chart</button>
-        <button class="tablinks" onclick="openTabSettings(event, 'Settings')"><i class="fa fa-file-text-o"></i> Settings</button>
-        <button class="tablinks" onclick="openTab(event, 'System')"><i class="fa fa-cogs"></i> System</button>
+        <button id='tabChart' class="tablinks active"><i class="fa fa-bar-chart"></i> Chart</button>
+        <button id='tabSettings' class="tablinks"><i class="fa fa-file-text-o"></i> Settings</button>
+        <button id='tabSystem' class="tablinks"><i class="fa fa-cogs"></i> System</button>
     </div>
 
     <div id="Chart" class="tab-content" style="display: block;">
@@ -230,8 +230,7 @@
             <!-- [ ]TODO: remove button -->
             <button class="button_sys"
                     type="submit"
-                    id="updateChartButton"
-                    onclick='update()'>
+                    id="updateChartButton">
                 CLICK FOR UPDATE
             </button>
         </form>
@@ -253,8 +252,7 @@
                         title="WiFi SSID">
                 <button type="button"
                         class="testbutton marg-top"
-                        id="toggle-button"
-                        onclick="onClickToggle()">
+                        id="toggle-button">
                     Survey
                 </button>
                 <table class="survey-table hideable hidden" id="table-content"></table>
@@ -295,8 +293,7 @@
                         title="OpenWeather API Key">
                 <button class="testbutton marg-top"
                         id="openWeatherKeyCheck"
-                        type="button"
-                        onclick="return OnTestButtonClick(openWeatherKey)">
+                        type="button">
                     Check Key
                 </button>
                 <!-- <span class="info-dev" id="info-opwKey">status</span> -->
@@ -307,8 +304,7 @@
                 <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="IpGeolocation API Key">
                 <button class="testbutton marg-top"
                         id="ip2geoKeyCheck"
-                        type="button"
-                        onclick="return OnTestButtonClick(ip2geoKey)">
+                        type="button">
                     Check Key
                 </button>
                 <!-- <span class="info-dev" id="info-ip2geoKey">status</span> -->
@@ -316,8 +312,7 @@
 
             <button class="button_sys"
                     type="submit"
-                    id="settings-submit-button"
-                    onclick='return submitSettings()'>
+                    id="settings-submit-button">
                 Submit
             </button>
         </form>
@@ -350,7 +345,7 @@
         <div id="map"></div>
         <div>
             <button id="closeMap">Save</button>
-            <button id="cancelMap" onclick="onCancelClick()">Cancel</button>
+            <button id="cancelMap">Cancel</button>
         </div>
     </dialog>
 
@@ -478,6 +473,46 @@
         //                 .forEach(h => h.classList.toggle('hidden'));
         //     });
 
+        document.querySelector('#tabChart')
+                ?.addEventListener('click', (e) => {
+                                                openTab(event, 'Chart');
+                                            });
+
+        document.querySelector('#tabSettings')
+                ?.addEventListener('click', (e) => {
+                                                openTab(event, 'Settings');
+                                                RequestFormData();
+                                                AcquireWiFiAPs();
+                                            });
+
+        document.querySelector('#tabSystem')
+                ?.addEventListener('click', (e) => {
+                                                openTab(event, 'System');
+                                            });
+
+        document.querySelector('#toggle-button')
+                ?.addEventListener('click', onClickToggle);
+
+        document.querySelector('#updateChartButton')
+                ?.addEventListener('click', update);
+
+        document.querySelector('#openWeatherKeyCheck')
+                ?.addEventListener('click', (e) => {
+                                                return OnTestButtonClick(openWeatherKey);
+                                            });
+
+        document.querySelector('#ip2geoKeyCheck')
+                ?.addEventListener('click', (e) => {
+                                                return OnTestButtonClick(ip2geoKey);
+                                            });
+
+        document.querySelector('#settings-submit-button')
+                ?.addEventListener('click', (e) => {
+                                                return submitSettings();
+                                            });
+
+        document.querySelector('#cancelMap')
+                ?.addEventListener('click', onCancelClick);
 
         function onClickToggle() {
             document.querySelectorAll('.hideable')
@@ -862,12 +897,6 @@
                 );
                 resizeObserver.observe(chartElement);
             }
-        }
-
-        function openTabSettings(evt, tabLabel) {
-            openTab(evt, tabLabel);
-            RequestFormData();
-            AcquireWiFiAPs();
         }
 
         function openTab(evt, tabLabel) {
