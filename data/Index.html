@@ -677,10 +677,8 @@
 
         function updateInfoDev(aInfo) {
             // [ ]TODO: remove test code
-            let infoParag = document.getElementsByClassName("info-dev");
-            for (let i = 0; i < infoParag.length; i++) {
-                infoParag[i].innerText = aInfo;
-            }
+            document.querySelectorAll(".info-dev")
+                .forEach(inf => inf.innerText = aInfo);
         }
 
         function CtrlToMessageID(aCtrlID) {
@@ -902,15 +900,11 @@
         }
 
         function openTab(evt, tabLabel) {
-            let tabcontent = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
+            document.querySelectorAll(".tab-content")
+                .forEach(elm => elm.style.display = "none");
 
-            let tablinks = document.getElementsByClassName("tablinks");
-            for (let i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
+            document.querySelectorAll(".tablinks")
+                .forEach(lnk => lnk.className = lnk.className.replace(" active", ""));
 
             document.getElementById(tabLabel).style.display = "block";
             evt.currentTarget.className += " active";
