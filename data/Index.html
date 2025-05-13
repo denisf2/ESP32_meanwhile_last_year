@@ -214,7 +214,7 @@
         <button id='tabSystem' class="tablinks"><i class="fa fa-cogs"></i> System</button>
     </div>
 
-    <div id="Chart" class="tab-content" style="display: block;">
+    <div class="tab-content" style="display: block;">
         <!-- <h3>Chart</h3> -->
         <p class="dev-todo">Here should be some description.</p>
         <!-- <h3 style='color:brown'>Room Temperature</h1> -->
@@ -224,9 +224,9 @@
               action="/"
               method="post"
               accept-charset="utf-8">
+
             <!-- [ ]TODO: scale for small screen -->
-            <div id='chart-div' class="chart-container">
-            </div>
+            <div id='chart-div' class="chart-container"></div>
             <!-- [ ]TODO: remove button -->
             <button class="button_sys"
                     type="submit"
@@ -243,6 +243,7 @@
               id="SettingsForm"
               action="/update"
               accept-charset="utf-8">
+
             <div class="form-group">
                 <label for="wifiSsid">WiFi SSID:</label>
                 <input class="inputbox"
@@ -261,20 +262,32 @@
 
             <div class="form-group">
                 <label for="wifiPassword">WiFi Password:</label>
-                <input class="inputbox" type="password" id="wifiPassword" name="wifiPassword" title="WiFi Password">
+                <input class="inputbox"
+                        type="password"
+                        id="wifiPassword"
+                        name="wifiPassword"
+                        title="WiFi Password">
                 <!-- <span class="info-dev" id="info-wifiPass">status</span> -->
             </div>
 
             <div class="form-group">
                 <div class="form-input-group">
                     <label for="longitude">Longitude:</label>
-                    <input class="inputbox" type="text" id="longitude" name="longitude" title="Longitude">
+                    <input class="inputbox"
+                            type="text"
+                            id="longitude"
+                            name="longitude"
+                            title="Longitude">
                     <!-- <span class="info-dev" id="info-longitude">status</span> -->
                 </div>
 
                 <div class="_form-input-group">
                     <label for="latitude">Latitude:</label>
-                    <input class="inputbox" type="text" id="latitude" name="latitude" title="Latitude">
+                    <input class="inputbox"
+                            type="text"
+                            id="latitude"
+                            name="latitude"
+                            title="Latitude">
                     <!-- <span class="info-dev" id="info-latitude">status</span> -->
                 </div>
                 <button class="marg-top"
@@ -301,7 +314,11 @@
 
             <div class="form-group">
                 <a for="ip2geoKey" href="https://ipgeolocation.io/">IpGeolocation Key</a>
-                <input class="inputbox" type="text" id="ip2geoKey" name="ip2geoKey" title="IpGeolocation API Key">
+                <input class="inputbox"
+                        type="text"
+                        id="ip2geoKey"
+                        name="ip2geoKey"
+                        title="IpGeolocation API Key">
                 <button class="testbutton marg-top"
                         id="ip2geoKeyCheck"
                         type="button">
@@ -320,17 +337,15 @@
 
     <div id="System" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
-        <form class="form-settings settings-width" id="SystemForm">
+        <form class="form-settings settings-width">
             <button class="button_sys"
                     type="submit"
-                    id="buttonResetDefault"
                     formaction="/default">
                 Reset to Default
             </button>
             <br>
             <button class="button_sys"
                     type="submit"
-                    id="buttonRestart"
                     formaction="/restart">
                 Restart
             </button>
