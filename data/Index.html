@@ -590,13 +590,23 @@
                     {
                         console.log('Available WiFi access points');
 
-                        let str = CreateTableHeader();
-
-                        let node = json["APs"];
-                        for(let i = 0; i < node.length; ++i)
-                            str += CreateTableRaw(node[i]);
+                        const str = `
+                                    ${CreateTableHeader()}
+                                    ${json["APs"].map(ap => CreateTableRaw(ap)).join('')}
+                                    `;
 
                         document.getElementById('table-content').innerHTML = str;
+
+                        document.querySelectorAll('.ssid-button')
+                            .forEach(aButton => aButton.addEventListener('click'
+                                                        , (aEvent) => {
+                                                            let input = document.getElementById("wifiSsid");
+                                                            input.value = aEvent.target.textContent;
+
+                                                            onClickToggle();
+                                                        }
+                                                    )
+                            );
 
                         break;
                     }
@@ -635,8 +645,7 @@
         function CreateTableRaw(aJsonNode) {
             let template = '<tr>\n'
                         +    '<td><button class="ssid-button"\n'
-                        +                'type="button"\n'
-                        +                'onclick="SsidButtonOnClick(\'{0}\')">\n'
+                        +                'type="button">\n'
                         +            '{0}\n'
                         +        '</button>\n'
                         +    '</td>\n'
@@ -664,13 +673,6 @@
             {
                 obj.textContent = obj.textContent.replace(" " + checkMark, "");
             }
-        }
-
-        function SsidButtonOnClick(aButtonName) {
-            let input = document.getElementById("wifiSsid");
-            input.value = aButtonName;
-
-            onClickToggle();
         }
 
         function updateInfoDev(aInfo) {
