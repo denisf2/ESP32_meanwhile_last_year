@@ -643,7 +643,7 @@
         }
 
         function CreateTableRaw(aJsonNode) {
-            let template = '<tr>\n'
+            const template = '<tr>\n'
                         +    '<td><button class="ssid-button"\n'
                         +                'type="button">\n'
                         +            '{0}\n'
@@ -662,7 +662,7 @@
         }
 
         function PasteRemoveCheckMark(aButtonName, aState) {
-            let checkMark = '\u{2713}';
+            const checkMark = '\u{2713}';
             let obj = document.getElementById(aButtonName);
             if ("true" == aState)
             {
