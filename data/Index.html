@@ -603,24 +603,7 @@
                     {
                         console.log('Available WiFi access points');
 
-                        const str = `
-                                    ${CreateTableHeader()}
-                                    ${json["APs"].map(ap => CreateTableRaw(ap)).join('')}
-                                    `;
-
-                        document.getElementById('table-content').innerHTML = str;
-
-                        document.querySelectorAll('.ssid-button')
-                            .forEach(aButton => aButton.addEventListener('click'
-                                                        , (aEvent) => {
-                                                            let input = document.getElementById("wifiSsid");
-                                                            input.value = aEvent.target.textContent;
-
-                                                            onClickToggle();
-                                                        }
-                                                    )
-                            );
-
+                        createAPTable(json["APs"]);
                         break;
                     }
                     case "ChartDataResponse":
@@ -649,6 +632,26 @@
             {
                 console.log('onMessage Error: %s', aError);
             }
+        }
+
+        function createAPTable(aNode) {
+            const str = `
+                        ${CreateTableHeader()}
+                        ${aNode.map(ap => CreateTableRaw(ap)).join('')}
+                        `;
+
+            document.getElementById('table-content').innerHTML = str;
+
+            document.querySelectorAll('.ssid-button')
+                .forEach(aButton => aButton.addEventListener('click'
+                                            , (aEvent) => {
+                                                let input = document.getElementById("wifiSsid");
+                                                input.value = aEvent.target.textContent;
+
+                                                onClickToggle();
+                                            }
+                                        )
+                );
         }
 
         function CreateTableHeader() {
