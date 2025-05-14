@@ -523,7 +523,7 @@
 
         document.querySelector('#settings-submit-button')
                 ?.addEventListener('click', (e) => {
-                                                return submitSettings();
+                                                return validateInputData();
                                             });
 
         document.querySelector('#cancelMap')
@@ -925,7 +925,7 @@
             evt.currentTarget.className += " active";
         }
 
-        function submitSettings() {
+        function validateInputData() {
             // validate data from form controls and post it to the server
             let validateKeyChars = (apikey, message) => {
                 const regHexOnlyLen32 = /^[0-9a-f]{32}$/i;
