@@ -338,15 +338,10 @@
     <div id="System" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width">
-            <button class="button_sys"
-                    type="submit"
-                    formaction="/default">
+            <button class="button_sys" id="setDefaultButton" type="submit">
                 Reset to Default
             </button>
-            <br>
-            <button class="button_sys"
-                    type="submit"
-                    formaction="/restart">
+            <button class="button_sys" id="resetButton" type="submit">
                 Restart
             </button>
         </form>
@@ -487,6 +482,11 @@
         //         document.querySelectorAll('.hideable')
         //                 .forEach(h => h.classList.toggle('hidden'));
         //     });
+
+        document.getElementById('resetButton')
+                    ?.setAttribute('formaction', '/restart');
+        document.getElementById('setDefaultButton')
+                    ?.setAttribute('formaction', '/default');
 
         document.querySelector('#tabChart')
                 ?.addEventListener('click', (e) => {
