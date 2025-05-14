@@ -941,10 +941,8 @@
                 return false;
             };
 
-            const form = document.forms["SettingsForm"];
-
-            return validateKeyChars(form["openWeatherKey"].value, "Invalid Openweather API key")
-                && validateKeyChars(form["ip2geoKey"].value, "Invalid IpGeolocation API key");
+            return validateKeyChars(document.getElementById("openWeatherKey").value, "Invalid Openweather API key")
+                && validateKeyChars(document.getElementById("ip2geoKey").value, "Invalid IpGeolocation API key");
         }
 
         const $mapModal = document.querySelector('#mapModal');
