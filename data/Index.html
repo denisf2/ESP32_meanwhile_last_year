@@ -205,21 +205,23 @@
 </head>
 
 <body>
-    <!-- <h2>Tabs</h2> -->
+    <!-- <h2>Tabbed menu</h2> -->
     <!-- <p>Click on the buttons inside the tabbed menu:</p> -->
-
     <div class="tab">
-        <button id='tabChart' class="tablinks active"><i class="fa fa-bar-chart"></i> Chart</button>
-        <button id='tabSettings' class="tablinks"><i class="fa fa-file-text-o"></i> Settings</button>
-        <button id='tabSystem' class="tablinks"><i class="fa fa-cogs"></i> System</button>
+        <button id='tabChart' class="tablinks active">
+            <i class="fa fa-bar-chart"></i> Chart
+        </button>
+        <button id='tabSettings' class="tablinks">
+            <i class="fa fa-file-text-o"></i> Settings
+        </button>
+        <button id='tabSystem' class="tablinks">
+            <i class="fa fa-cogs"></i> System
+        </button>
     </div>
 
+    <!-- tab chart -->
     <div id="Chart" class="tab-content" style="display: block;">
-        <!-- <h3>Chart</h3> -->
         <p class="dev-todo">Here should be some description.</p>
-        <!-- <h3 style='color:brown'>Room Temperature</h1> -->
-
-        <!-- <form action="/" method="post">-->
         <form class="form-settings chart-width"
               action="/"
               method="post"
@@ -236,8 +238,8 @@
         </form>
     </div>
 
+    <!-- tab settings -->
     <div id="Settings" class="tab-content">
-        <!-- <h3>Settings</h3> -->
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width"
               id="SettingsForm"
@@ -256,8 +258,8 @@
                         id="toggle-button">
                     Survey
                 </button>
+
                 <table class="survey-table hideable hidden" id="table-content"></table>
-                <!-- <span class="info-dev" id="info-wifiSsid">status</span> -->
             </div>
 
             <div class="form-group">
@@ -267,7 +269,6 @@
                         id="wifiPassword"
                         name="wifiPassword"
                         title="WiFi Password">
-                <!-- <span class="info-dev" id="info-wifiPass">status</span> -->
             </div>
 
             <div class="form-group">
@@ -278,7 +279,6 @@
                             id="longitude"
                             name="longitude"
                             title="Longitude">
-                    <!-- <span class="info-dev" id="info-longitude">status</span> -->
                 </div>
 
                 <div class="_form-input-group">
@@ -288,7 +288,6 @@
                             id="latitude"
                             name="latitude"
                             title="Latitude">
-                    <!-- <span class="info-dev" id="info-latitude">status</span> -->
                 </div>
                 <button class="marg-top"
                         id="openMap"
@@ -309,7 +308,6 @@
                         type="button">
                     Check Key
                 </button>
-                <!-- <span class="info-dev" id="info-opwKey">status</span> -->
             </div>
 
             <div class="form-group">
@@ -324,7 +322,6 @@
                         type="button">
                     Check Key
                 </button>
-                <!-- <span class="info-dev" id="info-ip2geoKey">status</span> -->
             </div>
 
             <button class="button_sys"
@@ -335,6 +332,7 @@
         </form>
     </div>
 
+    <!-- tab system -->
     <div id="System" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width">
