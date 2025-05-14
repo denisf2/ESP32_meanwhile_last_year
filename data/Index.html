@@ -876,7 +876,7 @@
             var options = getChartOptions();
 
             // Instantiate and draw our chart
-            const chart = new google.visualization.ComboChart(document.getElementById('chart-div'));
+            const chart = new google.visualization.ComboChart($chartElement);
             chart.draw(data, options);
 
             // Store reference to current chart
@@ -900,9 +900,10 @@
             }
         }
 
+        const $chartElement = document.getElementById('chart-div');
+
         function setupResizeObserver() {
             if (typeof ResizeObserver !== 'undefined') {
-                const chartElement = document.getElementById('chart-div');
                 const resizeObserver = new ResizeObserver(
                     debounce(
                         () => {
@@ -911,7 +912,7 @@
                         , 150
                     )
                 );
-                resizeObserver.observe(chartElement);
+                resizeObserver.observe($chartElement);
             }
         }
 
