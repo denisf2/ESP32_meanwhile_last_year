@@ -677,18 +677,20 @@
                                 );
         }
 
-        function PasteRemoveCheckMark(aButtonName, aState) {
-            const checkMark = '\u{2713}';
-            let obj = document.getElementById(aButtonName);
-            if ("true" == aState)
-            {
-                if (!obj.textContent.endsWith(checkMark))
-                    obj.textContent += " " + checkMark;
+        function PasteRemoveCheckMark(aButtonId, aState) {
+            let toggleCheckMark = (aStr) => {
+                if ("true" == aState)
+                {
+                    const checkMark = '\u{2713}';
+                    if (!aStr.endsWith(checkMark))
+                       return aStr + " " + checkMark;
+                }
+                else
+                    return aStr.slice(0, aStr.length - 2);
             }
-            else
-            {
-                obj.textContent = obj.textContent.replace(" " + checkMark, "");
-            }
+
+            let obj = document.getElementById(aButtonId);
+            obj.textContent = toggleCheckMark(obj.textContent);
         }
 
         // function updateInfoDev(aInfo) {
