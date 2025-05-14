@@ -193,9 +193,9 @@
         }
 
         /* developer styles */
-        .info-dev {
+        /* .info-dev {
             display: none;
-        }
+        } */
 
         .dev-todo {
             display: none;
@@ -617,16 +617,16 @@
                         console.log('JSON message: %s', aEvent.data);
                 }
 
-                switch (aEvent.data)
-                {
-                    case "beaf":
-                        // [ ]TODO: remove test code
-                        console.log('[dev] Get WebSocket data: %s', aEvent.data)
-                        updateInfoDev(aEvent.data);
-                        break;
-                    default:
-                        console.log('[dev] Unknown websocket argument: %s', aEvent.data)
-                }
+                // switch (aEvent.data)
+                // {
+                //     case "beaf":
+                //         // [ ]TODO: remove test code
+                //         console.debug('[dev] Get WebSocket data: %s', aEvent.data)
+                //         updateInfoDev(aEvent.data);
+                //         break;
+                //     default:
+                //         console.debug('[dev] Unknown websocket argument: %s', aEvent.data)
+                // }
             }
             catch (aError)
             {
@@ -691,11 +691,11 @@
             }
         }
 
-        function updateInfoDev(aInfo) {
-            // [ ]TODO: remove test code
-            document.querySelectorAll(".info-dev")
-                .forEach(inf => inf.innerText = aInfo);
-        }
+        // function updateInfoDev(aInfo) {
+        //     // [ ]TODO: remove test code
+        //     document.querySelectorAll(".info-dev")
+        //         .forEach(inf => inf.innerText = aInfo);
+        // }
 
         function CtrlToMessageID(aCtrlID) {
             switch (aCtrlID.id)
