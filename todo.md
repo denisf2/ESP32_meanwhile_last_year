@@ -24,3 +24,4 @@
     [x]TODO: display api keys verification status
     [ ]TODO: display note to restart device after submite settings
     [ ]TODO: filter somehow incoming invalid data
+    [ ]TODO: make control on a web page to toggle location acquisition mode
