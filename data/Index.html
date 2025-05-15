@@ -242,8 +242,7 @@
     <div id="Settings" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width"
-              id="SettingsForm"
-              action="/update"
+              id="settingsForm"
               accept-charset="utf-8">
 
             <div class="form-group">
@@ -771,20 +770,30 @@
             return true;
         }
 
-        // SettingsForm.onsubmit = async (e) => {
-        //     e.preventDefault();
-        //     let host = window.location.host + "/update";
-        //     let response = await fetch(host, {
-        //                                 method: 'POST',
-        //                                 body: new FormData(SettingsForm)
-        //                             });
-        //
-        //     let result = await response.json();
-        //
-        //     // alert(result.message);
-        //
-        //     alert(true);
-        // };
+        document.getElementById("settingsForm")
+            .addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                try {
+                    const form = e.target;
+                    let host = window.location.origin + "/update";
+                    let urlEncodedData = new URLSearchParams(new FormData(form)).toString();
+                    let request = {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: urlEncodedData
+                                };
+                    let response = await fetch(host, request);
+
+                    if(!response.ok){
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+
+                } catch (aError) {
+                    console.error(`Error: ${aError}`);
+                }});
 
         function debounce(func, wait) {
             let timeout;
