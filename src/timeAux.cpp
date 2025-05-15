@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <sstream>
 
+const char TAG[] = "[Time]";
+
 const char ntpServer1[] = "pool.ntp.org";
 const char ntpServer2[] = "time.nist.gov";
 const long gmtOffset_sec = 3600;
@@ -45,16 +47,16 @@ auto printLocalTime() -> void
     tm timeinfo;
     if (!getLocalTime(&timeinfo))
     {
-        log_i("No time available (yet)");
+        log_i("%s No time available (yet)", TAG);
         return;
     }
 
-    log_i("%s", print(&timeinfo, "%A, %B %d %Y %H:%M:%S").c_str());
+    log_i("%s %s", TAG, print(&timeinfo, "%A, %B %d %Y %H:%M:%S").c_str());
 }
 
 auto timeavailable(timeval * aTimeVal) -> void
 {
-    log_i("Got time adjustment from NTP!");
+    log_i("%s Got time adjustment from NTP!", TAG);
     printLocalTime();
 }
 
@@ -89,7 +91,8 @@ auto GetDateRangeEnds(bool aForLastYear) -> std::pair<String, String>
                 , (aForLastYear) ? +6 : +3);
     const auto threeDaysBeforeTodayLastYear = print(&timeInfoLastYear, "%F");
 
-    log_d("Date range is from %s till %s"
+    log_d("%s Date range is from %s till %s"
+                , TAG
                 , threeDaysPastTodayLastYear.c_str()
                 , threeDaysBeforeTodayLastYear.c_str());
 

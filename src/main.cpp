@@ -35,6 +35,8 @@
 #include "timeAux.h"
 #include "JsonAux.h"
 
+const char TAG[] = "[Main]";
+
 // [ ]TODO: need refactoring to prev time stamps
 unsigned long oldmil1 = 0UL;
 unsigned long oldmil2 = 0UL;
@@ -139,15 +141,15 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
             }
             catch (const std::invalid_argument &aExc)
             {
-                log_e("%s. Invalid argument: %s", msg, aExc.what());
+                log_e("%s %s. Invalid argument: %s", TAG, msg, aExc.what());
             }
             catch (const std::out_of_range &aExc)
             {
-                log_e("%s. Out of range: %s", msg, aExc.what());
+                log_e("%s %s. Out of range: %s", TAG, msg, aExc.what());
             }
             catch (const std::exception &aExc)
             {
-                log_e("%s. Other exception: %s", msg, aExc.what());
+                log_e("%s %s. Other exception: %s", TAG, msg, aExc.what());
             }
         }
 
@@ -189,7 +191,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         }
         else
         {
-            log_i("WiFi Disconnected");
+            log_i("%s WiFi Disconnected", TAG);
         }
         oldmil2 = aCurrent;
         once = true;
@@ -220,7 +222,7 @@ auto job_check_wifi_scan(unsigned long aCurrent) -> auto
         if (res.has_value())
         {
             websocket.textAll(res.value());
-            log_d("WiFi scan is ready");
+            log_d("%s WiFi scan is ready", TAG);
         }
 
         oldmil5 = aCurrent;

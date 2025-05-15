@@ -3,12 +3,14 @@
 #include "resources.h"
 #include "NvsPreferences.h"
 
+const char TAG[] = "[WebSrv]";
+
 constexpr int listenPort{80};
 AsyncWebServer server(listenPort);
 
 auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 {
-    log_d("Requested favicon.ico");
+    log_d("%s Requested favicon.ico", TAG);
 
     auto response = aRequest->beginResponse_P(200
                                             , "image/x-icon"
@@ -22,7 +24,7 @@ auto HandleFavIcon(AsyncWebServerRequest *aRequest) -> void
 
 auto HandleDeviceSoftRestart(AsyncWebServerRequest *aRequest) -> void
 {
-    log_d("Handle Soft Restart");
+    log_d("%s Handle Soft Restart", TAG);
 
     const char webpage[] PROGMEM = R"rawhtml(
         <!DOCTYPE HTML>
@@ -68,7 +70,7 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
 {
     const size_t paramsNr = aRequest->params();
 
-    log_i("Params total: %d", paramsNr);
+    log_i("%s Params total: %d", TAG, paramsNr);
 
     for (size_t i = 0; i < paramsNr; i++)
     {
@@ -76,7 +78,7 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
         const auto name = p->name();
         const auto value = p->value();
 
-        log_i("Param [name, value] : [%s, %s]", name.c_str(), value.c_str());
+        log_i("%s Param [name, value] : [%s, %s]", TAG, name.c_str(), value.c_str());
 
         if (value.isEmpty())
             continue;
@@ -121,7 +123,7 @@ auto handleSubmit(AsyncWebServerRequest *aRequest) -> void
     // [ ]TODO: do something with updateChartButton
     if (aRequest->hasArg("updateChartButton"))
     {
-        log_i("updateChartButton was pressed");
+        log_i("%s updateChartButton was pressed", TAG);
     }
 
     SendWebPageResponse(aRequest); // Response to the HTTP request
