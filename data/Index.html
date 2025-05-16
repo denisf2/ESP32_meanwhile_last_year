@@ -351,8 +351,8 @@
         </div>
         <div id="map"></div>
         <div>
-            <button id="closeMap">Save</button>
             <button id="cancelMap">Cancel</button>
+            <button id="saveMap">Save Location</button>
         </div>
     </dialog>
 
@@ -960,7 +960,7 @@
 
         const $mapModal = document.querySelector('#mapModal');
         const $openMap = document.querySelector('#openMap');
-        const $closeMap = document.querySelector('#closeMap');
+        const $saveMap = document.querySelector('#saveMap');
         const $latitude = document.querySelector('#latitude');
         const $longitude = document.querySelector('#longitude');
 
@@ -1027,7 +1027,7 @@
                 , 100);
         });
 
-        $closeMap.addEventListener('click', () => {
+        $saveMap.addEventListener('click', () => {
             $latitude.value = tmpCoordinate[1].toFixed(6);
             $longitude.value = tmpCoordinate[0].toFixed(6);
 
