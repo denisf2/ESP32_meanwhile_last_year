@@ -213,10 +213,10 @@
             <i class="fa fa-bar-chart"></i> Chart
         </button>
         <button id='tabSettings' class="tablinks">
-            <i class="fa fa-file-text-o"></i> Settings
+            <i class="fa fa-cogs"></i> Settings
         </button>
         <button id='tabSystem' class="tablinks">
-            <i class="fa fa-cogs"></i> System
+            <i class="fa fa-server"></i> System
         </button>
     </nav>
 
@@ -234,7 +234,7 @@
             <button class="button_sys"
                     type="submit"
                     id="updateChartButton">
-                CLICK FOR UPDATE
+                    <i class="fa fa-refresh"></i> Update Chart
             </button>
         </form>
     </div>
@@ -256,7 +256,7 @@
                 <button type="button"
                         class="marg-top"
                         id="toggle-button">
-                    Survey
+                    <i class="fa fa-wifi"></i> Scan Networks
                 </button>
 
                 <table class="survey-table hideable hidden" id="table-content"></table>
@@ -292,12 +292,16 @@
                 <button class="marg-top"
                         id="openMap"
                         type="button">
-                    Choose location
+                    <i class="fa fa-map-marker"></i> Select on Map
                 </button>
             </div>
 
             <div class="form-group">
-                <a for="openWeatherKey" href="https://openweathermap.org/">OpenWeatherMap Key</a>
+                <!-- <a for="openWeatherKey" href="https://openweathermap.org/">OpenWeatherMap Key</a> -->
+                <label class="form-label" for="openWeatherKey">
+                    <i class="fa fa-key"></i> OpenWeatherMap API Key
+                    <a href="https://openweathermap.org/" target="_blank">(Get Key)</a>
+                </label>
                 <input class="inputbox"
                         type="text"
                         id="openWeatherKey"
@@ -306,12 +310,16 @@
                 <button class="marg-top"
                         id="openWeatherKeyCheck"
                         type="button">
-                    Check Key
+                    <i class="fa fa-check"></i> Validate Key
                 </button>
             </div>
 
             <div class="form-group">
-                <a for="ip2geoKey" href="https://ipgeolocation.io/">IpGeolocation Key</a>
+                <!-- <a for="ip2geoKey" href="https://ipgeolocation.io/">IpGeolocation Key</a> -->
+                <label class="form-label" for="ip2geoKey">
+                    <i class="fa fa-key"></i> IpGeolocation API Key
+                    <a href="https://ipgeolocation.io/" target="_blank">(Get Key)</a>
+                </label>
                 <input class="inputbox"
                         type="text"
                         id="ip2geoKey"
@@ -320,14 +328,14 @@
                 <button class="marg-top"
                         id="ip2geoKeyCheck"
                         type="button">
-                    Check Key
+                    <i class="fa fa-check"></i> Validate Key
                 </button>
             </div>
 
             <button class="button_sys"
                     type="submit"
                     id="submitSettingsButton">
-                Submit
+                <i class="fa fa-save"></i> Save Settings
             </button>
         </form>
     </div>
@@ -337,10 +345,10 @@
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width">
             <button class="button_sys" id="setDefaultButton" type="submit">
-                Reset to Default
+                <i class="fa fa-undo"></i> Reset to Defaults
             </button>
             <button class="button_sys" id="resetButton" type="submit">
-                Restart
+                <i class="fa fa-power-off"></i> Restart System
             </button>
         </form>
     </div>
