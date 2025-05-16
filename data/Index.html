@@ -564,6 +564,7 @@
             websocket.onopen = onOpen;
             websocket.onclose = onClose;
             websocket.onmessage = onMessage;
+            websocket.onerror = onError;
         }
 
         function onOpen(aEvent) {
@@ -573,6 +574,10 @@
         function onClose(aEvent) {
             console.log('Connection closed');
             setTimeout(initWebSocket, 2000);
+        }
+
+        function onError(aEvent) {
+            console.log('WebSocket error:', aEvent);
         }
 
         function onMessage(aEvent) {
@@ -639,7 +644,7 @@
             }
             catch (aError)
             {
-                console.log('onMessage Error: %s', aError);
+                console.error('onMessage Error: %s', aError);
             }
         }
 
