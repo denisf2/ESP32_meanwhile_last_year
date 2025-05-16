@@ -630,21 +630,8 @@
                     default:
                         console.log('JSON message: %s', aEvent.data);
                 }
-
-                // switch (aEvent.data)
-                // {
-                //     case "beaf":
-                //         // [ ]TODO: remove test code
-                //         console.debug('[dev] Get WebSocket data: %s', aEvent.data)
-                //         updateInfoDev(aEvent.data);
-                //         break;
-                //     default:
-                //         console.debug('[dev] Unknown websocket argument: %s', aEvent.data)
-                // }
-            }
-            catch (aError)
-            {
-                console.error('onMessage Error: %s', aError);
+            } catch (aError) {
+                console.error('Error processing message:', aError);
             }
         }
 
