@@ -717,61 +717,35 @@
         }
 
         function OnTestButtonClick(aCtrlID) {
-            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
-                console.warn('WebSocket has not opened yet');
-                return false;
-            }
-
-            var obj = new Object();
-            obj.message = CtrlToMessageID(aCtrlID);
-            obj.apikey = aCtrlID.value;
-
-            var jsonString = JSON.stringify(obj);
-            websocket.send(jsonString);
-
-            return true;
+            sendWebSocketMessage({message : CtrlToMessageID(aCtrlID)
+                                , apikey: aCtrlID.value});
         }
 
         function RequestFormData() {
-            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
-                console.warn('WebSocket has not opened yet');
-                return;
-            }
-
-            var obj = new Object();
-            obj.message = "FormFill";
-
-            var jsonString = JSON.stringify(obj);
-            websocket.send(jsonString);
+            sendWebSocketMessage({message : 'FormFill'});
         }
 
         function AcquireWiFiAPs() {
-            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
-                console.warn('WebSocket has not opened yet');
-                return;
-            }
-
-            var obj = new Object();
-            obj.message = "AcquireWiFiAPs";
-
-            var jsonString = JSON.stringify(obj);
-            websocket.send(jsonString);
+            sendWebSocketMessage({message : 'AcquireWiFiAPs'});
         }
 
         function RequstChartData() {
-            if('undefined' === typeof websocket || WebSocket.OPEN != websocket.readyState){
-                console.warn('WebSocket has not opened yet');
+            sendWebSocketMessage({message: 'ChartDataRequest'});
+        }
+
+        function sendWebSocketMessage(aData) {
+            if (!websocket || WebSocket.OPEN !== websocket.readyState) {
+                console.warn('WebSocket is not connected');
                 return false;
             }
 
-            var obj = new Object();
-            // request chart data if available
-            obj.message = 'ChartDataRequest';
-
-            var jsonString = JSON.stringify(obj);
-            websocket.send(jsonString);
-
-            return true;
+            try {
+                websocket.send(JSON.stringify(aData));
+                return true;
+            } catch (aError) {
+                console.error('Error sending WebSocket message:', aError);
+                return false;
+            }
         }
 
         document.getElementById("settingsForm")
