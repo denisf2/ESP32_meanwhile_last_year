@@ -603,12 +603,7 @@
                     }
                     case "FormFillStoredData":
                     {
-                        document.getElementById("wifiSsid").value = json['WifiSsid'];
-                        document.getElementById("wifiPassword").value = json['WiFiPassword'];
-                        document.getElementById("longitude").value = json['Longitude'];
-                        document.getElementById("latitude").value = json['Latitude'];
-                        document.getElementById("ip2geoKey").value = json['IpGeolocKey'];
-                        document.getElementById("openWeatherKey").value = json['OpenWeatherKey'];
+                        populateForm(json);
 
                         console.log('Form Fill message');
                         break;
@@ -633,6 +628,15 @@
             } catch (aError) {
                 console.error('Error processing message:', aError);
             }
+        }
+
+        function populateForm(aData) {
+            document.getElementById("wifiSsid").value = aData['WifiSsid'];
+            document.getElementById("wifiPassword").value = aData['WiFiPassword'];
+            document.getElementById("longitude").value = aData['Longitude'];
+            document.getElementById("latitude").value = aData['Latitude'];
+            document.getElementById("ip2geoKey").value = aData['IpGeolocKey'];
+            document.getElementById("openWeatherKey").value = aData['OpenWeatherKey'];
         }
 
         function createAPTable(aNode) {
