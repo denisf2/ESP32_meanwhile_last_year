@@ -582,9 +582,8 @@
 
         function onMessage(aEvent) {
             try {
-                let json = JSON.parse(aEvent.data);
-                switch (json['message'])
-                {
+                const json = JSON.parse(aEvent.data);
+                switch (json['message']) {
                     case "ip2geoTest":
                     {
                         PasteRemoveCheckMark("ip2geoKeyCheck", json['valid']);
@@ -619,11 +618,12 @@
                     {
                         // [ ]TODO: update chart
                         chartValues = generateValues(json);
+
                         console.debug('ChartDataResponse');
                         break;
                     }
                     default:
-                        console.log('JSON message: %s', aEvent.data);
+                        console.log('Recieved message:', json);
                 }
             } catch (aError) {
                 console.error('Error processing message:', aError);
