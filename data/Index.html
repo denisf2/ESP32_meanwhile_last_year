@@ -567,23 +567,17 @@
         function initWebSocket() {
             console.log('Trying to open WebSocket connection...');
             websocket = new WebSocket(gateway);
-            websocket.onopen = onOpen;
-            websocket.onclose = onClose;
+            websocket.onopen = () =>  {
+                                    console.log('Connection opened');
+                                };
+            websocket.onclose = () => {
+                                    console.log('Connection closed');
+                                    setTimeout(initWebSocket, 2000);
+                                };
             websocket.onmessage = onMessage;
-            websocket.onerror = onError;
-        }
-
-        function onOpen(aEvent) {
-            console.log('Connection opened');
-        }
-
-        function onClose(aEvent) {
-            console.log('Connection closed');
-            setTimeout(initWebSocket, 2000);
-        }
-
-        function onError(aEvent) {
-            console.log('WebSocket error:', aEvent);
+            websocket.onerror = (aError) => {
+                                    console.log('WebSocket error:', aError);
+                                };
         }
 
         function onMessage(aEvent) {
