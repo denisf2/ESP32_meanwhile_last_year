@@ -406,50 +406,29 @@
                     console.error('Font awesome failed to load');
                 }});
 
-            let googleChartsUrl = 'https://www.gstatic.com/charts/loader.js';
-
-            // try to get google chart script
-            checkScriptAvailability(googleChartsUrl)
-                .then((available) => {
-                    if (available) {
-                        const script = CreateScriptElement(googleChartsUrl);
-                        script.onload = () => {
+        LoadResource({
+            aUrl : 'https://www.gstatic.com/charts/loader.js'
+            , aType : 'js'
+            , aOnLoad : () => {
                             console.log('Google charts script loaded')
                             onLoadGoogleCharts();
                             RequstChartData();
-                        };
-                        script.onerror = () => {
+                        }
+            , aOnError : () => {
                             console.error('Failed to load Google charts script')
-                        };
-                        document.body.appendChild(script);
-                    } else {
-                        console.warn('Script unavailable, loading fallback');
-                        // Load fallback script
-                    }
-                });
+                        }
+        });
 
-            let openLayersUrl = 'https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js';
-
-            // try to get google chart script
-            checkScriptAvailability(openLayersUrl)
-                .then((available) => {
-                    if (available) {
-                        const script = CreateScriptElement(openLayersUrl);
-                        script.onload = () => {
+        LoadResource({
+            aUrl : 'https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js'
+            , aType : 'js'
+            , aOnLoad : () => {
                             console.log('OpenLayers script loaded')
-                            onLoadGoogleCharts();
-                            RequstChartData();
-                        };
-                        script.onerror = () => {
+                        }
+            , onerror : () => {
                             console.error('Failed to load OpenLayers script')
-                        };
-                        document.body.appendChild(script);
-                    } else {
-                        console.warn('Script unavailable, loading fallback');
-                        // Load fallback script
-                    }
-                });
-
+                        }
+        });
         LoadResource({
                         aUrl : 'https://cdn.jsdelivr.net/npm/ol/ol.css'
                     , aType : 'css'
