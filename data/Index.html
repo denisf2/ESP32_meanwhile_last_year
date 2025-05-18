@@ -6,6 +6,12 @@
     <title>Temperature Forecast Linechart demo</title>
 
     <style>
+        :root {
+            --primary-color: #1e88e5;
+            --error-color: #d32f2f;
+            --success-color: #388e3c;
+        }
+
         body {
             background-color: powderblue;
             font-family: Arial, Helvetica, sans-serif;
@@ -1005,6 +1011,42 @@
 
             $mapModal.close('exit');
         });
+
+        function showSuccess(message) {
+            showAlert(message, 'var(--success-color)');
+        }
+
+        function showError(message) {
+            showAlert(message, 'var(--error-color)');
+        }
+
+        function showInfo(message) {
+            showAlert(message, 'var(--primary-color)');
+        }
+
+        function showAlert(message, color) {
+            const alert = document.createElement('div');
+
+            alert.style.position = 'fixed';
+            alert.style.bottom = '20px';
+            alert.style.right = '20px';
+            alert.style.padding = '1rem';
+            alert.style.backgroundColor = color;
+            alert.style.color = 'white';
+            alert.style.borderRadius = '4px';
+            alert.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            alert.style.zIndex = '1000';
+
+            alert.textContent = message;
+
+            document.body.appendChild(alert);
+
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        }
     </script>
 </body>
 
