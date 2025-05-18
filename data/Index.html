@@ -769,8 +769,11 @@
                         throw new Error(`Server responded with status: ${response.status}`);
                     }
 
+                    showSuccess('Settings saved successfully');
+
                 } catch (aError) {
                     console.error(`Error: ${aError}`);
+                    showError('Failed to save settings');
                 }});
 
         function debounce(func, wait) {
