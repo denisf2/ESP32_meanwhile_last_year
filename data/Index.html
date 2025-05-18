@@ -520,12 +520,12 @@
 
         document.querySelector('#openWeatherKeyCheck')
                 ?.addEventListener('click', (e) => {
-                                                return OnTestButtonClick(openWeatherKey);
+                                                return validateApiKey('openWeatherKey', 'openWeatherTest');
                                             });
 
         document.querySelector('#ip2geoKeyCheck')
                 ?.addEventListener('click', (e) => {
-                                                return OnTestButtonClick(ip2geoKey);
+                                                return validateApiKey('ip2geoKey', 'ip2geoTest');
                                             });
 
         document.querySelector('#submitSettingsButton')
@@ -702,23 +702,17 @@
         //         .forEach(inf => inf.innerText = aInfo);
         // }
 
-        function CtrlToMessageID(aCtrlID) {
-            switch (aCtrlID.id)
-            {
-                case "ip2geoKey":
-                    return "ip2geoTest";
-                case "openWeatherKey":
-                    return "openWeatherTest";
-                default:
-                    console.log("Unknown control id: %s", aCtrlID.id);
-
-                return "Unknown"
+        function validateApiKey(aCtrlID, aMessageType) {
+            const key = document.getElementById(aCtrlID).value.trim();
+            if (!key) {
+                alert('Please enter an API key first');
+                return;
             }
-        }
 
-        function OnTestButtonClick(aCtrlID) {
-            sendWebSocketMessage({message : CtrlToMessageID(aCtrlID)
-                                , apikey: aCtrlID.value});
+            sendWebSocketMessage({
+                message : aMessageType
+                , apikey: key
+            });
         }
 
         function RequestFormData() {
