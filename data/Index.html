@@ -395,26 +395,16 @@
             }
         }
 
-// Loading third party lib/css
-        let fontAwesomStyleUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
-
-        // try to get font awesom style
-        checkScriptAvailability(fontAwesomStyleUrl)
-            .then((available) => {
-                if (available) {
-                    const script = CreateStyleElement(fontAwesomStyleUrl);
-                    script.onload = () => {
-                        console.log('Font awesome loaded');
-                    };
-                    script.onerror = () => {
-                        console.error('Font awesome failed to load');
-                    };
-                    document.head.appendChild(script);
-                } else {
-                    console.warn('Script unavailable, loading fallback');
-                    // Load fallback script
+        // Loading third party lib/css
+        LoadResource({
+                    aUrl : 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+                , aType : 'css'
+                , aOnLoad : () => {
+                    console.log('Font awesome loaded');
                 }
-            });
+                , aOnError : () => {
+                    console.error('Font awesome failed to load');
+                }});
 
             let googleChartsUrl = 'https://www.gstatic.com/charts/loader.js';
 
@@ -460,23 +450,37 @@
                     }
                 });
 
-            let openLayersCssUrl = 'https://cdn.jsdelivr.net/npm/ol/ol.css';
-            checkScriptAvailability(openLayersCssUrl)
-                .then((available) => {
-                    if (available) {
-                        const script = CreateStyleElement(openLayersCssUrl);
-                        script.onload = () => {
-                            console.log('OpenLayers CSS loaded');
+        LoadResource({
+                        aUrl : 'https://cdn.jsdelivr.net/npm/ol/ol.css'
+                    , aType : 'css'
+                    , aOnLoad : () => {
+                        console.log('OpenLayers CSS loaded');
+                    }
+                    , aOnError : () => {
+                        console.error('OpenLayers failed to load');
+                    }});
+
+        function LoadResource({aUrl, aType, aOnLoad, aOnError}) {
+            checkScriptAvailability(aUrl)
+                .then((aAvailable) => {
+                    if (aAvailable) {
+                        const element = ('css' === aType)
+                                        ? CreateStyleElement(aUrl)
+                                        : CreateScriptElement(aUrl);
+                        element.onload = () => {
+                            aOnLoad?.();
                         };
-                        script.onerror = () => {
-                            console.error('OpenLayers failed to load');
+                        element.onerror = () => {
+                            aOnError?.();
                         };
-                        document.head.appendChild(script);
+
+                        (('css' === aType) ? document.head : document.body).appendChild(element);
                     } else {
                         console.warn('Script unavailable, loading fallback');
                         // Load fallback script
                     }
                 });
+        }
 
         function CreateStyleElement(aHref) {
             const link = document.createElement('link');
