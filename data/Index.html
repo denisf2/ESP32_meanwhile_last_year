@@ -402,11 +402,7 @@
         checkScriptAvailability(fontAwesomStyleUrl)
             .then((available) => {
                 if (available) {
-                    const script = document.createElement('link');
-                    script.href = fontAwesomStyleUrl;
-                    script.rel = 'stylesheet';
-                    script.type = 'text/css';
-                    script.async = true;
+                    const script = CreateStyleElement(fontAwesomStyleUrl);
                     script.onload = () => {
                         console.log('Font awesome loaded');
                     };
@@ -426,9 +422,7 @@
             checkScriptAvailability(googleChartsUrl)
                 .then((available) => {
                     if (available) {
-                        const script = document.createElement('script');
-                        script.src = googleChartsUrl;
-                        script.async = true;
+                        const script = CreateScriptElement(googleChartsUrl);
                         script.onload = () => {
                             console.log('Google charts script loaded')
                             onLoadGoogleCharts();
@@ -450,9 +444,7 @@
             checkScriptAvailability(openLayersUrl)
                 .then((available) => {
                     if (available) {
-                        const script = document.createElement('script');
-                        script.src = openLayersUrl;
-                        script.async = true;
+                        const script = CreateScriptElement(openLayersUrl);
                         script.onload = () => {
                             console.log('OpenLayers script loaded')
                             onLoadGoogleCharts();
@@ -472,11 +464,7 @@
             checkScriptAvailability(openLayersCssUrl)
                 .then((available) => {
                     if (available) {
-                        const script = document.createElement('link');
-                        script.href = openLayersCssUrl;
-                        script.rel = 'stylesheet';
-                        script.type = 'text/css';
-                        script.async = true;
+                        const script = CreateStyleElement(openLayersCssUrl);
                         script.onload = () => {
                             console.log('OpenLayers CSS loaded');
                         };
@@ -489,6 +477,24 @@
                         // Load fallback script
                     }
                 });
+
+        function CreateStyleElement(aHref) {
+            const link = document.createElement('link');
+            link.href = aHref;
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.async = true;
+
+            return link;
+        }
+
+        function CreateScriptElement (aSrc) {
+            const script = document.createElement('script');
+            script.src = aSrc;
+            script.async = true;
+
+            return script;
+        }
 
         // document.getElementById('toggle')
         //     ?.addEventListener('click', (e) => {
