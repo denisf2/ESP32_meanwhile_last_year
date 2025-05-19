@@ -350,10 +350,10 @@
     <div id="System" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width">
-            <button class="button_sys" id="setDefaultButton" type="submit">
+            <button class="button_sys" id="setDefaultButton">
                 <i class="fa fa-undo"></i> Reset to Defaults
             </button>
-            <button class="button_sys" id="resetButton" type="submit">
+            <button class="button_sys" id="resetButton">
                 <i class="fa fa-power-off"></i> Restart System
             </button>
         </form>
@@ -496,9 +496,18 @@
             //     });
 
             document.getElementById('resetButton')
-                        ?.setAttribute('formaction', '/restart');
+                            .addEventListener('click', () => {
+                                    if (confirm('Are you sure you want to restart the system?')) {
+                                        sendWebSocketMessage({ message: 'RestartSystem' });
+                                    }
+                                });
+
             document.getElementById('setDefaultButton')
-                        ?.setAttribute('formaction', '/default');
+                            .addEventListener('click', () => {
+                                if (confirm('Reset all settings to default values?')) {
+                                    sendWebSocketMessage({ message: 'ResetToDefaults' });
+                                }
+                            });
 
             document.querySelector('#tabChart')
                     ?.addEventListener('click', (e) => {

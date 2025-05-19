@@ -116,6 +116,17 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
         // proposal cannont scan in wifi client mode
         StartWiFiScanAsync(WiFi);
     }
+    else if (msgType.equals("RestartSystem"))
+    {
+        // [ ]TODO: make a restart
+        log_i("%s Restart system", TAG);
+        ESP.restart();
+    }
+    else if (msgType.equals("ResetToDefaults"))
+    {
+        // [ ]TODO: make a reset. Still do not know what to reset
+        log_i("%s Reset to defaults", TAG);
+    }
     else
         log_w("%s Unknown message", TAG);
 }
