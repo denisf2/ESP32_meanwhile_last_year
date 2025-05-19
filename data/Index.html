@@ -579,13 +579,13 @@
                                     console.log('Connection closed');
                                     setTimeout(initWebSocket, 2000);
                                 };
-            websocket.onmessage = onMessage;
+            websocket.onmessage = HandleWebSocketMessage;
             websocket.onerror = (aError) => {
                                     console.log('WebSocket error:', aError);
                                 };
         }
 
-        function onMessage(aEvent) {
+        function HandleWebSocketMessage(aEvent) {
             try {
                 const json = JSON.parse(aEvent.data);
                 switch (json['message']) {
