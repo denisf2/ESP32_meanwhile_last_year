@@ -395,49 +395,42 @@
             }
         }
 
-        // Loading third party lib/css
-        LoadResource({
-                    aUrl : 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+        // Loading third party lib/
+        const resources = [
+            {
+                aUrl : 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
                 , aType : 'css'
+                , aOnLoad : () => console.log('Font awesome loaded')
+                , aOnError : () => console.error('Font awesome failed to load')
+            },
+            {
+                aUrl : 'https://www.gstatic.com/charts/loader.js'
+                , aType : 'js'
                 , aOnLoad : () => {
-                    console.log('Font awesome loaded');
-                }
-                , aOnError : () => {
-                    console.error('Font awesome failed to load');
-                }});
+                                console.log('Google charts script loaded');
+                                onLoadGoogleCharts();
+                                RequstChartData();
+                            }
+                , aOnError : () => console.error('Failed to load Google charts script')
+            },
+            {
+                aUrl : 'https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js'
+                , aType : 'js'
+                , aOnLoad : () => console.log('OpenLayers script loaded')
+                , onerror : () => console.error('Failed to load OpenLayers script')
+            },
+            {
+                aUrl : 'https://cdn.jsdelivr.net/npm/ol/ol.css'
+                , aType : 'css'
+                , aOnLoad : () => console.log('OpenLayers CSS loaded')
+                , aOnError : () => console.error('OpenLayers failed to load')
+            }
+        ];
 
-        LoadResource({
-            aUrl : 'https://www.gstatic.com/charts/loader.js'
-            , aType : 'js'
-            , aOnLoad : () => {
-                            console.log('Google charts script loaded')
-                            onLoadGoogleCharts();
-                            RequstChartData();
-                        }
-            , aOnError : () => {
-                            console.error('Failed to load Google charts script')
-                        }
+        resources.forEach((aRes) => {
+            // [ ]TODO: try to check asynchronously
+            LoadResource(aRes);
         });
-
-        LoadResource({
-            aUrl : 'https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js'
-            , aType : 'js'
-            , aOnLoad : () => {
-                            console.log('OpenLayers script loaded')
-                        }
-            , onerror : () => {
-                            console.error('Failed to load OpenLayers script')
-                        }
-        });
-        LoadResource({
-                        aUrl : 'https://cdn.jsdelivr.net/npm/ol/ol.css'
-                    , aType : 'css'
-                    , aOnLoad : () => {
-                        console.log('OpenLayers CSS loaded');
-                    }
-                    , aOnError : () => {
-                        console.error('OpenLayers failed to load');
-                    }});
 
         function LoadResource({aUrl, aType, aOnLoad, aOnError}) {
             checkScriptAvailability(aUrl)
