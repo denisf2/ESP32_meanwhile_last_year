@@ -399,6 +399,52 @@
             }
         }
 
+        function CreateStyleElement(aHref) {
+            const link = document.createElement('link');
+            link.href = aHref;
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.async = true;
+
+            return link;
+        }
+
+        function CreateScriptElement (aSrc) {
+            const script = document.createElement('script');
+            script.src = aSrc;
+            script.async = true;
+
+            return script;
+        }
+
+        async function LoadResource(aResource) {
+            const {url, type, onLoad, onError} = aResource;
+
+            const isAvailable = await checkResourceAvailability(url);
+            if (!isAvailable) {
+                console.warn(`Resource unavailable: ${url}`);
+                throw new Error(`Resource ${url} not available`);
+            }
+
+            const element = ('css' === type)
+                ? CreateStyleElement(url)
+                : CreateScriptElement(url);
+
+            return new Promise((aResolve, aReject) => {
+                    element.onload = () => {
+                        onLoad?.();
+                        aResolve();
+                    };
+
+                    element.onerror = () => {
+                        onError?.();
+                        aReject(new Error(`Failed to load ${url}`));
+                    };
+
+                    (('css' === type) ? document.head : document.body).appendChild(element);
+                });
+        }
+
         // Loading third party lib/
         const resources = [
             {
@@ -431,59 +477,22 @@
             }
         ];
 
-        Promise.all(resources.map(
-            (aRes) => {
-                LoadResource(aRes)
-                .catch((aError) => {
+        function LoadAllResources() {
+            Promise.all(resources.map(
+                (aRes) => {
+                    LoadResource(aRes)
+                    .catch((aError) => {
                         console.error(`Error loading ${aRes.url}:`, aError);
                         return null; // Continue even if some fail
                     });
-            }));
-
-        async function LoadResource(aResource) {
-            const {url, type, onLoad, onError} = aResource;
-
-            const isAvailable = await checkResourceAvailability(url);
-            if (!isAvailable) {
-                console.warn(`Resource unavailable: ${url}`);
-                throw new Error(`Resource ${url} not available`);
-            }
-
-            const element = ('css' === type)
-                ? CreateStyleElement(url)
-                : CreateScriptElement(url);
-
-            return new Promise((aResolve, aReject) => {
-                    element.onload = () => {
-                        onLoad?.();
-                        aResolve();
-                    };
-
-                    element.onerror = () => {
-                        onError?.();
-                        aReject(new Error(`Failed to load ${url}`));
-                    };
-
-                    (('css' === type) ? document.head : document.body).appendChild(element);
-                });
+                }));
         }
 
-        function CreateStyleElement(aHref) {
-            const link = document.createElement('link');
-            link.href = aHref;
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.async = true;
-
-            return link;
-        }
-
-        function CreateScriptElement (aSrc) {
-            const script = document.createElement('script');
-            script.src = aSrc;
-            script.async = true;
-
-            return script;
+        // Start loading when DOM is ready
+        if ('loading' === document.readyState) {
+            document.addEventListener('DOMContentLoaded', LoadAllResources);
+        } else {
+            LoadAllResources();
         }
 
         // document.getElementById('toggle')
