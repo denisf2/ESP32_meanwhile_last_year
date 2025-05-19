@@ -386,11 +386,15 @@
             return s;
         };
 
-        async function checkScriptAvailability(url) {
+        async function checkResourceAvailability(aUrl) {
             try {
-                const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+                const response = await fetch(aUrl, {
+                    method: 'HEAD'
+                    , mode: 'no-cors'
+                });
                 return response.ok || response.type === 'opaque';
-            } catch {
+            } catch (error) {
+                console.warn(`Availability check failed for ${aUrl}:`, error);
                 return false;
             }
         }
@@ -398,59 +402,69 @@
         // Loading third party lib/
         const resources = [
             {
-                aUrl : 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
-                , aType : 'css'
-                , aOnLoad : () => console.log('Font awesome loaded')
-                , aOnError : () => console.error('Font awesome failed to load')
+                url : 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+                , type : 'css'
+                , onLoad : () => console.log('Font awesome loaded')
+                , onError : () => console.error('Font awesome failed to load')
             },
             {
-                aUrl : 'https://www.gstatic.com/charts/loader.js'
-                , aType : 'js'
-                , aOnLoad : () => {
+                url : 'https://www.gstatic.com/charts/loader.js'
+                , type : 'js'
+                , onLoad : () => {
                                 console.log('Google charts script loaded');
                                 onLoadGoogleCharts();
                                 RequstChartData();
                             }
-                , aOnError : () => console.error('Failed to load Google charts script')
+                , onError : () => console.error('Failed to load Google charts script')
             },
             {
-                aUrl : 'https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js'
-                , aType : 'js'
-                , aOnLoad : () => console.log('OpenLayers script loaded')
-                , onerror : () => console.error('Failed to load OpenLayers script')
+                url : 'https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js'
+                , type : 'js'
+                , onLoad : () => console.log('OpenLayers script loaded')
+                , onError : () => console.error('Failed to load OpenLayers script')
             },
             {
-                aUrl : 'https://cdn.jsdelivr.net/npm/ol/ol.css'
-                , aType : 'css'
-                , aOnLoad : () => console.log('OpenLayers CSS loaded')
-                , aOnError : () => console.error('OpenLayers failed to load')
+                url : 'https://cdn.jsdelivr.net/npm/ol/ol.css'
+                , type : 'css'
+                , onLoad : () => console.log('OpenLayers CSS loaded')
+                , onError : () => console.error('OpenLayers failed to load')
             }
         ];
 
-        resources.forEach((aRes) => {
-            // [ ]TODO: try to check asynchronously
-            LoadResource(aRes);
-        });
+        Promise.all(resources.map(
+            (aRes) => {
+                LoadResource(aRes)
+                .catch((aError) => {
+                        console.error(`Error loading ${aRes.url}:`, aError);
+                        return null; // Continue even if some fail
+                    });
+            }));
 
-        function LoadResource({aUrl, aType, aOnLoad, aOnError}) {
-            checkScriptAvailability(aUrl)
-                .then((aAvailable) => {
-                    if (aAvailable) {
-                        const element = ('css' === aType)
-                                        ? CreateStyleElement(aUrl)
-                                        : CreateScriptElement(aUrl);
-                        element.onload = () => {
-                            aOnLoad?.();
-                        };
-                        element.onerror = () => {
-                            aOnError?.();
-                        };
+        async function LoadResource(aResource) {
+            const {url, type, onLoad, onError} = aResource;
 
-                        (('css' === aType) ? document.head : document.body).appendChild(element);
-                    } else {
-                        console.warn('Script unavailable, loading fallback');
-                        // Load fallback script
-                    }
+            const isAvailable = await checkResourceAvailability(url);
+            if (!isAvailable) {
+                console.warn(`Resource unavailable: ${url}`);
+                throw new Error(`Resource ${url} not available`);
+            }
+
+            const element = ('css' === type)
+                ? CreateStyleElement(url)
+                : CreateScriptElement(url);
+
+            return new Promise((aResolve, aReject) => {
+                    element.onload = () => {
+                        onLoad?.();
+                        aResolve();
+                    };
+
+                    element.onerror = () => {
+                        onError?.();
+                        aReject(new Error(`Failed to load ${url}`));
+                    };
+
+                    (('css' === type) ? document.head : document.body).appendChild(element);
                 });
         }
 
