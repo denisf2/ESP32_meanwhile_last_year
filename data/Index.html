@@ -373,7 +373,9 @@
 
     <!-- JavaScript -->
     <script type='text/javascript'>
-
+        // ==============================================
+        // Utility Functions
+        // ==============================================
         // String format helper
         // https://stackoverflow.com/questions/1038746/equivalent-of-string-format-in-jquery/2648463#2648463
         String.prototype.format = String.prototype.f = function() {
@@ -385,6 +387,46 @@
             }
             return s;
         };
+
+        function debounce(func, wait) {
+            let timeout;
+            return function () {
+                const context = this;
+                const args = arguments;
+
+                clearTimeout(timeout);
+                timeout = setTimeout(
+                    () => {
+                        func.apply(context, args);
+                    }
+                    , wait
+                );
+            };
+        }
+
+        function showAlert(message, color) {
+            const alert = document.createElement('div');
+
+            alert.style.position = 'fixed';
+            alert.style.bottom = '20px';
+            alert.style.right = '20px';
+            alert.style.padding = '1rem';
+            alert.style.backgroundColor = color;
+            alert.style.color = 'white';
+            alert.style.borderRadius = '4px';
+            alert.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            alert.style.zIndex = '1000';
+
+            alert.textContent = message;
+
+            document.body.appendChild(alert);
+
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        }
 
         async function checkResourceAvailability(aUrl) {
             try {
@@ -785,22 +827,6 @@
             }
         }
 
-        function debounce(func, wait) {
-            let timeout;
-            return function () {
-                const context = this;
-                const args = arguments;
-
-                clearTimeout(timeout);
-                timeout = setTimeout(
-                    () => {
-                        func.apply(context, args);
-                    }
-                    , wait
-                );
-            };
-        }
-
         function generateTestValues() {
             // [ ]TODO: remove
             let testValues = [['Date', 'Tmin', 'Tmax', 'T']];
@@ -1042,30 +1068,6 @@
 
         function showInfo(message) {
             showAlert(message, 'var(--primary-color)');
-        }
-
-        function showAlert(message, color) {
-            const alert = document.createElement('div');
-
-            alert.style.position = 'fixed';
-            alert.style.bottom = '20px';
-            alert.style.right = '20px';
-            alert.style.padding = '1rem';
-            alert.style.backgroundColor = color;
-            alert.style.color = 'white';
-            alert.style.borderRadius = '4px';
-            alert.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-            alert.style.zIndex = '1000';
-
-            alert.textContent = message;
-
-            document.body.appendChild(alert);
-
-            setTimeout(() => {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
-            }, 3000);
         }
 
         function Init() {
