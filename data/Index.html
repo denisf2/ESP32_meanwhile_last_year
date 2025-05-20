@@ -484,7 +484,7 @@
             if (!button)
                 return;
 
-            icon = button.querySelector('i') || document.createElement('i');
+            const icon = button.querySelector('i') || document.createElement('i');
             icon.className = `fa ${"true" == aIsValid ? 'fa-check-circle' : 'fa-times-circle'}`;
 
             if (!button.querySelector('i')) {
