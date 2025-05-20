@@ -934,6 +934,104 @@
             sendWebSocketMessage({message: 'ChartDataRequest'});
         }
 
+        // ==============================================
+        // Initialization
+        // ==============================================
+        function SetupUI() {
+            // document.getElementById('toggle')
+            //     ?.addEventListener('click', (e) => {
+            //         document.querySelectorAll('.hideable')
+            //                 .forEach(h => h.classList.toggle('hidden'));
+            //     });
+
+            document.getElementById('resetButton')
+                            .addEventListener('click', () => {
+                                    if (confirm('Are you sure you want to restart the system?')) {
+                                        sendWebSocketMessage({ message: 'RestartSystem' });
+                                    }
+                                });
+
+            document.getElementById('setDefaultButton')
+                            .addEventListener('click', () => {
+                                if (confirm('Reset all settings to default values?')) {
+                                    sendWebSocketMessage({ message: 'ResetToDefaults' });
+                                }
+                            });
+
+            document.querySelectorAll('.tab-head-button').forEach(
+                (button) => {
+                    button.addEventListener('click'
+                        , (event) => {
+                                const tabId = event.currentTarget.id.replace('tab', 'panel');
+                                ShowTab(tabId);
+
+                                if('panelSettings' === tabId) {
+                                    RequestFormData();
+                                    AcquireWiFiAPs();
+                                }
+                            });
+                });
+
+            document.querySelector('#toggle-button')
+                    ?.addEventListener('click', onClickToggle);
+
+            document.querySelector('#updateChartButton')
+                    ?.addEventListener('click', update);
+
+            document.querySelector('#openWeatherKeyCheck')
+                    ?.addEventListener('click', (e) => {
+                                                    return validateApiKey('openWeatherKey', 'openWeatherTest');
+                                                });
+
+            document.querySelector('#ip2geoKeyCheck')
+                    ?.addEventListener('click', (e) => {
+                                                    return validateApiKey('ip2geoKey', 'ip2geoTest');
+                                                });
+
+            document.querySelector('#submitSettingsButton')
+                    ?.addEventListener('click', (e) => {
+                                                    return validateInputData();
+                                                });
+
+            document.getElementById("settingsForm")
+                    ?.addEventListener('submit', SubmitSettingsForm);
+
+            document.querySelector('#openMap')
+                    ?.addEventListener('click', OpenMapModal);
+
+            document.querySelector('#saveMap')
+                    ?.addEventListener('click', SaveMapLocation);
+
+            document.querySelector('#cancelMap')
+                    ?.addEventListener('click', closeMapModal);
+
+            // select first tab and tab content
+            const firstTabButton = document.querySelector('nav > button:first-child');
+            ShowTab(firstTabButton.id.replace('tab', 'panel'));
+        }
+        
+        function Init() {
+            LoadAllResources()
+            .then(() => SetupUI())
+            .then(() => initWebSocket())
+            .then(() => {
+                setTimeout(RequestFormData, 1000);
+                setTimeout(RequstChartData, 1000);
+                setTimeout(AcquireWiFiAPs, 1000);
+            })
+            .catch((aError) => {
+                console.error('Initialization error:', aError);
+                showError('Failed to initialize application');
+            });
+        }
+
+        // Start loading when DOM is ready
+        if ('loading' === document.readyState) {
+            document.addEventListener('DOMContentLoaded', Init);
+        } else {
+            Init();
+        }
+
         function CreateStyleElement(aHref) {
             const link = document.createElement('link');
             link.href = aHref;
@@ -1023,106 +1121,12 @@
                 }));
         }
 
-        function SetupUI() {
-            // document.getElementById('toggle')
-            //     ?.addEventListener('click', (e) => {
-            //         document.querySelectorAll('.hideable')
-            //                 .forEach(h => h.classList.toggle('hidden'));
-            //     });
-
-            document.getElementById('resetButton')
-                            .addEventListener('click', () => {
-                                    if (confirm('Are you sure you want to restart the system?')) {
-                                        sendWebSocketMessage({ message: 'RestartSystem' });
-                                    }
-                                });
-
-            document.getElementById('setDefaultButton')
-                            .addEventListener('click', () => {
-                                if (confirm('Reset all settings to default values?')) {
-                                    sendWebSocketMessage({ message: 'ResetToDefaults' });
-                                }
-                            });
-
-            document.querySelectorAll('.tab-head-button').forEach(
-                (button) => {
-                    button.addEventListener('click'
-                        , (event) => {
-                                const tabId = event.currentTarget.id.replace('tab', 'panel');
-                                ShowTab(tabId);
-
-                                if('panelSettings' === tabId) {
-                                    RequestFormData();
-                                    AcquireWiFiAPs();
-                                }
-                            });
-                });
-
-            document.querySelector('#toggle-button')
-                    ?.addEventListener('click', onClickToggle);
-
-            document.querySelector('#updateChartButton')
-                    ?.addEventListener('click', update);
-
-            document.querySelector('#openWeatherKeyCheck')
-                    ?.addEventListener('click', (e) => {
-                                                    return validateApiKey('openWeatherKey', 'openWeatherTest');
-                                                });
-
-            document.querySelector('#ip2geoKeyCheck')
-                    ?.addEventListener('click', (e) => {
-                                                    return validateApiKey('ip2geoKey', 'ip2geoTest');
-                                                });
-
-            document.querySelector('#submitSettingsButton')
-                    ?.addEventListener('click', (e) => {
-                                                    return validateInputData();
-                                                });
-
-            document.getElementById("settingsForm")
-                    ?.addEventListener('submit', SubmitSettingsForm);
-
-            document.querySelector('#openMap')
-                    ?.addEventListener('click', OpenMapModal);
-
-            document.querySelector('#saveMap')
-                    ?.addEventListener('click', SaveMapLocation);
-
-            document.querySelector('#cancelMap')
-                    ?.addEventListener('click', closeMapModal);
-
-            // select first tab and tab content
-            const firstTabButton = document.querySelector('nav > button:first-child');
-            ShowTab(firstTabButton.id.replace('tab', 'panel'));
-        }
-
         // function updateInfoDev(aInfo) {
         //     // [ ]TODO: remove test code
         //     document.querySelectorAll(".info-dev")
         //         .forEach(inf => inf.innerText = aInfo);
         // }
 
-        function Init() {
-            LoadAllResources()
-            .then(() => SetupUI())
-            .then(() => initWebSocket())
-            .then(() => {
-                setTimeout(RequestFormData, 1000);
-                setTimeout(RequstChartData, 1000);
-                setTimeout(AcquireWiFiAPs, 1000);
-            })
-            .catch((aError) => {
-                console.error('Initialization error:', aError);
-                showError('Failed to initialize application');
-            });
-        }
-
-        // Start loading when DOM is ready
-        if ('loading' === document.readyState) {
-            document.addEventListener('DOMContentLoaded', Init);
-        } else {
-            Init();
-        }
     </script>
 </body>
 
