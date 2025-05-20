@@ -953,9 +953,7 @@
         const $mapModal = document.querySelector('#mapModal');
 
         let map;
-
         // Variables for location picking
-        let marker = null;
         let tmpCoordinate;
 
         function onCancelClick() {
@@ -963,8 +961,8 @@
         }
 
         function InitMapModal() {
-            // Create map with OSM layer
             if (!map) {
+                // Create map with OSM layer
                 map = new ol.Map({
                     target: 'map',
                     layers: [
@@ -985,29 +983,38 @@
                 map.addLayer(markerLayer);
 
                 // Handle map clicks
-                map.on('click', onMapClick);
-
-                function onMapClick(evt) {
-                    // Clear previous marker
-                    markerLayer.getSource().clear();
-
-                    // Create new marker
-                    const coordinate = evt.coordinate;
-                    marker = new ol.Feature({
-                        geometry: new ol.geom.Point(coordinate)
-                    });
-
-                    markerLayer.getSource().addFeature(marker);
-
-                    // Convert to lon/lat
-                    const lonLat = ol.proj.toLonLat(coordinate);
-                    tmpCoordinate = lonLat;
-
-                    // Display coordinates
-                    document.getElementById('coordinates').textContent =
-                        `Selected location: ${lonLat[1].toFixed(6)}°N, ${lonLat[0].toFixed(6)}°E`;
-                }
+                map.on('click', (event) => onMapClick(event, markerLayer));
             }
+
+            // Center on current location if available
+            const lon = parseFloat(document.getElementById('longitude').value);
+            const lat = parseFloat(document.getElementById('latitude').value);
+
+            if (!isNaN(lon) && !isNaN(lat)) {
+                map.getView().setCenter(ol.proj.fromLonLat([lon, lat]));
+                map.getView().setZoom(10);
+            }
+        }
+
+        function onMapClick(aEvent, aMarkerLayer) {
+            // Clear previous marker
+            aMarkerLayer.getSource().clear();
+
+            // Create new marker
+            const coordinate = aEvent.coordinate;
+            const marker = new ol.Feature({
+                geometry: new ol.geom.Point(coordinate)
+            });
+
+            aMarkerLayer.getSource().addFeature(marker);
+
+            // Convert to lon/lat
+            const lonLat = ol.proj.toLonLat(coordinate);
+            tmpCoordinate = lonLat;
+
+            // Display coordinates
+            document.getElementById('coordinates').textContent =
+                `Selected location: ${lonLat[1].toFixed(6)}°N, ${lonLat[0].toFixed(6)}°E`;
         }
 
         function SaveMapLocation() {
