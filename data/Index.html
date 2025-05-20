@@ -601,7 +601,7 @@
                 switch (json['message']) {
                     case "ip2geoTest":
                     {
-                        PasteRemoveCheckMark("ip2geoKeyCheck", json['valid']);
+                        UpdateKeyValidationStatus("ip2geoKeyCheck", json['valid']);
 
                         let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
                         console.log('IpGeoloc Key status: %s', keyStatus)
@@ -609,7 +609,7 @@
                     }
                     case "openWeatherTest":
                     {
-                        PasteRemoveCheckMark("openWeatherKeyCheck", json['valid']);
+                        UpdateKeyValidationStatus("openWeatherKeyCheck", json['valid']);
 
                         let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
                         console.log('Openweather Key status: %s', keyStatus)
@@ -697,7 +697,7 @@
                                 );
         }
 
-        function PasteRemoveCheckMark(aButtonId, aIsValid) {
+        function UpdateKeyValidationStatus(aButtonId, aIsValid) {
             let button = document.getElementById(aButtonId);
 
             if (!button)
