@@ -756,6 +756,80 @@
             $mapModal.close('exit');
         }
 
+        // ==============================================
+        // WebSocket Functions
+        // ==============================================
+        let gateway = `ws://${window.location.hostname}/ws`;
+        let websocket;
+        let currentChart;
+        let chartValues = generateValues('');
+
+        function initWebSocket() {
+            console.log('Trying to open WebSocket connection...');
+            websocket = new WebSocket(gateway);
+            websocket.onopen = () =>  {
+                                    console.log('Connection opened');
+                                };
+            websocket.onclose = () => {
+                                    console.log('Connection closed');
+                                    setTimeout(initWebSocket, 2000);
+                                };
+            websocket.onmessage = HandleWebSocketMessage;
+            websocket.onerror = (aError) => {
+                                    console.log('WebSocket error:', aError);
+                                };
+        }
+
+        function HandleWebSocketMessage(aEvent) {
+            try {
+                const json = JSON.parse(aEvent.data);
+                switch (json['message']) {
+                    case "ip2geoTest":
+                    {
+                        UpdateKeyValidationStatus("ip2geoKeyCheck", json['valid']);
+
+                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
+                        console.log('IpGeoloc Key status: %s', keyStatus)
+                        break;
+                    }
+                    case "openWeatherTest":
+                    {
+                        UpdateKeyValidationStatus("openWeatherKeyCheck", json['valid']);
+
+                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
+                        console.log('Openweather Key status: %s', keyStatus)
+                        break;
+                    }
+                    case "FormFillStoredData":
+                    {
+                        populateForm(json);
+
+                        console.log('Form Fill message');
+                        break;
+                    }
+                    case "wifiAps":
+                    {
+                        console.log('Available WiFi access points');
+
+                        createAPTable(json["APs"]);
+                        break;
+                    }
+                    case "ChartDataResponse":
+                    {
+                        // [ ]TODO: update chart
+                        chartValues = generateValues(json);
+
+                        console.debug('ChartDataResponse');
+                        break;
+                    }
+                    default:
+                        console.log('Recieved message:', json);
+                }
+            } catch (aError) {
+                console.error('Error processing message:', aError);
+            }
+        }
+
         async function checkResourceAvailability(aUrl) {
             try {
                 const response = await fetch(aUrl, {
@@ -769,6 +843,21 @@
             }
         }
 
+        function sendWebSocketMessage(aData) {
+            if (!websocket || WebSocket.OPEN !== websocket.readyState) {
+                console.warn('WebSocket is not connected');
+                return false;
+            }
+
+            try {
+                websocket.send(JSON.stringify(aData));
+                return true;
+            } catch (aError) {
+                console.error('Error sending WebSocket message:', aError);
+                return false;
+            }
+        }
+        
         function CreateStyleElement(aHref) {
             const link = document.createElement('link');
             link.href = aHref;
@@ -931,77 +1020,6 @@
             ShowTab(firstTabButton.id.replace('tab', 'panel'));
         }
 
-        let gateway = `ws://${window.location.hostname}/ws`;
-        let websocket;
-        let currentChart;
-        let chartValues = generateValues('');
-
-        function initWebSocket() {
-            console.log('Trying to open WebSocket connection...');
-            websocket = new WebSocket(gateway);
-            websocket.onopen = () =>  {
-                                    console.log('Connection opened');
-                                };
-            websocket.onclose = () => {
-                                    console.log('Connection closed');
-                                    setTimeout(initWebSocket, 2000);
-                                };
-            websocket.onmessage = HandleWebSocketMessage;
-            websocket.onerror = (aError) => {
-                                    console.log('WebSocket error:', aError);
-                                };
-        }
-
-        function HandleWebSocketMessage(aEvent) {
-            try {
-                const json = JSON.parse(aEvent.data);
-                switch (json['message']) {
-                    case "ip2geoTest":
-                    {
-                        UpdateKeyValidationStatus("ip2geoKeyCheck", json['valid']);
-
-                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
-                        console.log('IpGeoloc Key status: %s', keyStatus)
-                        break;
-                    }
-                    case "openWeatherTest":
-                    {
-                        UpdateKeyValidationStatus("openWeatherKeyCheck", json['valid']);
-
-                        let keyStatus = ("true" == json['valid']) ? "Validated" : "Not valid";
-                        console.log('Openweather Key status: %s', keyStatus)
-                        break;
-                    }
-                    case "FormFillStoredData":
-                    {
-                        populateForm(json);
-
-                        console.log('Form Fill message');
-                        break;
-                    }
-                    case "wifiAps":
-                    {
-                        console.log('Available WiFi access points');
-
-                        createAPTable(json["APs"]);
-                        break;
-                    }
-                    case "ChartDataResponse":
-                    {
-                        // [ ]TODO: update chart
-                        chartValues = generateValues(json);
-
-                        console.debug('ChartDataResponse');
-                        break;
-                    }
-                    default:
-                        console.log('Recieved message:', json);
-                }
-            } catch (aError) {
-                console.error('Error processing message:', aError);
-            }
-        }
-
         // function updateInfoDev(aInfo) {
         //     // [ ]TODO: remove test code
         //     document.querySelectorAll(".info-dev")
@@ -1031,21 +1049,6 @@
 
         function RequstChartData() {
             sendWebSocketMessage({message: 'ChartDataRequest'});
-        }
-
-        function sendWebSocketMessage(aData) {
-            if (!websocket || WebSocket.OPEN !== websocket.readyState) {
-                console.warn('WebSocket is not connected');
-                return false;
-            }
-
-            try {
-                websocket.send(JSON.stringify(aData));
-                return true;
-            } catch (aError) {
-                console.error('Error sending WebSocket message:', aError);
-                return false;
-            }
         }
 
         async function SubmitSettingsForm(aEvent) {
