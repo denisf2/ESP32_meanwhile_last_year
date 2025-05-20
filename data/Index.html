@@ -668,7 +668,94 @@
             google.charts.load('current', { 'packages': ['corechart'] });
             google.charts.setOnLoadCallback(drawChart);
         }
-        
+
+        // ==============================================
+        // Map Functions
+        // ==============================================
+        const $mapModal = document.querySelector('#mapModal');
+
+        let map;
+        // Variables for location picking
+        let tmpCoordinate;
+
+        function InitMapModal() {
+            if (!map) {
+                // Create map with OSM layer
+                map = new ol.Map({
+                    target: 'map',
+                    layers: [
+                        new ol.layer.Tile({
+                            source: new ol.source.OSM()
+                        })
+                    ],
+                    view: new ol.View({
+                        center: ol.proj.fromLonLat([0, 0]), // Center at [0,0]
+                        zoom: 2
+                    })
+                });
+
+                const markerLayer = new ol.layer.Vector({
+                    source: new ol.source.Vector()
+                });
+
+                map.addLayer(markerLayer);
+
+                // Handle map clicks
+                map.on('click', (event) => onMapClick(event, markerLayer));
+            }
+
+            // Center on current location if available
+            const lon = parseFloat(document.getElementById('longitude').value);
+            const lat = parseFloat(document.getElementById('latitude').value);
+
+            if (!isNaN(lon) && !isNaN(lat)) {
+                map.getView().setCenter(ol.proj.fromLonLat([lon, lat]));
+                map.getView().setZoom(10);
+            }
+        }
+
+        function onMapClick(aEvent, aMarkerLayer) {
+            // Clear previous marker
+            aMarkerLayer.getSource().clear();
+
+            // Create new marker
+            const coordinate = aEvent.coordinate;
+            const marker = new ol.Feature({
+                geometry: new ol.geom.Point(coordinate)
+            });
+
+            aMarkerLayer.getSource().addFeature(marker);
+
+            // Convert to lon/lat
+            const lonLat = ol.proj.toLonLat(coordinate);
+            tmpCoordinate = lonLat;
+
+            // Display coordinates
+            document.getElementById('coordinates').textContent =
+                `Selected location: ${lonLat[1].toFixed(6)}°N, ${lonLat[0].toFixed(6)}°E`;
+        }
+
+        function SaveMapLocation() {
+            if (!tmpCoordinate) {
+                alert('Please select a location on the map first');
+                return;
+            }
+
+            document.querySelector('#latitude').value = tmpCoordinate[1].toFixed(6);
+            document.querySelector('#longitude').value = tmpCoordinate[0].toFixed(6);
+
+            $mapModal.close('exit');
+        }
+
+        function OpenMapModal() {
+            $mapModal.showModal();
+            setTimeout(InitMapModal, 100);
+        }
+
+        function closeMapModal() {
+            $mapModal.close('exit');
+        }
+
         async function checkResourceAvailability(aUrl) {
             try {
                 const response = await fetch(aUrl, {
@@ -831,16 +918,13 @@
                     ?.addEventListener('submit', SubmitSettingsForm);
 
             document.querySelector('#openMap')
-                    ?.addEventListener('click', () => {
-                                                $mapModal.showModal();
-                                                setTimeout(InitMapModal, 100);
-                                            });
+                    ?.addEventListener('click', OpenMapModal);
 
             document.querySelector('#saveMap')
                     ?.addEventListener('click', SaveMapLocation);
 
             document.querySelector('#cancelMap')
-                    ?.addEventListener('click', onCancelClick);
+                    ?.addEventListener('click', closeMapModal);
 
             // select first tab and tab content
             const firstTabButton = document.querySelector('nav > button:first-child');
@@ -1010,85 +1094,6 @@
 
             return validateKeyChars(document.getElementById("openWeatherKey").value, "Invalid Openweather API key")
                 && validateKeyChars(document.getElementById("ip2geoKey").value, "Invalid IpGeolocation API key");
-        }
-
-        const $mapModal = document.querySelector('#mapModal');
-
-        let map;
-        // Variables for location picking
-        let tmpCoordinate;
-
-        function onCancelClick() {
-            $mapModal.close('exit');
-        }
-
-        function InitMapModal() {
-            if (!map) {
-                // Create map with OSM layer
-                map = new ol.Map({
-                    target: 'map',
-                    layers: [
-                        new ol.layer.Tile({
-                            source: new ol.source.OSM()
-                        })
-                    ],
-                    view: new ol.View({
-                        center: ol.proj.fromLonLat([0, 0]), // Center at [0,0]
-                        zoom: 2
-                    })
-                });
-
-                const markerLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector()
-                });
-
-                map.addLayer(markerLayer);
-
-                // Handle map clicks
-                map.on('click', (event) => onMapClick(event, markerLayer));
-            }
-
-            // Center on current location if available
-            const lon = parseFloat(document.getElementById('longitude').value);
-            const lat = parseFloat(document.getElementById('latitude').value);
-
-            if (!isNaN(lon) && !isNaN(lat)) {
-                map.getView().setCenter(ol.proj.fromLonLat([lon, lat]));
-                map.getView().setZoom(10);
-            }
-        }
-
-        function onMapClick(aEvent, aMarkerLayer) {
-            // Clear previous marker
-            aMarkerLayer.getSource().clear();
-
-            // Create new marker
-            const coordinate = aEvent.coordinate;
-            const marker = new ol.Feature({
-                geometry: new ol.geom.Point(coordinate)
-            });
-
-            aMarkerLayer.getSource().addFeature(marker);
-
-            // Convert to lon/lat
-            const lonLat = ol.proj.toLonLat(coordinate);
-            tmpCoordinate = lonLat;
-
-            // Display coordinates
-            document.getElementById('coordinates').textContent =
-                `Selected location: ${lonLat[1].toFixed(6)}°N, ${lonLat[0].toFixed(6)}°E`;
-        }
-
-        function SaveMapLocation() {
-            if (!tmpCoordinate) {
-                alert('Please select a location on the map first');
-                return;
-            }
-
-            document.querySelector('#latitude').value = tmpCoordinate[1].toFixed(6);
-            document.querySelector('#longitude').value = tmpCoordinate[0].toFixed(6);
-
-            $mapModal.close('exit');
         }
 
         function Init() {
