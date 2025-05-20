@@ -830,19 +830,6 @@
             }
         }
 
-        async function checkResourceAvailability(aUrl) {
-            try {
-                const response = await fetch(aUrl, {
-                    method: 'HEAD'
-                    , mode: 'no-cors'
-                });
-                return response.ok || response.type === 'opaque';
-            } catch (error) {
-                console.warn(`Availability check failed for ${aUrl}:`, error);
-                return false;
-            }
-        }
-
         function sendWebSocketMessage(aData) {
             if (!websocket || WebSocket.OPEN !== websocket.readyState) {
                 console.warn('WebSocket is not connected');
@@ -953,6 +940,19 @@
             script.async = true;
 
             return script;
+        }
+
+        async function checkResourceAvailability(aUrl) {
+            try {
+                const response = await fetch(aUrl, {
+                    method: 'HEAD'
+                    , mode: 'no-cors'
+                });
+                return response.ok || response.type === 'opaque';
+            } catch (error) {
+                console.warn(`Availability check failed for ${aUrl}:`, error);
+                return false;
+            }
         }
 
         async function LoadResource(aResource) {
