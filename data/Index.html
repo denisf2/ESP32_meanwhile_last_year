@@ -215,7 +215,7 @@
     <!-- <h2>Tabbed menu</h2> -->
     <!-- <p>Click on the buttons inside the tabbed menu:</p> -->
     <nav class="tab">
-        <button id='tabChart' class="tablinks active">
+        <button id='tabChart' class="tablinks">
             <i class="fa fa-bar-chart"></i> Chart
         </button>
         <button id='tabSettings' class="tablinks">
@@ -227,7 +227,7 @@
     </nav>
 
     <!-- Chart Tab -->
-    <div id="Chart" class="tab-content" style="display: block;">
+    <div id="Chart" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings chart-width"
               action="/"
@@ -549,6 +549,9 @@
 
             document.querySelector('#cancelMap')
                     ?.addEventListener('click', onCancelClick);
+
+            document.getElementById('Chart').style.display = 'block';
+            document.getElementById('tabChart').classList.add('active');
         }
 
         function onClickToggle() {
