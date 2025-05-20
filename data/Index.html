@@ -857,7 +857,83 @@
                 return false;
             }
         }
-        
+
+        // ==============================================
+        // Form Handling Functions
+        // ==============================================
+        function validateApiKey(aCtrlID, aMessageType) {
+            const key = document.getElementById(aCtrlID).value.trim();
+            if (!key) {
+                alert('Please enter an API key first');
+                return;
+            }
+
+            sendWebSocketMessage({
+                message : aMessageType
+                , apikey: key
+            });
+        }
+
+        function validateInputData() {
+            // validate data from form controls and post it to the server
+            let validateKeyChars = (apikey, message) => {
+                const regHexOnlyLen32 = /^[0-9a-f]{32}$/i;
+
+                // empty string is valid to submit form
+                if("" == apikey || regHexOnlyLen32.test(apikey)) {
+                    return true;
+                }
+
+                console.warn(message);
+                alert(message);
+
+                return false;
+            };
+
+            return validateKeyChars(document.getElementById("openWeatherKey").value, "Invalid Openweather API key")
+                && validateKeyChars(document.getElementById("ip2geoKey").value, "Invalid IpGeolocation API key");
+        }
+
+        async function SubmitSettingsForm(aEvent) {
+            aEvent.preventDefault();
+
+            try {
+                const form = aEvent.target;
+                let host = window.location.origin + "/update";
+                let urlEncodedData = new URLSearchParams(new FormData(form)).toString();
+                let request = {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: urlEncodedData
+                            };
+                let response = await fetch(host, request);
+
+                if(!response.ok){
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+
+                showSuccess('Settings saved successfully');
+
+            } catch (aError) {
+                console.error(`Error: ${aError}`);
+                showError('Failed to save settings');
+            }
+        }
+
+        function RequestFormData() {
+            sendWebSocketMessage({message : 'FormFill'});
+        }
+
+        function AcquireWiFiAPs() {
+            sendWebSocketMessage({message : 'AcquireWiFiAPs'});
+        }
+
+        function RequstChartData() {
+            sendWebSocketMessage({message: 'ChartDataRequest'});
+        }
+
         function CreateStyleElement(aHref) {
             const link = document.createElement('link');
             link.href = aHref;
@@ -1025,79 +1101,6 @@
         //     document.querySelectorAll(".info-dev")
         //         .forEach(inf => inf.innerText = aInfo);
         // }
-
-        function validateApiKey(aCtrlID, aMessageType) {
-            const key = document.getElementById(aCtrlID).value.trim();
-            if (!key) {
-                alert('Please enter an API key first');
-                return;
-            }
-
-            sendWebSocketMessage({
-                message : aMessageType
-                , apikey: key
-            });
-        }
-
-        function RequestFormData() {
-            sendWebSocketMessage({message : 'FormFill'});
-        }
-
-        function AcquireWiFiAPs() {
-            sendWebSocketMessage({message : 'AcquireWiFiAPs'});
-        }
-
-        function RequstChartData() {
-            sendWebSocketMessage({message: 'ChartDataRequest'});
-        }
-
-        async function SubmitSettingsForm(aEvent) {
-            aEvent.preventDefault();
-
-            try {
-                const form = aEvent.target;
-                let host = window.location.origin + "/update";
-                let urlEncodedData = new URLSearchParams(new FormData(form)).toString();
-                let request = {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: urlEncodedData
-                            };
-                let response = await fetch(host, request);
-
-                if(!response.ok){
-                    throw new Error(`Server responded with status: ${response.status}`);
-                }
-
-                showSuccess('Settings saved successfully');
-
-            } catch (aError) {
-                console.error(`Error: ${aError}`);
-                showError('Failed to save settings');
-            }
-        }
-
-        function validateInputData() {
-            // validate data from form controls and post it to the server
-            let validateKeyChars = (apikey, message) => {
-                const regHexOnlyLen32 = /^[0-9a-f]{32}$/i;
-
-                // empty string is valid to submit form
-                if("" == apikey || regHexOnlyLen32.test(apikey)) {
-                    return true;
-                }
-
-                console.warn(message);
-                alert(message);
-
-                return false;
-            };
-
-            return validateKeyChars(document.getElementById("openWeatherKey").value, "Invalid Openweather API key")
-                && validateKeyChars(document.getElementById("ip2geoKey").value, "Invalid IpGeolocation API key");
-        }
 
         function Init() {
             LoadAllResources()
