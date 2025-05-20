@@ -544,6 +544,131 @@
             document.getElementById("openWeatherKey").value = aData['OpenWeatherKey'];
         }
 
+        // ==============================================
+        // Chart Functions
+        // ==============================================
+
+        function generateTestValues() {
+            // [ ]TODO: remove
+            let testValues = [['Date', 'Tmin', 'Tmax', 'T']];
+
+            for (let i = 0; i < 20; ++i)
+                testValues.push([i, Math.sin(i), Math.cos(i), Math.log10(i)]);
+
+            return testValues;
+        }
+
+        function generateValues(aJson) {
+            // if ('string' != typeof aJson)
+            //     return;
+
+            console.debug('generateValues: incoming json %s', (0 == aJson.length) ? '[empty string]' : aJson);
+
+            if(0 == aJson.length)
+            {
+                return generateTestValues();
+            }
+
+            let values = [['Date', 'Tmin', 'Tmax', 'T']];
+
+            // example
+            // {"message" : "ChartDataResponse",
+            // "current":[14.3,12.2,15.1],
+            // "daily":{
+            //     "time": ["2024-04-08","2024-04-09","2024-04-10","2024-04-11","2024-04-12","2024-04-13","2024-04-14"],
+            //     "temperature_2m_max":[16.4,18.4,19.2,18.3,14.3,12.3,12.6],
+            //     "temperature_2m_min":[7.0,8.2,9.8,7.8,6.3,2.9,4.0]
+            // }}
+
+            let daily = aJson["daily"];
+            let time = daily["time"];
+            let tempMin = daily["temperature_2m_min"];
+            let tempMax = daily["temperature_2m_max"];
+            let current = aJson["current"];
+
+            for (let i = 0; i < time.length; ++i)
+                values.push([time[i], tempMin[i], tempMax[i], current[i]]);
+
+            return values;
+        }
+
+        function getChartOptions() {
+            const isMobile = window.innerWidth < 768;
+
+            return {
+                title: 'Local Temperature Log',
+                legend: { position: isMobile ? 'bottom' : 'top' },
+                chartArea: {
+                    width: isMobile ? '80%' : '90%',
+                    height: isMobile ? '65%' : '75%'
+                },
+                fontSize : isMobile ? 10 : 12,
+                backgroundColor: 'transparent',
+                vAxis: {title: 'Temperature, \u{2103}'},
+                hAxis: {title: 'Date'},
+                seriesType: 'line',
+                series: {2: {type: 'line'}}
+            };
+        }
+
+        function getChartData() {
+            return google.visualization.arrayToDataTable(chartValues);
+        }
+
+        function drawChart() {
+            // let chartValues = generateTestValues();
+
+            var data = getChartData();
+
+            // Get dynamic options based on screen size
+            var options = getChartOptions();
+
+            // Instantiate and draw our chart
+            const chart = new google.visualization.ComboChart($chartElement);
+            chart.draw(data, options);
+
+            // Store reference to current chart
+            currentChart = chart;
+            currentChart.getData = getChartData;
+            currentChart.getOptions = getChartOptions;
+
+            // Add event listener for window resize
+            window.addEventListener('resize', update);
+
+            // Setup ResizeObserver for container changes
+            setupResizeObserver();
+        }
+
+        // Handle window resize event
+        function update() {
+            if (currentChart) {
+                const data = currentChart.getData();
+                const options = currentChart.getOptions();
+                currentChart.draw(data, options);
+            }
+        }
+
+        const $chartElement = document.getElementById('chart-div');
+
+        function setupResizeObserver() {
+            if (typeof ResizeObserver !== 'undefined') {
+                const resizeObserver = new ResizeObserver(
+                    debounce(
+                        () => {
+                            update();
+                        }
+                        , 150
+                    )
+                );
+                resizeObserver.observe($chartElement);
+            }
+        }
+
+        function onLoadGoogleCharts() {
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+        }
+        
         async function checkResourceAvailability(aUrl) {
             try {
                 const response = await fetch(aUrl, {
@@ -722,11 +847,6 @@
             ShowTab(firstTabButton.id.replace('tab', 'panel'));
         }
 
-        function onLoadGoogleCharts() {
-            google.charts.load('current', { 'packages': ['corechart'] });
-            google.charts.setOnLoadCallback(drawChart);
-        }
-
         let gateway = `ws://${window.location.hostname}/ws`;
         let websocket;
         let currentChart;
@@ -869,122 +989,6 @@
             } catch (aError) {
                 console.error(`Error: ${aError}`);
                 showError('Failed to save settings');
-            }
-        }
-
-        function generateTestValues() {
-            // [ ]TODO: remove
-            let testValues = [['Date', 'Tmin', 'Tmax', 'T']];
-
-            for (let i = 0; i < 20; ++i)
-                testValues.push([i, Math.sin(i), Math.cos(i), Math.log10(i)]);
-
-            return testValues;
-        }
-
-        function generateValues(aJson) {
-            // if ('string' != typeof aJson)
-            //     return;
-
-            console.debug('generateValues: incoming json %s', (0 == aJson.length) ? '[empty string]' : aJson);
-
-            if(0 == aJson.length)
-            {
-                return generateTestValues();
-            }
-
-            let values = [['Date', 'Tmin', 'Tmax', 'T']];
-
-            // example
-            // {"message" : "ChartDataResponse",
-            // "current":[14.3,12.2,15.1],
-            // "daily":{
-            //     "time": ["2024-04-08","2024-04-09","2024-04-10","2024-04-11","2024-04-12","2024-04-13","2024-04-14"],
-            //     "temperature_2m_max":[16.4,18.4,19.2,18.3,14.3,12.3,12.6],
-            //     "temperature_2m_min":[7.0,8.2,9.8,7.8,6.3,2.9,4.0]
-            // }}
-
-            let daily = aJson["daily"];
-            let time = daily["time"];
-            let tempMin = daily["temperature_2m_min"];
-            let tempMax = daily["temperature_2m_max"];
-            let current = aJson["current"];
-
-            for (let i = 0; i < time.length; ++i)
-                values.push([time[i], tempMin[i], tempMax[i], current[i]]);
-
-            return values;
-        }
-
-        function getChartOptions() {
-            const isMobile = window.innerWidth < 768;
-
-            return {
-                title: 'Local Temperature Log',
-                legend: { position: isMobile ? 'bottom' : 'top' },
-                chartArea: {
-                    width: isMobile ? '80%' : '90%',
-                    height: isMobile ? '65%' : '75%'
-                },
-                fontSize : isMobile ? 10 : 12,
-                backgroundColor: 'transparent',
-                vAxis: {title: 'Temperature, \u{2103}'},
-                hAxis: {title: 'Date'},
-                seriesType: 'line',
-                series: {2: {type: 'line'}}
-            };
-        }
-
-        function getChartData() {
-            return google.visualization.arrayToDataTable(chartValues);
-        }
-
-        function drawChart() {
-            // let chartValues = generateTestValues();
-
-            var data = getChartData();
-
-            // Get dynamic options based on screen size
-            var options = getChartOptions();
-
-            // Instantiate and draw our chart
-            const chart = new google.visualization.ComboChart($chartElement);
-            chart.draw(data, options);
-
-            // Store reference to current chart
-            currentChart = chart;
-            currentChart.getData = getChartData;
-            currentChart.getOptions = getChartOptions;
-
-            // Add event listener for window resize
-            window.addEventListener('resize', update);
-
-            // Setup ResizeObserver for container changes
-            setupResizeObserver();
-        }
-
-        // Handle window resize event
-        function update() {
-            if (currentChart) {
-                const data = currentChart.getData();
-                const options = currentChart.getOptions();
-                currentChart.draw(data, options);
-            }
-        }
-
-        const $chartElement = document.getElementById('chart-div');
-
-        function setupResizeObserver() {
-            if (typeof ResizeObserver !== 'undefined') {
-                const resizeObserver = new ResizeObserver(
-                    debounce(
-                        () => {
-                            update();
-                        }
-                        , 150
-                    )
-                );
-                resizeObserver.observe($chartElement);
             }
         }
 
