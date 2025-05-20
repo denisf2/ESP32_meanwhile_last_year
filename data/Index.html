@@ -544,6 +544,9 @@
                                                     return validateInputData();
                                                 });
 
+            document.querySelector('#saveMap')
+                ?.addEventListener('click', SaveMapLocation);
+
             document.querySelector('#cancelMap')
                     ?.addEventListener('click', onCancelClick);
 
@@ -943,9 +946,6 @@
 
         const $mapModal = document.querySelector('#mapModal');
         const $openMap = document.querySelector('#openMap');
-        const $saveMap = document.querySelector('#saveMap');
-        const $latitude = document.querySelector('#latitude');
-        const $longitude = document.querySelector('#longitude');
 
         let map;
 
@@ -1010,12 +1010,17 @@
                 , 100);
         });
 
-        $saveMap.addEventListener('click', () => {
-            $latitude.value = tmpCoordinate[1].toFixed(6);
-            $longitude.value = tmpCoordinate[0].toFixed(6);
+        function SaveMapLocation() {
+            if (!tmpCoordinate) {
+                alert('Please select a location on the map first');
+                return;
+            }
+
+            document.querySelector('#latitude').value = tmpCoordinate[1].toFixed(6);
+            document.querySelector('#longitude').value = tmpCoordinate[0].toFixed(6);
 
             $mapModal.close('exit');
-        });
+        }
 
         function showSuccess(message) {
             showAlert(message, 'var(--success-color)');
