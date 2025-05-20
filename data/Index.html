@@ -215,19 +215,19 @@
     <!-- <h2>Tabbed menu</h2> -->
     <!-- <p>Click on the buttons inside the tabbed menu:</p> -->
     <nav class="tab">
-        <button id='tabChart' class="tablinks">
+        <button id='tabChart' class="tab-head-button">
             <i class="fa fa-bar-chart"></i> Chart
         </button>
-        <button id='tabSettings' class="tablinks">
+        <button id='tabSettings' class="tab-head-button">
             <i class="fa fa-cogs"></i> Settings
         </button>
-        <button id='tabSystem' class="tablinks">
+        <button id='tabSystem' class="tab-head-button">
             <i class="fa fa-server"></i> System
         </button>
     </nav>
 
     <!-- Chart Tab -->
-    <div id="Chart" class="tab-content">
+    <div id="panelChart" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings chart-width"
               action="/"
@@ -246,7 +246,7 @@
     </div>
 
     <!-- Settings Tab -->
-    <div id="Settings" class="tab-content">
+    <div id="panelSettings" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width"
               id="settingsForm"
@@ -347,7 +347,7 @@
     </div>
 
     <!-- System Tab -->
-    <div id="System" class="tab-content">
+    <div id="panelSystem" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
         <form class="form-settings settings-width">
             <button class="button_sys" id="setDefaultButton">
@@ -509,22 +509,19 @@
                                 }
                             });
 
-            document.querySelector('#tabChart')
-                    ?.addEventListener('click', (e) => {
-                                                    openTab(event, 'Chart');
-                                                });
+            document.querySelectorAll('.tab-head-button').forEach(
+                (button) => {
+                    button.addEventListener('click'
+                        , (event) => {
+                                const tabId = event.currentTarget.id.replace('tab', 'panel');
+                                ShowTab(tabId);
 
-            document.querySelector('#tabSettings')
-                    ?.addEventListener('click', (e) => {
-                                                    openTab(event, 'Settings');
-                                                    RequestFormData();
-                                                    AcquireWiFiAPs();
-                                                });
-
-            document.querySelector('#tabSystem')
-                    ?.addEventListener('click', (e) => {
-                                                    openTab(event, 'System');
-                                                });
+                                if('panelSettings' === tabId) {
+                                    RequestFormData();
+                                    AcquireWiFiAPs();
+                                }
+                            });
+                });
 
             document.querySelector('#toggle-button')
                     ?.addEventListener('click', onClickToggle);
@@ -550,8 +547,9 @@
             document.querySelector('#cancelMap')
                     ?.addEventListener('click', onCancelClick);
 
-            document.getElementById('Chart').style.display = 'block';
-            document.getElementById('tabChart').classList.add('active');
+            // select first tab and tab content
+            const firstTabButton = document.querySelector('nav > button:first-child');
+            ShowTab(firstTabButton.id.replace('tab', 'panel'));
         }
 
         function onClickToggle() {
@@ -907,15 +905,20 @@
             }
         }
 
-        function openTab(evt, tabLabel) {
+        function ShowTab(aTabId) {
+            // Hide all tabs
             document.querySelectorAll(".tab-content")
                 .forEach(elm => elm.style.display = "none");
 
-            document.querySelectorAll(".tablinks")
-                .forEach(lnk => lnk.className = lnk.className.replace(" active", ""));
+            // Deactivate all buttons
+            document.querySelectorAll(".tab-head-button")
+                .forEach(button => button.classList.remove('active'));
 
-            document.getElementById(tabLabel).style.display = "block";
-            evt.currentTarget.className += " active";
+            // Show selected tab
+            document.getElementById(aTabId).style.display = "block";
+
+            // Activate clicked button
+            document.getElementById(aTabId.replace('panel', 'tab')).classList.add('active');
         }
 
         function validateInputData() {
