@@ -859,10 +859,13 @@
                 alert(message);
 
                 return false;
-            };
+            }
 
-            return validateKeyChars(document.getElementById("openWeatherKey").value, "Invalid Openweather API key")
-                && validateKeyChars(document.getElementById("ip2geoKey").value, "Invalid IpGeolocation API key");
+            const openWeatherKey = document.getElementById("openWeatherKey").value;
+            const ip2geoKey = document.getElementById("ip2geoKey").value;
+
+            return validateKeyChars(openWeatherKey, "Invalid Openweather API key")
+                && validateKeyChars(ip2geoKey, "Invalid IpGeolocation API key");
         }
 
         async function SubmitSettingsForm(aEvent) {
