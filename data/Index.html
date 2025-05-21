@@ -886,7 +886,7 @@
 
             try {
                 const form = aEvent.target;
-                let host = window.location.origin + "/update";
+                let url = window.location.origin + "/update";
                 let urlEncodedData = new URLSearchParams(new FormData(form)).toString();
                 let request = {
                                 method: 'POST',
@@ -895,7 +895,7 @@
                                 },
                                 body: urlEncodedData
                             };
-                let response = await fetch(host, request);
+                let response = await fetch(url, request);
 
                 if(!response.ok){
                     throw new Error(`Server responded with status: ${response.status}`);
