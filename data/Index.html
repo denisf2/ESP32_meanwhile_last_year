@@ -536,12 +536,12 @@
         }
 
         function populateForm(aData) {
-            document.getElementById("wifiSsid").value = aData['WifiSsid'];
-            document.getElementById("wifiPassword").value = aData['WiFiPassword'];
-            document.getElementById("longitude").value = aData['Longitude'];
-            document.getElementById("latitude").value = aData['Latitude'];
-            document.getElementById("ip2geoKey").value = aData['IpGeolocKey'];
-            document.getElementById("openWeatherKey").value = aData['OpenWeatherKey'];
+            document.getElementById("wifiSsid").value = aData['WifiSsid'] || '';
+            document.getElementById("wifiPassword").value = aData['WiFiPassword'] || '';
+            document.getElementById("longitude").value = aData['Longitude'] || '';
+            document.getElementById("latitude").value = aData['Latitude'] || '';
+            document.getElementById("ip2geoKey").value = aData['IpGeolocKey'] || '';
+            document.getElementById("openWeatherKey").value = aData['OpenWeatherKey'] || '';
         }
 
         // ==============================================
