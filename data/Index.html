@@ -420,12 +420,7 @@
                 const args = arguments;
 
                 clearTimeout(timeout);
-                timeout = setTimeout(
-                    () => {
-                        func.apply(context, args);
-                    }
-                    , wait
-                );
+                timeout = setTimeout(() => func.apply(context, args), wait);
             };
         }
 
@@ -652,14 +647,7 @@
 
         function setupResizeObserver() {
             if (typeof ResizeObserver !== 'undefined') {
-                const resizeObserver = new ResizeObserver(
-                    debounce(
-                        () => {
-                            update();
-                        }
-                        , 150
-                    )
-                );
+                const resizeObserver = new ResizeObserver(debounce(update, 150));
                 resizeObserver.observe($chartElement);
             }
         }
@@ -767,17 +755,13 @@
         function initWebSocket() {
             console.log('Trying to open WebSocket connection...');
             websocket = new WebSocket(gateway);
-            websocket.onopen = () =>  {
-                                    console.log('Connection opened');
-                                };
+            websocket.onopen = () => console.log('Connection opened');
             websocket.onclose = () => {
                                     console.log('Connection closed');
                                     setTimeout(initWebSocket, 2000);
                                 };
             websocket.onmessage = HandleWebSocketMessage;
-            websocket.onerror = (aError) => {
-                                    console.log('WebSocket error:', aError);
-                                };
+            websocket.onerror = (aError) => console.log('WebSocket error:', aError);
         }
 
         function HandleWebSocketMessage(aEvent) {
