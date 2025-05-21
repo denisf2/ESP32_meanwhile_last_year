@@ -851,7 +851,7 @@
                 const regHexOnlyLen32 = /^[0-9a-f]{32}$/i;
 
                 // empty string is valid to submit form
-                if("" == apikey || regHexOnlyLen32.test(apikey)) {
+                if("" === apikey || regHexOnlyLen32.test(aApiKey)) {
                     return true;
                 }
 
