@@ -729,8 +729,8 @@
                 return;
             }
 
-            document.querySelector('#latitude').value = tmpCoordinate[1].toFixed(6);
-            document.querySelector('#longitude').value = tmpCoordinate[0].toFixed(6);
+            document.getElementById('latitude').value = tmpCoordinate[1].toFixed(6);
+            document.getElementById('longitude').value = tmpCoordinate[0].toFixed(6);
 
             $mapModal.close('exit');
         }
