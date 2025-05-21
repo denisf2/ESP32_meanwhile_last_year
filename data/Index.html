@@ -917,7 +917,7 @@
             sendWebSocketMessage({message : 'AcquireWiFiAPs'});
         }
 
-        function RequstChartData() {
+        function RequestChartData() {
             sendWebSocketMessage({message: 'ChartDataRequest'});
         }
 
@@ -997,7 +997,7 @@
                 , onLoad : () => {
                                 console.log('Google charts script loaded');
                                 onLoadGoogleCharts();
-                                RequstChartData();
+                                RequestChartData();
                             }
                 , onError : () => console.error('Failed to load Google charts script')
             },
@@ -1108,7 +1108,7 @@
             .then(() => initWebSocket())
             .then(() => {
                 setTimeout(RequestFormData, 1000);
-                setTimeout(RequstChartData, 1000);
+                setTimeout(RequestChartData, 1000);
                 setTimeout(AcquireWiFiAPs, 1000);
             })
             .catch((aError) => {
