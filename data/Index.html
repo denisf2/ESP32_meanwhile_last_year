@@ -602,12 +602,12 @@
                     width: isMobile ? '80%' : '90%',
                     height: isMobile ? '65%' : '75%'
                 },
-                fontSize : isMobile ? 10 : 12,
+                fontSize: isMobile ? 10 : 12,
                 backgroundColor: 'transparent',
-                vAxis: {title: 'Temperature, \u{2103}'},
-                hAxis: {title: 'Date'},
+                vAxis: { title: 'Temperature, \u{2103}' },
+                hAxis: { title: 'Date' },
                 seriesType: 'line',
-                series: {2: {type: 'line'}}
+                series: { 2: { type: 'line' } }
             };
         }
 
@@ -897,7 +897,7 @@
                             };
                 let response = await fetch(url, request);
 
-                if(!response.ok){
+                if (!response.ok) {
                     throw new Error(`Server responded with status: ${response.status}`);
                 }
 
