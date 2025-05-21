@@ -550,7 +550,7 @@
 
         function generateTestValues() {
             // [ ]TODO: remove
-            let testValues = [['Date', 'Tmin', 'Tmax', 'T']];
+            const testValues = [['Date', 'Tmin', 'Tmax', 'T']];
 
             for (let i = 0; i < 20; ++i)
                 testValues.push([i, Math.sin(i), Math.cos(i), Math.log10(i)]);
@@ -569,7 +569,7 @@
                 return generateTestValues();
             }
 
-            let values = [['Date', 'Tmin', 'Tmax', 'T']];
+            const values = [['Date', 'Tmin', 'Tmax', 'T']];
 
             // example
             // {"message" : "ChartDataResponse",
@@ -580,11 +580,11 @@
             //     "temperature_2m_min":[7.0,8.2,9.8,7.8,6.3,2.9,4.0]
             // }}
 
-            let daily = aJson["daily"];
-            let time = daily["time"];
-            let tempMin = daily["temperature_2m_min"];
-            let tempMax = daily["temperature_2m_max"];
-            let current = aJson["current"];
+            const daily = aJson["daily"];
+            const time = daily["time"];
+            const tempMin = daily["temperature_2m_min"];
+            const tempMax = daily["temperature_2m_max"];
+            const current = aJson["current"];
 
             for (let i = 0; i < time.length; ++i)
                 values.push([time[i], tempMin[i], tempMax[i], current[i]]);
