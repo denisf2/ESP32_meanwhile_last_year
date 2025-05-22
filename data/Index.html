@@ -10,6 +10,11 @@
             --primary-color: #1e88e5;
             --error-color: #d32f2f;
             --success-color: #388e3c;
+            --button-color: DodgerBlue;
+            --button-hover-color: #007bff;
+            --tab-bg-color: #f1f1f1;
+            --tab-active-bg-color: #ccc;
+            --tab-hover-bg-color: #ddd;
         }
 
         body {
@@ -30,11 +35,11 @@
             }
         }
 
-        /* Style the tab */
+        /* Tab styles */
         .tab {
             overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
+            border: 1px solid var(--tab-active-bg-color);
+            background-color: var(--tab-bg-color);
         }
 
         /* Style the buttons inside the tab */
@@ -51,72 +56,62 @@
 
         /* Change background color of buttons on hover */
         .tab button:hover {
-            background-color: #ddd;
+            background-color: var(--tab-hover-bg-color);
         }
 
         /* Create an active/current tablink class */
         .tab button.active {
-            background-color: #ccc;
+            background-color: var(--tab-active-bg-color);
         }
 
         /* Style the tab content */
         .tab-content {
             display: none;
             padding: 6px 12px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--tab-active-bg-color);
             border-top: none;
         }
 
-        .button_sys {
-            margin-block-start: 5px;
-            margin-block-end: 5px;
-            background-color: DodgerBlue;
-            border: none;
-            color: white;
-            padding: 12px 16px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
+        /* Button styles */
         /* [ ]TODO: change to class */
         .marg-top {
             margin-top: 2px;
         }
 
-        .chart-width{
+        .chart-width {
             max-width: 600px;
         }
 
-        .settings-width{
+        .settings-width {
             max-width: 400px;
         }
 
-        .form-settings {
+        .form-container {
             margin: 50px auto;
             padding: 20px;
-            background-color: #fff;
+            background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 2px solid #007bff;
+            border: 2px solid var(--button-hover-color);
         }
 
-        .form-settings .form-group {
+        .form-group {
             margin-bottom: 20px;
         }
 
-        .form-settings .form-input-group {
+        .form-input-group {
             margin-bottom: 10px;
         }
 
-        .form-settings label {
+        .form-container label {
             display: block;
             margin-bottom: 5px;
             color: #333;
         }
 
-        .form-settings input[type="text"],
-        .form-settings input[type="password"],
-        .form-settings button {
+        .form-container input[type="text"],
+        .form-container input[type="password"],
+        .form-container button {
             width: 94%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -124,35 +119,35 @@
             transition: border-color 0.3s ease;
         }
 
-        .form-settings input[type="text"]:focus,
-        .form-settings input[type="password"]:focus {
-            border-color: dodgerblue;
+        .form-container input[type="text"]:focus,
+        .form-container input[type="password"]:focus {
+            border-color: var(--button-color);
             outline: none;
         }
 
-        .form-settings button {
-            background-color: dodgerblue;
+        .form-container button {
+            background-color: var(--button-color);
             width: 100%;
-            color: #fff;
+            color: white;
             cursor: pointer;
+            font-size: 16px;
             transition: background-color 0.3s ease;
         }
 
-        .form-settings button:hover {
-            background-color: #007bff;
+        .form-container button:hover {
+            background-color: var(--button-hover-color);
         }
 
         .survey-table td {
             font-size: 16px;
+            padding: 10px;
         }
 
-        .survey-table td.td-right {
-            padding: 10px;
+        .survey-table .td-right {
             text-align: right;
         }
 
-        .survey-table td.td-left {
-            padding: 10px;
+        .survey-table .td-left {
             text-align: left;
         }
 
@@ -167,6 +162,23 @@
         #map {
             width: 100%;
             height: 400px;
+            margin-bottom: 5px;
+        }
+
+        .button-container {
+            display: flex;
+        }
+
+        dialog button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: var(--button-color);
+            width: 100%;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
 
         #coordinates {
@@ -223,6 +235,7 @@
         .alert-info {
             background-color: var(--primary-color);
         }
+
         /* developer styles */
         /* .info-dev {
             display: none;
@@ -254,7 +267,7 @@
     <!-- Chart Tab -->
     <div id="panelChart" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
-        <form class="form-settings chart-width"
+        <form class="form-container chart-width"
               action="/"
               method="post"
               accept-charset="utf-8">
@@ -262,8 +275,7 @@
             <!-- [ ]TODO: scale for small screen -->
             <div id="chart-div" class="chart-container"></div>
             <!-- [ ]TODO: remove button -->
-            <button class="button_sys"
-                    type="submit"
+            <button type="submit"
                     id="updateChartButton">
                     <i class="fa fa-refresh"></i> Update Chart
             </button>
@@ -273,7 +285,7 @@
     <!-- Settings Tab -->
     <div id="panelSettings" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
-        <form class="form-settings settings-width"
+        <form class="form-container settings-width"
               id="settingsForm"
               accept-charset="utf-8">
 
@@ -312,7 +324,7 @@
                             title="Longitude">
                 </div>
 
-                <div class="_form-input-group">
+                <div class="__form-input-group">
                     <label for="latitude">Latitude:</label>
                     <input class="inputbox"
                             type="text"
@@ -363,8 +375,7 @@
                 </button>
             </div>
 
-            <button class="button_sys"
-                    type="submit"
+            <button type="submit"
                     id="submitSettingsButton">
                 <i class="fa fa-save"></i> Save Settings
             </button>
@@ -374,11 +385,11 @@
     <!-- System Tab -->
     <div id="panelSystem" class="tab-content">
         <p class="dev-todo">Here should be some description.</p>
-        <form class="form-settings settings-width">
-            <button class="button_sys" id="setDefaultButton">
+        <form class="form-container settings-width">
+            <button id="setDefaultButton">
                 <i class="fa fa-undo"></i> Reset to Defaults
             </button>
-            <button class="button_sys" id="resetButton">
+            <button id="resetButton">
                 <i class="fa fa-power-off"></i> Restart System
             </button>
         </form>
@@ -390,7 +401,7 @@
             <span id="coordinates">Click the map to select a location</span>
         </div>
         <div id="map"></div>
-        <div>
+        <div class="button-container">
             <button id="cancelMap">Cancel</button>
             <button id="saveMap">Save Location</button>
         </div>
