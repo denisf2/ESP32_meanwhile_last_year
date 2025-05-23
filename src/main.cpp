@@ -116,6 +116,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
     {
         // [ ]TODO: choose user stored/automatic coordinates
         // if (GetAutoLocation())
+        log_d("%s SET AUTO FIND LOCATION BY IP FOR DEBUGGING PURPOSES", TAG);
         if (true)
         {
             // case automatic
