@@ -90,16 +90,10 @@ auto HandleUpdateParams(AsyncWebServerRequest *aRequest) -> void
             SaveOpenWeather(value);
 
         if (name.equals("latitude"))
-        {
             SaveLatitude(value);
-            SaveAutoLocation(false);
-        }
 
         if (name.equals("longitude"))
-        {
             SaveLongitude(value);
-            SaveAutoLocation(false);
-        }
 
         if (name.equals("wifiSsid"))
             SaveWifiSSID(value);
