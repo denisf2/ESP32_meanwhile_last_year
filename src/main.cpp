@@ -121,9 +121,12 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
         {
             // case automatic
             GetLocationCoordinates(GetIpGeoKey());
-
-            SaveLatitude(std::to_string(coordinates.latitude).c_str());
-            SaveLongitude(std::to_string(coordinates.longitude).c_str());
+            // [ ]TODO: save result on positive request status
+            // if(request is OK)
+            {
+                SaveLatitude(std::to_string(coordinates.latitude).c_str());
+                SaveLongitude(std::to_string(coordinates.longitude).c_str());
+            }
         }
         else
         {
