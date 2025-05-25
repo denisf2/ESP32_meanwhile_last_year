@@ -315,28 +315,40 @@
             </div>
 
             <div class="form-group">
-                <div class="form-input-group">
-                    <label for="longitude">Longitude:</label>
-                    <input class="inputbox"
-                            type="text"
-                            id="longitude"
-                            name="longitude"
-                            title="Longitude">
+                <div id="LocationFlag" class="form-group location hideable">
+                    <button id="manualLocation"
+                            type="button">
+                        <i class="fa fa-map-pin"></i> Set Location Manually
+                    </button>
                 </div>
+                <div class="form-group location hideable hidden">
+                    <button id="autoLocation"
+                            type="button">
+                        <i class="fa fa-location-arrow"></i> Set Location Automatically
+                    </button>
+                    <div class="form-input-group">
+                        <label for="longitude">Longitude:</label>
+                        <input class="inputbox"
+                                type="text"
+                                id="longitude"
+                                name="longitude"
+                                title="Longitude">
+                    </div>
 
-                <div class="__form-input-group">
-                    <label for="latitude">Latitude:</label>
-                    <input class="inputbox"
-                            type="text"
-                            id="latitude"
-                            name="latitude"
-                            title="Latitude">
+                    <div class="__form-input-group">
+                        <label for="latitude">Latitude:</label>
+                        <input class="inputbox"
+                                type="text"
+                                id="latitude"
+                                name="latitude"
+                                title="Latitude">
+                    </div>
+                    <button class="marg-top"
+                            id="openMap"
+                            type="button">
+                        <i class="fa fa-map-marker"></i> Select on Map
+                    </button>
                 </div>
-                <button class="marg-top"
-                        id="openMap"
-                        type="button">
-                    <i class="fa fa-map-marker"></i> Select on Map
-                </button>
             </div>
 
             <div class="form-group">
@@ -480,8 +492,13 @@
         }
 
         function onClickToggle() {
-            document.querySelectorAll('.hideable')
-                .forEach(h => h.classList.toggle('hidden'));
+            document.querySelectorAll('.survey-table.hideable')
+                .forEach(table => table.classList.toggle('hidden'));
+        }
+
+        function ToggleLocationAcqusition() {
+            document.querySelectorAll('.location.hideable')
+                .forEach(el => el.classList.toggle('hidden'));
         }
 
         function UpdateKeyValidationStatus(aButtonId, aIsValid) {
@@ -548,11 +565,27 @@
             document.getElementById("latitude").value = aData['Latitude'] || '';
             document.getElementById("ip2geoKey").value = aData['IpGeolocKey'] || '';
             document.getElementById("openWeatherKey").value = aData['OpenWeatherKey'] || '';
+
+            // show/hide location controls
+            const fromSettings = aData['autolocation'];
+            const fromForm = IsAutoLocation();
+            // imitates XOR
+            if (fromSettings != fromForm) {
+                ToggleLocationAcqusition();
+            }
+        }
+
+        function IsAutoLocation() {
+            return !document.getElementById('LocationFlag')
+                            ?.classList.contains('hidden');
         }
 
         // ==============================================
         // Chart Functions
         // ==============================================
+        let currentChart;
+        let chartValues = generateValues('');
+        const $chartElement = document.getElementById('chart-div');
 
         function generateTestValues() {
             // [ ]TODO: remove
@@ -653,8 +686,6 @@
                 currentChart.draw(data, options);
             }
         }
-
-        const $chartElement = document.getElementById('chart-div');
 
         function setupResizeObserver() {
             if (typeof ResizeObserver !== 'undefined') {
@@ -760,8 +791,6 @@
         // ==============================================
         let gateway = `ws://${window.location.hostname}/ws`;
         let websocket;
-        let currentChart;
-        let chartValues = generateValues('');
 
         function initWebSocket() {
             console.log('Trying to open WebSocket connection...');
@@ -883,17 +912,22 @@
             aEvent.preventDefault();
 
             try {
+                // collect form params
                 const form = aEvent.target;
-                let url = window.location.origin + "/update";
-                let urlEncodedData = new URLSearchParams(new FormData(form)).toString();
-                let request = {
+                const formData = new FormData(form);
+                formData.append('autolocation', IsAutoLocation().toString());
+
+                const urlEncodedData = new URLSearchParams(formData).toString();
+                const request = {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded',
                                 },
                                 body: urlEncodedData
                             };
-                let response = await fetch(url, request);
+
+                const url = window.location.origin + "/update";
+                const response = await fetch(url, request);
 
                 if (!response.ok) {
                     throw new Error(`Server responded with status: ${response.status}`);
@@ -1028,12 +1062,6 @@
         // Initialization
         // ==============================================
         function SetupUI() {
-            // document.getElementById('toggle')
-            //     ?.addEventListener('click', (e) => {
-            //         document.querySelectorAll('.hideable')
-            //                 .forEach(h => h.classList.toggle('hidden'));
-            //     });
-
             document.getElementById('resetButton')
                             .addEventListener('click', () => {
                                     if (confirm('Are you sure you want to restart the system?')) {
@@ -1064,6 +1092,9 @@
 
             document.querySelector('#toggle-button')
                     ?.addEventListener('click', onClickToggle);
+
+            document.querySelectorAll('.location.hideable')
+                    ?.addEventListener('click', ToggleLocationAcqusition);
 
             document.querySelector('#updateChartButton')
                     ?.addEventListener('click', update);
