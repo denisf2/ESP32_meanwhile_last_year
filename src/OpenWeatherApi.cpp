@@ -33,16 +33,16 @@ auto ParseJsonOwtr(const String& aData) -> std::optional<Weather_t>
 {
     // Allocate the JSON document
     JsonDocument doc;
-    // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, aData);
 
+    // Deserialize the JSON document
     // Test if parsing succeeds.
-    if (error)
+    if (auto error = deserializeJson(doc, aData); error)
     {
         log_w("JSON deserialition failed. Error code: %s", error.c_str());
         return std::nullopt;
     }
 
+    // Test if json is applicable
     if(!doc["cod"].is<int>())
         return std::nullopt;
 
