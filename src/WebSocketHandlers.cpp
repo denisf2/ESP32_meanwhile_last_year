@@ -7,6 +7,16 @@
 #include "WifiAux.h"
 #include "JsonAux.h"
 
+namespace MessageType {
+    const char IpGeolocationTest[]{"ip2geoTest"};
+    const char OpenWeatherTest[]{"openWeatherTest"};
+    const char FormFillRequest[]{"FormFill"};
+    const char ChartDataRequest[]{"ChartDataRequest"};
+    const char WiFiAPsRequest[]{"AcquireWiFiAPs"};
+    const char RestartSystemRequest[]{"RestartSystem"};
+    const char FactoryResetRequest[]{"ResetToDefaults"};
+}
+
 const char TAG[] = "[WebSoc]";
 
 bool chartDataRequested{false};
@@ -70,6 +80,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     }
 
     // [ ]TODO: messages dispatching needs refactoring
+    // [ ]TODO: make message dispatching manager. props: std::unordered_map<MsgType, std::function<void(const JsonDoc&)>>
     const auto msg = doc["message"];
     if (!msg.is<String>())
     {
@@ -80,7 +91,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     const auto msgType = msg.as<String>();
     log_d("%s Web socket message type is %s",TAG , msgType.c_str());
 
-    if (msgType.equals("ip2geoTest"))
+    if (msgType.equals(MessageType::IpGeolocationTest))
     {
         const auto res = TestIpGeolocationKey(doc);
         log_d("%s IpGeolocation.io key check: %svalid", TAG, (res) ? "" : "In");
@@ -88,7 +99,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
         const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
         aServer->textAll(respond);
     }
-    else if (msgType.equals("openWeatherTest"))
+    else if (msgType.equals(MessageType::OpenWeatherTest))
     {
         const auto res = TestOpenweatherKey(doc);
         log_d("%s OpenWeathermap.org key check: %svalid", TAG, (res) ? "" : "In");
@@ -96,33 +107,33 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
         const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
         aServer->textAll(respond);
     }
-    else if (msgType.equals("FormFill"))
+    else if (msgType.equals(MessageType::FormFillRequest))
     {
         // [x]TODO: update form with stored data
         const String respond = SerializeFormStoredData(std::move(doc), "");
         log_d("%s Ready to send %s", TAG, respond.c_str());
         aServer->textAll(respond);
     }
-    else if (msgType.equals("ChartDataRequest"))
+    else if (msgType.equals(MessageType::ChartDataRequest))
     {
         log_d("%s Update chart weather data", TAG);
 
         chartDataRequested = true;
     }
-    else if (msgType.equals("AcquireWiFiAPs"))
+    else if (msgType.equals(MessageType::WiFiAPsRequest))
     {
         log_i("%s Start WiFi network scan", TAG);
         // [ ]TODO: core1 WDT restart device here.
         // proposal cannont scan in wifi client mode
         StartWiFiScanAsync(WiFi);
     }
-    else if (msgType.equals("RestartSystem"))
+    else if (msgType.equals(MessageType::RestartSystemRequest))
     {
         // [ ]TODO: make a restart
         log_i("%s Restart system", TAG);
         ESP.restart();
     }
-    else if (msgType.equals("ResetToDefaults"))
+    else if (msgType.equals(MessageType::FactoryResetRequest))
     {
         // [ ]TODO: make a reset. Still do not know what to reset
         log_i("%s Reset to defaults", TAG);
