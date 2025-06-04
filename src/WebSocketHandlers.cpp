@@ -22,6 +22,9 @@ const char TAG[] = "[WebSoc]";
 
 bool chartDataRequested{false};
 
+using HandlerParams = std::tuple<AsyncWebSocket*, JsonDocument&&>;
+MessageDispatcher<String, HandlerParams> dispatcher;
+
 auto TestIpGeolocationKey(const JsonDocument& aDoc) -> bool
 {
     const auto keyNode = aDoc["apikey"];
@@ -53,9 +56,6 @@ auto getTestResponse() -> String
 \"temperature_2m_min\":[7.0,8.2,9.8,7.8,6.3,2.9,4.0]}}"
     );
 }
-
-using HandlerParams = std::tuple<AsyncWebSocket*, JsonDocument&&>;
-MessageDispatcher<String, HandlerParams> dispatcher;
 
 // --------------------------------------------------------
 // Dispatching web application level messages
@@ -96,7 +96,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     dispatcher.Dispatch(msgType, std::make_tuple(aServer, std::move(doc)));
 }
 
-auto bar1(String aMsgType, HandlerParams aParams) -> void
+auto IpGeolocationTest(String aMsgType, HandlerParams aParams) -> void
 {
     auto&& [server, doc] = aParams;
     const auto res = TestIpGeolocationKey(doc);
@@ -106,7 +106,7 @@ auto bar1(String aMsgType, HandlerParams aParams) -> void
     server->textAll(respond);
 }
 
-auto bar2(String aMsgType, HandlerParams aParams) -> void
+auto OpenWeatherTest(String aMsgType, HandlerParams aParams) -> void
 {
     auto&& [server, doc] = aParams;
     const auto res = TestOpenweatherKey(doc);
@@ -116,7 +116,7 @@ auto bar2(String aMsgType, HandlerParams aParams) -> void
     server->textAll(respond);
 }
 
-auto bar3(String aMsgType, HandlerParams aParams) -> void
+auto FormFillRequest(String aMsgType, HandlerParams aParams) -> void
 {
     auto&& [server, doc] = aParams;
     // [x]TODO: update form with stored data
@@ -126,14 +126,14 @@ auto bar3(String aMsgType, HandlerParams aParams) -> void
 }
 
 
-auto bar4(String aMsgType, HandlerParams aParams) -> void
+auto ChartDataRequest(String aMsgType, HandlerParams aParams) -> void
 {
     log_d("%s Update chart weather data", TAG);
 
     chartDataRequested = true;
 }
 
-auto bar5(String aMsgType, HandlerParams aParams) -> void
+auto WiFiAPsRequest(String aMsgType, HandlerParams aParams) -> void
 {
     log_i("%s Start WiFi network scan", TAG);
     // [ ]TODO: core1 WDT restart device here.
@@ -141,35 +141,34 @@ auto bar5(String aMsgType, HandlerParams aParams) -> void
     StartWiFiScanAsync(WiFi);
 }
 
-auto bar6(String aMsgType, HandlerParams aParams) -> void
+auto RestartSystem(String aMsgType, HandlerParams aParams) -> void
 {
     // [ ]TODO: make a restart
     log_i("%s Restart system", TAG);
     ESP.restart();
 }
 
-auto bar7(String aMsgType, HandlerParams aParams) -> void
+auto FactoryResert(String aMsgType, HandlerParams aParams) -> void
 {
     // [ ]TODO: make a reset. Still do not know what to reset
     log_i("%s Reset to defaults", TAG);
 }
 
-auto bar8(String aMsgType, HandlerParams aParams) -> void
+auto UnknownMessage(String aMsgType, HandlerParams aParams) -> void
 {
     log_w("%s Unknown message", TAG);
 }
 
-
-void fff()
+auto InitializeWebSocketMessageDispatching() -> void
 {
-    dispatcher.RegisterHandler(MessageType::IpGeolocationTest, bar1);
-    dispatcher.RegisterHandler(MessageType::OpenWeatherTest, bar2);
-    dispatcher.RegisterHandler(MessageType::FormFillRequest, bar3);
-    dispatcher.RegisterHandler(MessageType::ChartDataRequest, bar4);
-    dispatcher.RegisterHandler(MessageType::WiFiAPsRequest,bar5);
-    dispatcher.RegisterHandler(MessageType::RestartSystemRequest,bar6);
-    dispatcher.RegisterHandler(MessageType::FactoryResetRequest, bar7);
-    dispatcher.RegisterUnknownMessageHandler(bar8);
+    dispatcher.RegisterHandler(MessageType::IpGeolocationTest, IpGeolocationTest);
+    dispatcher.RegisterHandler(MessageType::OpenWeatherTest, OpenWeatherTest);
+    dispatcher.RegisterHandler(MessageType::FormFillRequest, FormFillRequest);
+    dispatcher.RegisterHandler(MessageType::ChartDataRequest, ChartDataRequest);
+    dispatcher.RegisterHandler(MessageType::WiFiAPsRequest, WiFiAPsRequest);
+    dispatcher.RegisterHandler(MessageType::RestartSystemRequest, RestartSystem);
+    dispatcher.RegisterHandler(MessageType::FactoryResetRequest, FactoryResert);
+    dispatcher.RegisterUnknownMessageHandler(UnknownMessage);
 }
 
 // --------------------------------------------------------

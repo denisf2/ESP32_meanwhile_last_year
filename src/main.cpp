@@ -57,6 +57,7 @@ AsyncWebSocket websocket("/ws");
 
 auto InitWebSocket() -> void
 {
+    InitializeWebSocketMessageDispatching();
     websocket.onEvent(OnEvent);
     server.addHandler(&websocket);
 }
