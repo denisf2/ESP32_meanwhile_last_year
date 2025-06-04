@@ -28,7 +28,7 @@ class MessageDispatcher
             m_handlers[aType] = std::move(aHandler);
         }
 
-        auto RegisterUnknownMwssageHandler(HandlerFunction aHandler) -> void
+        auto RegisterUnknownMessageHandler(HandlerFunction aHandler) -> void
         {
             m_unknownMessageHandler = std::move(aHandler);
         }

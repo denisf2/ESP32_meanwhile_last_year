@@ -169,7 +169,7 @@ void fff()
     dispatcher.RegisterHandler(MessageType::WiFiAPsRequest,bar5);
     dispatcher.RegisterHandler(MessageType::RestartSystemRequest,bar6);
     dispatcher.RegisterHandler(MessageType::FactoryResetRequest, bar7);
-    dispatcher.RegisterUnknownMwssageHandler(bar8);
+    dispatcher.RegisterUnknownMessageHandler(bar8);
 }
 
 // --------------------------------------------------------
