@@ -1093,8 +1093,9 @@
             document.querySelector('#toggle-button')
                     ?.addEventListener('click', onClickToggle);
 
-            document.querySelectorAll('.location.hideable')
-                    ?.addEventListener('click', ToggleLocationAcqusition);
+            document.querySelectorAll('.location.hideable').forEach(
+                (control) => control.addEventListener('click', ToggleLocationAcqusition)
+            );
 
             document.querySelector('#updateChartButton')
                     ?.addEventListener('click', update);
