@@ -13,20 +13,20 @@ class MessageDispatcher
                     , "U must be move-constructible");
 
     private:
-        using MessageHandler = std::function<auto (T&, U&&) -> void>;
+        using HandlerFunction = std::function<auto (T&, U&&) -> void>;
 
         // std::unordered_map does not fit here couse Arduino's String
         // class lacks a compatible std::hash specialization
         std::map<T, MessageHandler> m_handlers;
-        MessageHandler m_unknownMessageHandler;
+        HandlerFunction m_unknownMessageHandler;
 
     public:
-        auto RegisterHandler(const T& aType, MessageHandler aHandler) -> void
+        auto RegisterHandler(const T& aType, HandlerFunction aHandler) -> void
         {
             m_handlers[aType] = std::move(aHandler);
         }
 
-        auto RegisterUnknownMwssageHandler(MessageHandler aHandler) -> void
+        auto RegisterUnknownMwssageHandler(HandlerFunction aHandler) -> void
         {
             m_unknownMessageHandler = std::move(aHandler);
         }
