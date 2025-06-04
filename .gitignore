@@ -4,3 +4,4 @@
 .vscode/launch.json
 .vscode/ipch
 data/gzip
+.vscode/settings.json
