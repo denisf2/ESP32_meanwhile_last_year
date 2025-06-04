@@ -81,8 +81,6 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
         return;
     }
 
-    // [ ]TODO: messages dispatching needs refactoring
-    // [ ]TODO: make message dispatching manager. props: std::unordered_map<MsgType, std::function<void(const JsonDoc&)>>
     const auto msg = doc["message"];
     if (!msg.is<String>())
     {
@@ -119,12 +117,10 @@ auto OpenWeatherTest(String aMsgType, HandlerParams aParams) -> void
 auto FormFillRequest(String aMsgType, HandlerParams aParams) -> void
 {
     auto&& [server, doc] = aParams;
-    // [x]TODO: update form with stored data
     const String respond = SerializeFormStoredData(std::move(doc), "");
     log_d("%s Ready to send %s", TAG, respond.c_str());
     server->textAll(respond);
 }
-
 
 auto ChartDataRequest(String aMsgType, HandlerParams aParams) -> void
 {
