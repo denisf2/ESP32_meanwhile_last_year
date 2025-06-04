@@ -1,12 +1,15 @@
 #include "WebSocketHandlers.h"
 
 #include <ArduinoJson.h>
+#include <functional>
 
 #include "IpGeolocationApi.h"
 #include "OpenWeatherApi.h"
 #include "WifiAux.h"
 #include "JsonAux.h"
 #include "MessageDispatcher.h"
+
+const char TAG[] = "[WebSoc]";
 
 namespace MessageType {
     const char IpGeolocationTest[]{"ip2geoTest"};
@@ -18,32 +21,20 @@ namespace MessageType {
     const char FactoryResetRequest[]{"ResetToDefaults"};
 }
 
-const char TAG[] = "[WebSoc]";
-
 bool chartDataRequested{false};
 
 using HandlerParams = std::tuple<AsyncWebSocket*, JsonDocument&&>;
 MessageDispatcher<String, HandlerParams> dispatcher;
 
-auto TestIpGeolocationKey(const JsonDocument& aDoc) -> bool
+using ApiFunc = std::function<auto(const String&) -> bool>;
+auto TestApiKey(const JsonDocument& aDoc, ApiFunc aFunc) -> bool
 {
     const auto keyNode = aDoc["apikey"];
     if (!keyNode.is<String>())
         return false;
 
     const auto key = keyNode.as<String>();
-    return GetLocationCoordinates(key);
-}
-
-auto TestOpenweatherKey(const JsonDocument& aDoc) -> bool
-{
-    const auto keyNode = aDoc["apikey"];
-    if (!keyNode.is<String>())
-        return false;
-
-    const auto key = keyNode.as<String>();
-    return GetForecast(key, String("0"), String("0"));
-}
+    return aFunc(key);
 }
 
 // --------------------------------------------------------
@@ -86,7 +77,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
 auto IpGeolocationTest(String aMsgType, HandlerParams aParams) -> void
 {
     auto&& [server, doc] = aParams;
-    const auto res = TestIpGeolocationKey(doc);
+    const auto res = TestApiKey(doc, GetLocationCoordinates);
     log_d("%s IpGeolocation.io key check: %svalid", TAG, (res) ? "" : "In");
 
     const auto respond = SerializeRespondJSON(std::move(doc), aMsgType, res);
@@ -96,7 +87,11 @@ auto IpGeolocationTest(String aMsgType, HandlerParams aParams) -> void
 auto OpenWeatherTest(String aMsgType, HandlerParams aParams) -> void
 {
     auto&& [server, doc] = aParams;
-    const auto res = TestOpenweatherKey(doc);
+    const auto res = TestApiKey(doc
+                                , [](const String& aKey) -> bool
+                                    {
+                                        return GetForecast(aKey, String("0"), String("0"));
+                                    });
     log_d("%s OpenWeathermap.org key check: %svalid", TAG, (res) ? "" : "In");
 
     const auto respond = SerializeRespondJSON(std::move(doc), aMsgType, res);
