@@ -6,6 +6,7 @@
 #include "OpenWeatherApi.h"
 #include "WifiAux.h"
 #include "JsonAux.h"
+#include "MessageDispatcher.h"
 
 namespace MessageType {
     const char IpGeolocationTest[]{"ip2geoTest"};
@@ -53,6 +54,9 @@ auto getTestResponse() -> String
     );
 }
 
+using HandlerParams = std::tuple<AsyncWebSocket*, JsonDocument&&>;
+MessageDispatcher<String, HandlerParams> dispatcher;
+
 // --------------------------------------------------------
 // Dispatching web application level messages
 auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInfo, const uint8_t* const aData) -> void
@@ -70,10 +74,8 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     // Allocate the JSON document
     JsonDocument doc;
     // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, json);
-
     // Test if parsing succeeds.
-    if (error)
+    if (auto error = deserializeJson(doc, json); error)
     {
         log_w("%s JSON deserializition is failed. Error code: %s",TAG , error.f_str());
         return;
@@ -91,55 +93,83 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
     const auto msgType = msg.as<String>();
     log_d("%s Web socket message type is %s",TAG , msgType.c_str());
 
-    if (msgType.equals(MessageType::IpGeolocationTest))
-    {
-        const auto res = TestIpGeolocationKey(doc);
-        log_d("%s IpGeolocation.io key check: %svalid", TAG, (res) ? "" : "In");
+    dispatcher.Dispatch(msgType, std::make_tuple(aServer, std::move(doc)));
+}
 
-        const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
-        aServer->textAll(respond);
-    }
-    else if (msgType.equals(MessageType::OpenWeatherTest))
-    {
-        const auto res = TestOpenweatherKey(doc);
-        log_d("%s OpenWeathermap.org key check: %svalid", TAG, (res) ? "" : "In");
+auto bar1(String aMsgType, HandlerParams aParams) -> void
+{
+    auto&& [server, doc] = aParams;
+    const auto res = TestIpGeolocationKey(doc);
+    log_d("%s IpGeolocation.io key check: %svalid", TAG, (res) ? "" : "In");
 
-        const auto respond = SerializeRespondJSON(std::move(doc), msgType, res);
-        aServer->textAll(respond);
-    }
-    else if (msgType.equals(MessageType::FormFillRequest))
-    {
-        // [x]TODO: update form with stored data
-        const String respond = SerializeFormStoredData(std::move(doc), "");
-        log_d("%s Ready to send %s", TAG, respond.c_str());
-        aServer->textAll(respond);
-    }
-    else if (msgType.equals(MessageType::ChartDataRequest))
-    {
-        log_d("%s Update chart weather data", TAG);
+    const auto respond = SerializeRespondJSON(std::move(doc), aMsgType, res);
+    server->textAll(respond);
+}
 
-        chartDataRequested = true;
-    }
-    else if (msgType.equals(MessageType::WiFiAPsRequest))
-    {
-        log_i("%s Start WiFi network scan", TAG);
-        // [ ]TODO: core1 WDT restart device here.
-        // proposal cannont scan in wifi client mode
-        StartWiFiScanAsync(WiFi);
-    }
-    else if (msgType.equals(MessageType::RestartSystemRequest))
-    {
-        // [ ]TODO: make a restart
-        log_i("%s Restart system", TAG);
-        ESP.restart();
-    }
-    else if (msgType.equals(MessageType::FactoryResetRequest))
-    {
-        // [ ]TODO: make a reset. Still do not know what to reset
-        log_i("%s Reset to defaults", TAG);
-    }
-    else
-        log_w("%s Unknown message", TAG);
+auto bar2(String aMsgType, HandlerParams aParams) -> void
+{
+    auto&& [server, doc] = aParams;
+    const auto res = TestOpenweatherKey(doc);
+    log_d("%s OpenWeathermap.org key check: %svalid", TAG, (res) ? "" : "In");
+
+    const auto respond = SerializeRespondJSON(std::move(doc), aMsgType, res);
+    server->textAll(respond);
+}
+
+auto bar3(String aMsgType, HandlerParams aParams) -> void
+{
+    auto&& [server, doc] = aParams;
+    // [x]TODO: update form with stored data
+    const String respond = SerializeFormStoredData(std::move(doc), "");
+    log_d("%s Ready to send %s", TAG, respond.c_str());
+    server->textAll(respond);
+}
+
+
+auto bar4(String aMsgType, HandlerParams aParams) -> void
+{
+    log_d("%s Update chart weather data", TAG);
+
+    chartDataRequested = true;
+}
+
+auto bar5(String aMsgType, HandlerParams aParams) -> void
+{
+    log_i("%s Start WiFi network scan", TAG);
+    // [ ]TODO: core1 WDT restart device here.
+    // proposal cannont scan in wifi client mode
+    StartWiFiScanAsync(WiFi);
+}
+
+auto bar6(String aMsgType, HandlerParams aParams) -> void
+{
+    // [ ]TODO: make a restart
+    log_i("%s Restart system", TAG);
+    ESP.restart();
+}
+
+auto bar7(String aMsgType, HandlerParams aParams) -> void
+{
+    // [ ]TODO: make a reset. Still do not know what to reset
+    log_i("%s Reset to defaults", TAG);
+}
+
+auto bar8(String aMsgType, HandlerParams aParams) -> void
+{
+    log_w("%s Unknown message", TAG);
+}
+
+
+void fff()
+{
+    dispatcher.RegisterHandler(MessageType::IpGeolocationTest, bar1);
+    dispatcher.RegisterHandler(MessageType::OpenWeatherTest, bar2);
+    dispatcher.RegisterHandler(MessageType::FormFillRequest, bar3);
+    dispatcher.RegisterHandler(MessageType::ChartDataRequest, bar4);
+    dispatcher.RegisterHandler(MessageType::WiFiAPsRequest,bar5);
+    dispatcher.RegisterHandler(MessageType::RestartSystemRequest,bar6);
+    dispatcher.RegisterHandler(MessageType::FactoryResetRequest, bar7);
+    dispatcher.RegisterUnknownMwssageHandler(bar8);
 }
 
 // --------------------------------------------------------
