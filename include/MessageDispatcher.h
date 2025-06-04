@@ -6,24 +6,24 @@
 #include <type_traits>
 #include <utility>
 
-template <typename T, typename U>
+template <typename MessageType, typename ParamType>
 class MessageDispatcher
 {
-    static_assert(std::is_move_constructible_v<U>
-                    , "U must be move-constructible");
+    static_assert(std::is_move_constructible_v<ParamType>
+                    , "ParamType must be move-constructible");
 
     private:
-        using HandlerFunction = std::function<auto (T&, U&&) -> void>;
+        using HandlerFunction = std::function<auto (MessageType&, ParamType&&) -> void>;
 
         // std::unordered_map does not fit here couse Arduino's String
         // class lacks a compatible std::hash specialization
-        using HandlersMap = std::map<T, HandlerFunction>;
+        using HandlersMap = std::map<MessageType, HandlerFunction>;
 
         HandlersMap m_handlers;
         HandlerFunction m_unknownMessageHandler;
 
     public:
-        auto RegisterHandler(const T& aType, HandlerFunction aHandler) -> void
+        auto RegisterHandler(const MessageType& aType, HandlerFunction aHandler) -> void
         {
             m_handlers[aType] = std::move(aHandler);
         }
@@ -33,9 +33,9 @@ class MessageDispatcher
             m_unknownMessageHandler = std::move(aHandler);
         }
 
-        auto Dispatch(T aMessageType, U&& aParams)
+        auto Dispatch(MessageType aMessageType, ParamType&& aParams)
         {
-            if(auto it = m_handlers.find(aMessageType); m_handlers.end() != it)
+            if(const auto it = m_handlers.find(aMessageType); m_handlers.end() != it)
                 it->second(aMessageType, std::move(aParams));
             else if(m_unknownMessageHandler)
                 m_unknownMessageHandler(aMessageType, std::move(aParams));
