@@ -23,12 +23,12 @@ class MessageDispatcher
     public:
         auto RegisterHandler(const T& aType, MessageHandler aHandler) -> void
         {
-            m_handlers[aType] = aHandler;
+            m_handlers[aType] = std::move(aHandler);
         }
 
         auto RegisterUnknownMwssageHandler(MessageHandler aHandler) -> void
         {
-            m_unknownMessageHandler = aHandler;
+            m_unknownMessageHandler = std::move(aHandler);
         }
 
         auto Dispatch(T aMessageType, U&& aParams)
