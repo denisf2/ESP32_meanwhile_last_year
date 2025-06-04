@@ -6,12 +6,12 @@
 #include <type_traits>
 #include <utility>
 
-template <typename T>
-using MoveConstructible = std::enable_if_t<std::is_move_constructible_v<T> >;
-
-template <typename T, typename U, typename = MoveConstructible<U> >
+template <typename T, typename U>
 class MessageDispatcher
 {
+    static_assert(std::is_move_constructible_v<U>
+                    , "U must be move-constructible");
+
     private:
         using MessageHandler = std::function<auto (T&, U&&) -> void>;
 
