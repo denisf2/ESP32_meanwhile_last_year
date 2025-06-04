@@ -17,7 +17,9 @@ class MessageDispatcher
 
         // std::unordered_map does not fit here couse Arduino's String
         // class lacks a compatible std::hash specialization
-        std::map<T, MessageHandler> m_handlers;
+        using HandlersMap = std::map<T, HandlerFunction>;
+
+        HandlersMap m_handlers;
         HandlerFunction m_unknownMessageHandler;
 
     public:
