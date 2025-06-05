@@ -2,40 +2,42 @@
 #define OPENMETEOAPI_H__
 
 #include <Arduino.h>
-
-constexpr size_t days{7};
-
-struct WeatherHistory_t
+namespace OMeteo
 {
-    struct TempPoint
+    constexpr size_t days{7};
+
+    struct WeatherHistory_t
     {
-        uint8_t Tmin{0};
-        uint8_t Tmax{0};
-        String days;
+        struct TempPoint
+        {
+            uint8_t Tmin{0};
+            uint8_t Tmax{0};
+            String days;
+        };
+
+        TempPoint points[days]{};
     };
 
-    TempPoint points[days]{};
-};
-
-// [ ]TODO: eliminate this type
-struct WeatherHistory2_t
-{
-    struct TempPoint
+    // [ ]TODO: eliminate this type
+    struct WeatherHistory2_t
     {
-        uint8_t Tmean{0};
-        String days;
+        struct TempPoint
+        {
+            uint8_t Tmean{0};
+            String days;
+        };
+
+        TempPoint points[days]{};
+        double current{0.};
     };
 
-    TempPoint points[days]{};
-    double current{0.};
-};
+    auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool;
+    auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool;
 
-auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool;
-auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool;
-
-extern WeatherHistory_t weatherHistory;
-extern WeatherHistory2_t weatherWeek;
-extern bool chartHistoryDataReady;
-extern bool chartWeekDataReady;
+    extern WeatherHistory_t weatherHistory;
+    extern WeatherHistory2_t weatherWeek;
+    extern bool chartHistoryDataReady;
+    extern bool chartWeekDataReady;
+} // namespace
 
 #endif /*OPENMETEOAPI_H__*/

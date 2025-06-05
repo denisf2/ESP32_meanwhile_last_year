@@ -9,7 +9,9 @@
 #include <optional>
 #include <functional>
 
-const char TAG[] = "[OpenMeteoApi]";
+namespace OMeteo
+{
+constexpr char TAG[] = "[OpenMeteoApi]";
 
 WeatherHistory_t weatherHistory;
 WeatherHistory2_t weatherWeek;
@@ -63,17 +65,15 @@ auto ParseLastWeek(JsonDocument& aJson) -> WeatherHistory2_t
 }
 
 template<typename T>
-auto ParseJsonOpmet(const String& aData
+auto ParseJsonResponse(const String& aData
                     , std::function<auto(JsonDocument& aJson) -> T> aParse
                     ) -> std::optional<T>
 {
     // Allocate the JSON document
     JsonDocument doc;
     // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, aData);
-
     // Test if parsing succeeds.
-    if (error)
+    if (DeserializationError error = deserializeJson(doc, aData); error)
     {
         log_w("%s JSON deserialition failed. Error code: %s", TAG, error.c_str());
         return std::nullopt;
@@ -141,7 +141,7 @@ auto GetWeatherForPeriod(const String &aLat, const String &aLon, UrlBuilder aGet
     if(!respond)
         return false;
 
-    auto res = ParseJsonOpmet<T>(respond.value(), aParser);
+    auto res = ParseJsonResponse<T>(respond.value(), aParser);
     if(!res)
         return false;
 
@@ -177,3 +177,4 @@ auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
 
     return false;
 }
+} //namespace

@@ -184,10 +184,10 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         if (WL_CONNECTED == WiFi.status())
         {
             // last year
-            GetWeatherLastYear(String(IpGeo::coordinates.latitude)
+            OMeteo::GetWeatherLastYear(String(IpGeo::coordinates.latitude)
                             , String(IpGeo::coordinates.longitude));
             // last three days
-            GetWeatherLastWeek(String(IpGeo::coordinates.latitude)
+            OMeteo::GetWeatherLastWeek(String(IpGeo::coordinates.latitude)
                             , String(IpGeo::coordinates.longitude));
 
             GetForecast(GetOpenWeatherKey()
@@ -206,7 +206,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
 auto job_update_chart_data(unsigned long aCurrent) -> void
 {
     // [ ]TODO: add some delay
-    if(chartDataRequested && chartHistoryDataReady)
+    if(chartDataRequested && OMeteo::chartHistoryDataReady)
     {
         auto respond = GetChartData();
         websocket.textAll(respond);

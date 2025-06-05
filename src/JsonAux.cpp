@@ -78,20 +78,20 @@ auto GetChartData() -> String
     JsonArray Tmax = daily["temperature_2m_max"].to<JsonArray>();
     JsonArray Tmin = daily["temperature_2m_min"].to<JsonArray>();
 
-    for(auto i = 0; i < days; ++i)
+    for(auto i = 0; i < OMeteo::days; ++i)
     {
-        Tmax.add(weatherHistory.points[i].Tmax);
-        Tmin.add(weatherHistory.points[i].Tmin);
-        time.add(weatherHistory.points[i].days);
+        Tmax.add(OMeteo::weatherHistory.points[i].Tmax);
+        Tmin.add(OMeteo::weatherHistory.points[i].Tmin);
+        time.add(OMeteo::weatherHistory.points[i].days);
     }
 
     auto current = doc["current"].to<JsonArray>();
 
     const size_t lastDays{3};
     for(auto i = 0; i < lastDays; ++i)
-        current.add(weatherWeek.points[i].Tmean);
+        current.add(OMeteo::weatherWeek.points[i].Tmean);
 
-    current.add(weatherWeek.current);
+    current.add(OMeteo::weatherWeek.current);
 
     String serial;
     serializeJson(doc, serial);
