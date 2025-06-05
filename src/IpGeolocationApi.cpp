@@ -5,6 +5,8 @@
 
 #include <optional>
 
+const char TAG[] = "[IpGeoApi]";
+
 Coordinates_t coordinates;
 
 /*
@@ -20,13 +22,13 @@ auto ParseJson(const String &aData) -> std::optional<Coordinates_t>
     // Test if parsing succeeds.
     if (error)
     {
-        log_w("JSON deserializition is failed. Error code: %s", error.f_str());
+        log_w("%s JSON deserializition is failed. Error code: %s", TAG, error.f_str());
         return std::nullopt;
     }
 
     if (!doc["ip"].is<String>())
     {
-        log_i("JSON invalid format %s", aData.c_str());
+        log_i("%s JSON invalid format %s", TAG, aData.c_str());
         return std::nullopt;
     }
 
@@ -60,7 +62,7 @@ auto GetLocationCoordinates(const String &aApiKey) -> bool
 
     coordinates = res.value();
     // Print values.
-    log_i("Acquired coordinates: [%3.3f, %3.3f]", coordinates.latitude, coordinates.longitude);
+    log_i("%s Acquired coordinates: [%3.3f, %3.3f]", TAG, coordinates.latitude, coordinates.longitude);
 
     return true;
 }

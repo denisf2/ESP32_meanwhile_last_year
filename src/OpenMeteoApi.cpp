@@ -9,6 +9,8 @@
 #include <optional>
 #include <functional>
 
+const char TAG[] = "[OpenMeteoApi]";
+
 WeatherHistory_t weatherHistory;
 WeatherHistory2_t weatherWeek;
 bool chartHistoryDataReady{false};
@@ -24,7 +26,7 @@ auto ParseHistory(JsonDocument& aJson) -> WeatherHistory_t
 
     auto size = time.size();
     if(days < size)
-    log_i("Recieved info for %d days", size);
+        log_i("%s Recieved info for %d days", TAG, size);
 
     WeatherHistory_t weatherData;
     for(auto i{0u}; i < std::min(days, size); ++i)
@@ -46,7 +48,7 @@ auto ParseLastWeek(JsonDocument& aJson) -> WeatherHistory2_t
 
     auto size = time.size();
     if(days < size)
-        log_i("Recieved info for %d days", size);
+        log_i("%s Recieved info for %d days", TAG, size);
 
     WeatherHistory2_t weatherData;
     for(auto i{0u}; i < std::min(days, size); ++i)
@@ -73,7 +75,7 @@ auto ParseJsonOpmet(const String& aData
     // Test if parsing succeeds.
     if (error)
     {
-        log_w("JSON deserialition failed. Error code: %s", error.c_str());
+        log_w("%s JSON deserialition failed. Error code: %s", TAG, error.c_str());
         return std::nullopt;
     }
 
@@ -82,14 +84,14 @@ auto ParseJsonOpmet(const String& aData
     {
         const auto reason = doc["reason"];
         if (reason.is<String>())
-            log_w("OpenMeteo.com API request failed. The reason is \"%s\"", reason.as<String>().c_str());
+            log_w("%s OpenMeteo.com API request failed. The reason is \"%s\"", TAG, reason.as<String>().c_str());
 
         return std::nullopt;
     }
 
     if (!doc["generationtime_ms"].is<double>())
     {
-        log_w("OpenMeteo.com API request failed. Invalid JSON format");
+        log_w("%s OpenMeteo.com API request failed. Invalid JSON format", TAG);
         return std::nullopt;
     }
 
@@ -132,7 +134,7 @@ auto GetWeatherForPeriod(const String &aLat, const String &aLon
                         ) -> bool
 {
     const String requestUrl = aGetURL(aLat, aLon);
-    log_d("%s", requestUrl.c_str());
+    log_d("%s %s", TAG, requestUrl.c_str());
 
     auto respond = SendGetRequest(requestUrl);
     if(!respond)
@@ -154,9 +156,7 @@ auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
 {
     if(GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, GetHistoryApiUrl, ParseHistory))
     {
-        // Print values.
-        // log_i("Acquired temperature: [ %4.1f ]", weather.temp);
-        log_d("Acquired history temperature");
+        log_d("%s Acquired history temperature", TAG);
         chartHistoryDataReady = true;
 
         return true;
@@ -169,9 +169,7 @@ auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
 {
     if(GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, GetWeekApiUrl, ParseLastWeek))
     {
-        // Print values.
-        // log_i("Acquired temperature: [ %4.1f ]", weather.temp);
-        log_d("Acquired week temperature");
+        log_d("%s Acquired week temperature", TAG);
         chartWeekDataReady = true;
         return true;
     }

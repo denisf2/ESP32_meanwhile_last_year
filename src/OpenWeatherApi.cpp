@@ -27,6 +27,8 @@ const String GEO_REVERSE_API = "https://api.openweathermap.org/geo/1.0/reverse";
 ```
 */
 
+const char TAG[] = "[OpenWeatherApi]";
+
 Weather_t weather;
 
 auto ParseJsonOwtr(const String& aData) -> std::optional<Weather_t>
@@ -38,7 +40,7 @@ auto ParseJsonOwtr(const String& aData) -> std::optional<Weather_t>
     // Test if parsing succeeds.
     if (auto error = deserializeJson(doc, aData); error)
     {
-        log_w("JSON deserialition failed. Error code: %s", error.c_str());
+        log_w("%s JSON deserialition failed. Error code: %s", TAG, error.c_str());
         return std::nullopt;
     }
 
@@ -87,7 +89,7 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
 
     weather = res.value();
     // Print values.
-    log_i("Acquired temperature: [ %4.1f ]", weather.temp);
+    log_i("%s Acquired temperature: [ %4.1f ]", TAG, weather.temp);
 
     return true;
 }

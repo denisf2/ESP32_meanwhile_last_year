@@ -3,6 +3,8 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
+const char TAG[] = "[HttpClientAux]";
+
 auto SendGetRequest(const String& aUrl) -> std::optional<String>
 {
     WiFiClientSecure client;
@@ -29,7 +31,7 @@ auto SendGetRequest(const String& aUrl) -> std::optional<String>
     int httpResponseCode = https.GET();
     if (httpResponseCode <= 0)
     {
-        log_w("Error code: %d", httpResponseCode);
+        log_w("%s Error code: %d", TAG, httpResponseCode);
         // Free resources
         https.end();
 
@@ -37,7 +39,7 @@ auto SendGetRequest(const String& aUrl) -> std::optional<String>
     }
 
     // [ ]TODO: handle response codes and JSONs 200 400 401 404
-    log_d("HTTP Response code: %d", httpResponseCode);
+    log_d("%s HTTP Response code: %d", TAG, httpResponseCode);
     const String payload = https.getString();
 
     // Free resources
