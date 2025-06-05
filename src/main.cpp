@@ -121,12 +121,12 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
         if (true)
         {
             // case automatic
-            GetLocationCoordinates(GetIpGeoKey());
+            IpGeo::GetLocationCoordinates(GetIpGeoKey());
             // [ ]TODO: save result on positive request status
             // if(request is OK)
             {
-                SaveLatitude(std::to_string(coordinates.latitude).c_str());
-                SaveLongitude(std::to_string(coordinates.longitude).c_str());
+                SaveLatitude(std::to_string(IpGeo::coordinates.latitude).c_str());
+                SaveLongitude(std::to_string(IpGeo::coordinates.longitude).c_str());
             }
         }
         else
@@ -135,14 +135,14 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
             // case manual
             try
             {
-                Coordinates_t tmp{coordinates};
+                auto tmp{IpGeo::coordinates};
 
                 // use std::stod to catch exceptions
                 // String::toDouble() does not provide this functionality
                 tmp.latitude = std::stod(GetLatitude().c_str());
                 tmp.longitude = std::stod(GetLongitude().c_str());
 
-                coordinates = tmp;
+                IpGeo::coordinates = tmp;
             }
             catch (const std::invalid_argument &aExc)
             {
@@ -184,15 +184,15 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         if (WL_CONNECTED == WiFi.status())
         {
             // last year
-            GetWeatherLastYear(String(coordinates.latitude)
-                            , String(coordinates.longitude));
+            GetWeatherLastYear(String(IpGeo::coordinates.latitude)
+                            , String(IpGeo::coordinates.longitude));
             // last three days
-            GetWeatherLastWeek(String(coordinates.latitude)
-                            , String(coordinates.longitude));
+            GetWeatherLastWeek(String(IpGeo::coordinates.latitude)
+                            , String(IpGeo::coordinates.longitude));
 
             GetForecast(GetOpenWeatherKey()
-                            , String(coordinates.latitude)
-                            , String(coordinates.longitude));
+                            , String(IpGeo::coordinates.latitude)
+                            , String(IpGeo::coordinates.longitude));
         }
         else
         {

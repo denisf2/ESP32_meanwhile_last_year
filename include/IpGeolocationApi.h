@@ -3,12 +3,17 @@
 
 #include <Arduino.h>
 
-auto GetLocationCoordinates(const String &aApiKey) -> bool;
-struct Coordinates_t
+namespace IpGeo
 {
-    double latitude{0.0};
-    double longitude{0.0};
-};
+    struct Coordinates_t
+    {
+        double latitude{0.0};
+        double longitude{0.0};
+    };
 
-extern Coordinates_t coordinates;
+    auto GetLocationCoordinates(const String &aApiKey) -> bool;
+
+    extern Coordinates_t coordinates;
+} // namespace
+
 #endif /* IPGEOLOCATIONAPI_H__ */

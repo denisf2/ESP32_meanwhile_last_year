@@ -5,22 +5,24 @@
 
 #include <optional>
 
-const char TAG[] = "[IpGeoApi]";
+/*
+    api description: https://ipgeolocation.io/ip-location-api.html#documentation-overview
+*/
+
+namespace IpGeo
+{
+constexpr char TAG[] = "[IpGeoApi]";
+constexpr char API_BASE_URL[] = "https://api.ipgeolocation.io/ipgeo";
 
 Coordinates_t coordinates;
 
-/*
-api description: https://ipgeolocation.io/ip-location-api.html#documentation-overview
-*/
-
-auto ParseJson(const String &aData) -> std::optional<Coordinates_t>
+auto ParseJsonResponse(const String &aData) -> std::optional<Coordinates_t>
 {
     // Allocate the JSON document
     JsonDocument doc;
     // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, aData);
     // Test if parsing succeeds.
-    if (error)
+    if (DeserializationError error = deserializeJson(doc, aData); error)
     {
         log_w("%s JSON deserializition is failed. Error code: %s", TAG, error.f_str());
         return std::nullopt;
@@ -32,31 +34,27 @@ auto ParseJson(const String &aData) -> std::optional<Coordinates_t>
         return std::nullopt;
     }
 
-    Coordinates_t coord;
-    // Fetch values
-    coord.latitude = doc["latitude"].as<double>();
-    coord.longitude = doc["longitude"].as<double>();
-
-    return std::make_optional<Coordinates_t>(std::move(coord));
+    return Coordinates_t {
+        doc["latitude"].as<double>()
+        , doc["longitude"].as<double>()
+    };
 }
 
-auto GetApiUrl(const String& aApiKey)-> String {
-    return String("https://api.ipgeolocation.io/ipgeo")
-            + "?apiKey="
-            + aApiKey;
+auto BuildApiUrl(const String& aApiKey)-> String
+{
+    return String(API_BASE_URL) + "?apiKey=" + aApiKey;
 }
 
 auto GetLocationCoordinates(const String &aApiKey) -> bool
 {
-    const String requestUrl = GetApiUrl(aApiKey);
+    const String requestUrl = BuildApiUrl(aApiKey);
     log_d("%s", requestUrl.c_str());
 
-    auto respond = SendGetRequest(requestUrl);
+    const auto respond = SendGetRequest(requestUrl);
     if(!respond)
         return false;
 
-    const auto res = ParseJson(respond.value());
-
+    const auto res = ParseJsonResponse(respond.value());
     if (!res)
         return false;
 
@@ -66,3 +64,5 @@ auto GetLocationCoordinates(const String &aApiKey) -> bool
 
     return true;
 }
+
+} // namespace
