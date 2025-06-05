@@ -128,10 +128,11 @@ auto GetHistoryApiUrl(const String &aLat, const String &aLon) -> String
 }
 
 template<typename T>
-auto GetWeatherForPeriod(const String &aLat, const String &aLon
-                            , std::function<auto(const String &aLat, const String &aLon) -> String> aGetURL
-                            , std::function<auto(JsonDocument& aJson) -> T> aParser
-                        ) -> bool
+using JsonParser = std::function<auto(JsonDocument& aJson) -> T>;
+using UrlBuilder = std::function<auto(const String &aLat, const String &aLon) -> String>;
+
+template<typename T>
+auto GetWeatherForPeriod(const String &aLat, const String &aLon, UrlBuilder aGetURL, JsonParser<T> aParser) -> bool
 {
     const String requestUrl = aGetURL(aLat, aLon);
     log_d("%s %s", TAG, requestUrl.c_str());
