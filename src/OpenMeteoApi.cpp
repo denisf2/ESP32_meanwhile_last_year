@@ -12,6 +12,8 @@
 namespace OMeteo
 {
 constexpr char TAG[] = "[OpenMeteoApi]";
+constexpr char BASE_API_URL[] = "https://api.open-meteo.com/v1/forecast";
+constexpr char HISTORICAL_API_URL[] = "https://historical-forecast-api.open-meteo.com/v1/forecast";
 
 WeatherHistory_t weatherHistory;
 WeatherHistory2_t weatherWeek;
@@ -105,7 +107,7 @@ auto GetWeekApiUrl(const String &aLat, const String &aLon) -> String
     const auto [begin, end] = GetDateRangeEnds(false);
     constexpr char dailyParams[]{"temperature_2m_mean"};
     constexpr char currentParams[]{"temperature_2m"};
-    return String("https://api.open-meteo.com/v1/forecast")
+    return String(BASE_API_URL)
                     + "?latitude=" + aLat
                     + "&longitude=" + aLon
                     + "&start_date=" + begin
@@ -118,7 +120,7 @@ auto GetHistoryApiUrl(const String &aLat, const String &aLon) -> String
 {
     const auto [begin, end] = GetDateRangeEnds(true);
     constexpr char dailyParams[]{"temperature_2m_max,temperature_2m_min"};
-    return String("https://historical-forecast-api.open-meteo.com/v1/forecast")
+    return String(HISTORICAL_API_URL)
                     + "?latitude=" + aLat
                     + "&longitude=" + aLon
                     + "&start_date=" + begin
