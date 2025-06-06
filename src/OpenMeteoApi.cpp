@@ -9,6 +9,8 @@
 #include <optional>
 #include <functional>
 
+#include "functional_aux.h"
+
 namespace OMeteo
 {
 constexpr char TAG[] = "[OpenMeteoApi]";
@@ -134,34 +136,29 @@ using JsonParser = std::function<auto(JsonDocument& aJson) -> T>;
 using UrlBuilder = std::function<auto(const String &aLat, const String &aLon) -> String>;
 
 template<typename T>
-auto GetWeatherForPeriod(const String &aLat, const String &aLon, UrlBuilder aGetURL, JsonParser<T> aParser) -> bool
+auto GetWeatherForPeriod(const String &aLat
+                        , const String &aLon
+                        , UrlBuilder aGetURL
+                        , JsonParser<T> aParser)
+                    -> std::optional<T>
 {
     const String requestUrl = aGetURL(aLat, aLon);
     log_d("%s %s", TAG, requestUrl.c_str());
 
     auto respond = SendGetRequest(requestUrl);
-    if(!respond)
-        return false;
-
-    auto res = ParseJsonResponse<T>(respond.value(), aParser);
-    if(!res)
-        return false;
-
-    if constexpr (std::is_same_v<T, WeatherHistory_t>)
-        weatherHistory = res.value();
-    else
-        weatherWeek = res.value();
-
-    return true;
+    return Functonal::and_then(respond, [aParser](auto aArg)
+                                {
+                                    return ParseJsonResponse<T>(std::move(aArg), aParser);
+                                });
 }
 
 auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
 {
-    if(GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, GetHistoryApiUrl, ParseHistory))
+    if(auto res = GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, GetHistoryApiUrl, ParseHistory); res)
     {
         log_d("%s Acquired history temperature", TAG);
+        weatherHistory = res.value();
         chartHistoryDataReady = true;
-
         return true;
     }
 
@@ -170,9 +167,10 @@ auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
 
 auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
 {
-    if(GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, GetWeekApiUrl, ParseLastWeek))
+    if(auto res = GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, GetWeekApiUrl, ParseLastWeek); res)
     {
         log_d("%s Acquired week temperature", TAG);
+        weatherWeek = res.value();
         chartWeekDataReady = true;
         return true;
     }
