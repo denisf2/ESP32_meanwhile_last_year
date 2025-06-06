@@ -23,12 +23,14 @@ namespace OMeteo
     {
         struct TempPoint
         {
-            uint8_t Tmean{0};
+            // uint8_t Tmin{0}; < --
+            // uint8_t Tmax{0}; < --
+            uint8_t Tmean{0}; // < ++
             String days;
         };
 
         TempPoint points[days]{};
-        double current{0.};
+        double current{0.}; // < ++
     };
 
     auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool;
