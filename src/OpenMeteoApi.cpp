@@ -173,4 +173,12 @@ auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
 
     return false;
 }
+
+auto FetchData(const String &aLat, const String &aLon) -> bool
+{
+    // last year
+    return OMeteo::GetWeatherLastYear(aLat, aLon)
+    // last three days
+        && OMeteo::GetWeatherLastWeek(aLat, aLon);
+}
 } //namespace

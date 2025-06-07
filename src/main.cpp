@@ -183,11 +183,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
         {
-            // last year
-            OMeteo::GetWeatherLastYear(String(IpGeo::coordinates.latitude)
-                            , String(IpGeo::coordinates.longitude));
-            // last three days
-            OMeteo::GetWeatherLastWeek(String(IpGeo::coordinates.latitude)
+            OMeteo::FetchData(String(IpGeo::coordinates.latitude)
                             , String(IpGeo::coordinates.longitude));
 
             OpenWeather::FetchData(GetOpenWeatherKey()

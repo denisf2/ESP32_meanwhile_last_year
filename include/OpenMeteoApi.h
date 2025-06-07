@@ -33,8 +33,7 @@ namespace OMeteo
         double current{0.}; // < ++
     };
 
-    auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool;
-    auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool;
+    auto FetchData(const String &aLat, const String &aLon) -> bool;
 
     extern std::optional<WeatherHistory_t> weatherHistory;
     extern std::optional<WeatherHistory2_t> weatherWeek;
