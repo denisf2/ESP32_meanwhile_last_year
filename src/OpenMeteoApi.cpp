@@ -155,7 +155,7 @@ auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
     if(auto res = GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, BuildHistoryApiUrl, ParseHistory); res)
     {
         log_d("%s Acquired history temperature", TAG);
-        weatherHistory = std::make_optional(res.value());
+        weatherHistory = res;
         return true;
     }
 
@@ -167,7 +167,7 @@ auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
     if(auto res = GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, BuildWeekApiUrl, ParseLastWeek); res)
     {
         log_d("%s Acquired week temperature", TAG);
-        weatherWeek = std::make_optional(res.value());
+        weatherWeek = res;
         return true;
     }
 
