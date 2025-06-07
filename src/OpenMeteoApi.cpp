@@ -17,10 +17,8 @@ constexpr char TAG[] = "[OpenMeteoApi]";
 constexpr char BASE_API_URL[] = "https://api.open-meteo.com/v1/forecast";
 constexpr char HISTORICAL_API_URL[] = "https://historical-forecast-api.open-meteo.com/v1/forecast";
 
-WeatherHistory_t weatherHistory;
-WeatherHistory2_t weatherWeek;
-bool chartHistoryDataReady{false};
-bool chartWeekDataReady{false};
+std::optional<WeatherHistory_t> weatherHistory{std::nullopt};
+std::optional<WeatherHistory2_t> weatherWeek;
 
 auto ParseHistory(JsonDocument& aJson) -> WeatherHistory_t
 {
@@ -157,8 +155,7 @@ auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
     if(auto res = GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, BuildHistoryApiUrl, ParseHistory); res)
     {
         log_d("%s Acquired history temperature", TAG);
-        weatherHistory = res.value();
-        chartHistoryDataReady = true;
+        weatherHistory = std::make_optional(res.value());
         return true;
     }
 
@@ -170,8 +167,7 @@ auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
     if(auto res = GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, BuildWeekApiUrl, ParseLastWeek); res)
     {
         log_d("%s Acquired week temperature", TAG);
-        weatherWeek = res.value();
-        chartWeekDataReady = true;
+        weatherWeek = std::make_optional(res.value());
         return true;
     }
 

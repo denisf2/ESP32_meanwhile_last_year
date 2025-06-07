@@ -206,7 +206,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
 auto job_update_chart_data(unsigned long aCurrent) -> void
 {
     // [ ]TODO: add some delay
-    if(chartDataRequested && OMeteo::chartHistoryDataReady)
+    if(chartDataRequested && OMeteo::weatherHistory)
     {
         auto respond = GetChartData();
         websocket.textAll(respond);

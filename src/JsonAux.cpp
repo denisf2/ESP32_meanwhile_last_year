@@ -73,25 +73,35 @@ auto GetChartData() -> String
     JsonDocument doc;
     doc["message"] = "ChartDataResponse";
 
-    auto daily = doc["daily"].to<JsonObject>();
-    JsonArray time = daily["time"].to<JsonArray>();
-    JsonArray Tmax = daily["temperature_2m_max"].to<JsonArray>();
-    JsonArray Tmin = daily["temperature_2m_min"].to<JsonArray>();
-
-    for(auto i = 0; i < OMeteo::days; ++i)
+    if (OMeteo::weatherHistory && OMeteo::weatherWeek)
     {
-        Tmax.add(OMeteo::weatherHistory.points[i].Tmax);
-        Tmin.add(OMeteo::weatherHistory.points[i].Tmin);
-        time.add(OMeteo::weatherHistory.points[i].days);
+        const auto& data = OMeteo::weatherHistory.value();
+
+        auto daily = doc["daily"].to<JsonObject>();
+        JsonArray time = daily["time"].to<JsonArray>();
+        JsonArray Tmax = daily["temperature_2m_max"].to<JsonArray>();
+        JsonArray Tmin = daily["temperature_2m_min"].to<JsonArray>();
+
+        for(auto i = 0; i < OMeteo::days; ++i)
+        {
+            Tmax.add(data.points[i].Tmax);
+            Tmin.add(data.points[i].Tmin);
+            time.add(data.points[i].days);
+        }
+
+        auto current = doc["current"].to<JsonArray>();
+
+        const auto& weekData = OMeteo::weatherWeek.value();
+        const size_t lastDays{3};
+        for(auto i = 0; i < lastDays; ++i)
+            current.add(weekData.points[i].Tmean);
+
+        current.add(weekData.current);
     }
-
-    auto current = doc["current"].to<JsonArray>();
-
-    const size_t lastDays{3};
-    for(auto i = 0; i < lastDays; ++i)
-        current.add(OMeteo::weatherWeek.points[i].Tmean);
-
-    current.add(OMeteo::weatherWeek.current);
+    else
+    {
+        doc["warning"] = "No data ready";
+    }
 
     String serial;
     serializeJson(doc, serial);

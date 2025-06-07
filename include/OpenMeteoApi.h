@@ -36,10 +36,8 @@ namespace OMeteo
     auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool;
     auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool;
 
-    extern WeatherHistory_t weatherHistory;
-    extern WeatherHistory2_t weatherWeek;
-    extern bool chartHistoryDataReady;
-    extern bool chartWeekDataReady;
+    extern std::optional<WeatherHistory_t> weatherHistory;
+    extern std::optional<WeatherHistory2_t> weatherWeek;
 } // namespace
 
 #endif /*OPENMETEOAPI_H__*/
