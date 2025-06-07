@@ -104,7 +104,7 @@ auto ParseJsonResponse(const String& aData
     return std::make_optional(std::move(weatherData));
 }
 
-auto GetWeekApiUrl(const String &aLat, const String &aLon) -> String
+auto BuildWeekApiUrl(const String &aLat, const String &aLon) -> String
 {
     const auto [begin, end] = GetDateRangeEnds(false);
     constexpr char dailyParams[]{"temperature_2m_mean"};
@@ -118,7 +118,7 @@ auto GetWeekApiUrl(const String &aLat, const String &aLon) -> String
                     + "&current=" + currentParams;
 }
 
-auto GetHistoryApiUrl(const String &aLat, const String &aLon) -> String
+auto BuildHistoryApiUrl(const String &aLat, const String &aLon) -> String
 {
     const auto [begin, end] = GetDateRangeEnds(true);
     constexpr char dailyParams[]{"temperature_2m_max,temperature_2m_min"};
@@ -154,7 +154,7 @@ auto GetWeatherForPeriod(const String &aLat
 
 auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
 {
-    if(auto res = GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, GetHistoryApiUrl, ParseHistory); res)
+    if(auto res = GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, BuildHistoryApiUrl, ParseHistory); res)
     {
         log_d("%s Acquired history temperature", TAG);
         weatherHistory = res.value();
@@ -167,7 +167,7 @@ auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
 
 auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
 {
-    if(auto res = GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, GetWeekApiUrl, ParseLastWeek); res)
+    if(auto res = GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, BuildWeekApiUrl, ParseLastWeek); res)
     {
         log_d("%s Acquired week temperature", TAG);
         weatherWeek = res.value();
