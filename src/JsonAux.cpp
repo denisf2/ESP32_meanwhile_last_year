@@ -4,7 +4,7 @@
 #include "OpenMeteoApi.h"
 #include "OpenWeatherApi.h"
 
-const char TAG[] = "[JSON]";
+constexpr char TAG[] = "[JSON]";
 
 auto WiFiAPtoJSON(WiFiClass& aWiFi, const int16_t aTotal) -> String
 {

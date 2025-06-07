@@ -2,7 +2,7 @@
 #include "JsonAux.h"
 #include "NvsPreferences.h"
 
-const char TAG[] = "[WiFi]";
+constexpr char TAG[] = "[WiFi]";
 bool scanInProgress{false};
 
 auto to_string(const wifi_auth_mode_t aMode) -> String

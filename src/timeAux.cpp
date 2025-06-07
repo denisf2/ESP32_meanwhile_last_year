@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <sstream>
 
-const char TAG[] = "[Time]";
+constexpr char TAG[] = "[Time]";
 
 const char ntpServer1[] = "pool.ntp.org";
 const char ntpServer2[] = "time.nist.gov";

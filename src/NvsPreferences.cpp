@@ -1,6 +1,6 @@
 #include "NvsPreferences.h"
 
-const char TAG[] = "[NVS]";
+constexpr char TAG[] = "[NVS]";
 
 Preferences nvsPrefs;
 

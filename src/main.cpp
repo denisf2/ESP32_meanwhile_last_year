@@ -35,7 +35,7 @@
 #include "timeAux.h"
 #include "JsonAux.h"
 
-const char TAG[] = "[Main]";
+constexpr char TAG[] = "[Main]";
 
 // [ ]TODO: need refactoring to prev time stamps
 unsigned long oldmil1 = 0UL;

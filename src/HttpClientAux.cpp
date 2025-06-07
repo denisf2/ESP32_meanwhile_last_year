@@ -3,7 +3,7 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
-const char TAG[] = "[HttpClientAux]";
+constexpr char TAG[] = "[HttpClientAux]";
 
 auto SendGetRequest(const String& aUrl) -> std::optional<String>
 {

@@ -9,7 +9,7 @@
 #include "JsonAux.h"
 #include "MessageDispatcher.h"
 
-const char TAG[] = "[WebSoc]";
+constexpr char TAG[] = "[WebSoc]";
 
 namespace MessageType {
     const char IpGeolocationTest[]{"ip2geoTest"};

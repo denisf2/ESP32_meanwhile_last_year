@@ -3,7 +3,7 @@
 #include "resources.h"
 #include "NvsPreferences.h"
 
-const char TAG[] = "[WebSrv]";
+constexpr char TAG[] = "[WebSrv]";
 
 constexpr int listenPort{80};
 AsyncWebServer server(listenPort);
