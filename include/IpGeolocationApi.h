@@ -11,7 +11,7 @@ namespace IpGeo
         double longitude{0.0};
     };
 
-    auto GetLocationCoordinates(const String &aApiKey) -> bool;
+    auto FetchData(const String &aApiKey) -> bool;
 
     extern Coordinates_t coordinates;
 } // namespace

@@ -121,7 +121,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
         if (true)
         {
             // case automatic
-            IpGeo::GetLocationCoordinates(GetIpGeoKey());
+            IpGeo::FetchData(GetIpGeoKey());
             // [ ]TODO: save result on positive request status
             // if(request is OK)
             {

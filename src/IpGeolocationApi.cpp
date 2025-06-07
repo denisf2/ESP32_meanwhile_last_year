@@ -45,7 +45,7 @@ auto BuildApiUrl(const String& aApiKey)-> String
     return String(API_BASE_URL) + "?apiKey=" + aApiKey;
 }
 
-auto GetLocationCoordinates(const String &aApiKey) -> bool
+auto FetchData(const String &aApiKey) -> bool
 {
     const String requestUrl = BuildApiUrl(aApiKey);
     log_d("%s", requestUrl.c_str());

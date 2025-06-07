@@ -77,7 +77,7 @@ auto ProcessWSData(AsyncWebSocket * aServer, const AwsFrameInfo* const aFrameInf
 auto IpGeolocationTest(String aMsgType, HandlerParams aParams) -> void
 {
     auto&& [server, doc] = aParams;
-    const auto res = TestApiKey(doc, IpGeo::GetLocationCoordinates);
+    const auto res = TestApiKey(doc, IpGeo::FetchData);
     log_d("%s IpGeolocation.io key check: %svalid", TAG, (res) ? "" : "In");
 
     const auto respond = SerializeRespondJSON(std::move(doc), aMsgType, res);
