@@ -26,12 +26,14 @@ the names of the nearby locations.
 const String GEO_REVERSE_API = "https://api.openweathermap.org/geo/1.0/reverse";
 ```
 */
-
-const char TAG[] = "[OpenWeatherApi]";
+namespace OpenWeather
+{
+constexpr char TAG[] = "[OpenWeatherApi]";
+constexpr char BASE_API_URL[] = "https://api.openweathermap.org/data/2.5/weather";
 
 Weather_t weather;
 
-auto ParseJsonOwtr(const String& aData) -> std::optional<Weather_t>
+auto ParseJsonResponse(const String& aData) -> std::optional<Weather_t>
 {
     // Allocate the JSON document
     JsonDocument doc;
@@ -63,26 +65,26 @@ auto ParseJsonOwtr(const String& aData) -> std::optional<Weather_t>
     return std::make_optional(std::move(w));
 }
 
-auto GetApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-> String
+auto BuildApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-> String
 {
     constexpr char units[]{"metric"};
-    return String("https://api.openweathermap.org/data/2.5/weather")
+    return String(BASE_API_URL)
                 + "?lat=" + aLat
                 + "&lon=" + aLon
                 + "&appid=" + aApiKey
                 + "&units=" + units;
 }
 
-auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) -> bool // [ ]FIXME:rename
+auto FetchData(const String &aApiKey, const String &aLat, const String &aLon) -> bool // [ ]FIXME:rename
 {
-    const String requestUrl = GetApiUrl(aApiKey, aLat, aLon);
+    const String requestUrl = BuildApiUrl(aApiKey, aLat, aLon);
     log_d("%s", requestUrl.c_str());
 
     auto respond = SendGetRequest(requestUrl);
     if(!respond)
         return false;
 
-    const auto res = ParseJsonOwtr(respond.value());
+    const auto res = ParseJsonResponse(respond.value());
 
     if (!res)
         return false;
@@ -92,4 +94,5 @@ auto GetForecast(const String &aApiKey, const String &aLat, const String &aLon) 
     log_i("%s Acquired temperature: [ %4.1f ]", TAG, weather.temp);
 
     return true;
+}
 }

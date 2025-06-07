@@ -190,7 +190,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
             OMeteo::GetWeatherLastWeek(String(IpGeo::coordinates.latitude)
                             , String(IpGeo::coordinates.longitude));
 
-            GetForecast(GetOpenWeatherKey()
+            OpenWeather::FetchData(GetOpenWeatherKey()
                             , String(IpGeo::coordinates.latitude)
                             , String(IpGeo::coordinates.longitude));
         }

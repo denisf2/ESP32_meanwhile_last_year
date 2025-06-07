@@ -90,7 +90,7 @@ auto OpenWeatherTest(String aMsgType, HandlerParams aParams) -> void
     const auto res = TestApiKey(doc
                                 , [](const String& aKey) -> bool
                                     {
-                                        return GetForecast(aKey, String("0"), String("0"));
+                                        return OpenWeather::FetchData(aKey, String("0"), String("0"));
                                     });
     log_d("%s OpenWeathermap.org key check: %svalid", TAG, (res) ? "" : "In");
 
