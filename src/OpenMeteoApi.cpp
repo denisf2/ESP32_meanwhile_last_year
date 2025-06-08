@@ -20,7 +20,7 @@ constexpr char HISTORICAL_API_URL[] = "https://historical-forecast-api.open-mete
 std::optional<WeatherHistory_t> weatherHistory{std::nullopt};
 std::optional<WeatherHistory2_t> weatherWeek;
 
-auto ParseHistory(JsonDocument& aJson) -> WeatherHistory_t
+auto DecomposeHistoryJson(JsonDocument& aJson) -> WeatherHistory_t
 {
     // Fetch values
     JsonObject daily = aJson["daily"];
@@ -43,7 +43,7 @@ auto ParseHistory(JsonDocument& aJson) -> WeatherHistory_t
     return weatherData;
 }
 
-auto ParseLastWeek(JsonDocument& aJson) -> WeatherHistory2_t
+auto DecomposeLastWeekJson(JsonDocument& aJson) -> WeatherHistory2_t
 {
     // Fetch values
     JsonObject daily = aJson["daily"];
@@ -152,7 +152,7 @@ auto GetWeatherForPeriod(const String &aLat
 
 auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
 {
-    if(auto res = GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, BuildHistoryApiUrl, ParseHistory); res)
+    if(auto res = GetWeatherForPeriod<WeatherHistory_t>(aLat, aLon, BuildHistoryApiUrl, DecomposeHistoryJson); res)
     {
         log_d("%s Acquired history temperature", TAG);
         weatherHistory = res;
@@ -164,7 +164,7 @@ auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
 
 auto GetWeatherLastWeek(const String &aLat, const String &aLon) -> bool
 {
-    if(auto res = GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, BuildWeekApiUrl, ParseLastWeek); res)
+    if(auto res = GetWeatherForPeriod<WeatherHistory2_t>(aLat, aLon, BuildWeekApiUrl, DecomposeLastWeekJson); res)
     {
         log_d("%s Acquired week temperature", TAG);
         weatherWeek = res;
