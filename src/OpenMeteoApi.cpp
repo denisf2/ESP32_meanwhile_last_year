@@ -20,7 +20,7 @@ constexpr char HISTORICAL_API_URL[] = "https://historical-forecast-api.open-mete
 std::optional<WeatherHistory_t> weatherHistory{std::nullopt};
 std::optional<WeatherHistory2_t> weatherWeek;
 
-auto DecomposeHistoryJson(JsonDocument& aJson) -> WeatherHistory_t
+auto DecomposeHistoryJson(JsonDocument&& aJson) -> WeatherHistory_t
 {
     // Fetch values
     JsonObject daily = aJson["daily"];
@@ -43,7 +43,7 @@ auto DecomposeHistoryJson(JsonDocument& aJson) -> WeatherHistory_t
     return weatherData;
 }
 
-auto DecomposeLastWeekJson(JsonDocument& aJson) -> WeatherHistory2_t
+auto DecomposeLastWeekJson(JsonDocument&& aJson) -> WeatherHistory2_t
 {
     // Fetch values
     JsonObject daily = aJson["daily"];
@@ -66,10 +66,7 @@ auto DecomposeLastWeekJson(JsonDocument& aJson) -> WeatherHistory2_t
     return weatherData;
 }
 
-template<typename T>
-auto ParseJsonResponse(const String& aData
-                    , std::function<auto(JsonDocument& aJson) -> T> aParse
-                    ) -> std::optional<T>
+auto ValidateJsonResponse(String&& aData) -> Functional::Optional<JsonDocument>
 {
     // Allocate the JSON document
     JsonDocument doc;
@@ -97,9 +94,7 @@ auto ParseJsonResponse(const String& aData
         return std::nullopt;
     }
 
-    auto weatherData = aParse(doc);
-
-    return std::make_optional(std::move(weatherData));
+    return doc;
 }
 
 auto BuildWeekApiUrl(const String &aLat, const String &aLon) -> String
@@ -130,7 +125,7 @@ auto BuildHistoryApiUrl(const String &aLat, const String &aLon) -> String
 }
 
 template<typename T>
-using JsonParser = std::function<auto(JsonDocument& aJson) -> T>;
+using JsonParser = std::function<auto(JsonDocument&& aJson) -> T>;
 using UrlBuilder = std::function<auto(const String &aLat, const String &aLon) -> String>;
 
 template<typename T>
@@ -143,11 +138,9 @@ auto GetWeatherForPeriod(const String &aLat
     const String requestUrl = aGetURL(aLat, aLon);
     log_d("%s %s", TAG, requestUrl.c_str());
 
-    auto respond = SendGetRequest(requestUrl);
-    return Functonal::and_then(respond, [aParser](auto aArg)
-                                {
-                                    return ParseJsonResponse<T>(std::move(aArg), aParser);
-                                });
+    return Functional::Optional(SendGetRequest(requestUrl))
+                                .and_then(ValidateJsonResponse)
+                                .transform(aParser);
 }
 
 auto GetWeatherLastYear(const String &aLat, const String &aLon) -> bool
