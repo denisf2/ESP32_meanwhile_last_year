@@ -100,10 +100,10 @@ public:
     // }
 
     // Conversion
-    // std::optional<T> into_optional() &&
-    // {
-    //     return std::move(m_opt);
-    // }
+    std::optional<T> into_optional() &&
+    {
+        return std::move(m_opt);
+    }
     operator std::optional<T>() &&
     {
         return std::move(m_opt);

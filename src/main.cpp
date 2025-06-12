@@ -125,8 +125,9 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
             // [ ]TODO: save result on positive request status
             // if(request is OK)
             {
-                SaveLatitude(std::to_string(IpGeo::coordinates.latitude).c_str());
-                SaveLongitude(std::to_string(IpGeo::coordinates.longitude).c_str());
+                const auto coordinates = IpGeo::coordinates.value();
+                SaveLatitude(std::to_string(coordinates.latitude).c_str());
+                SaveLongitude(std::to_string(coordinates.longitude).c_str());
             }
         }
         else
@@ -135,14 +136,14 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
             // case manual
             try
             {
-                auto tmp{IpGeo::coordinates};
+                auto tmp{IpGeo::coordinates.value()};
 
                 // use std::stod to catch exceptions
                 // String::toDouble() does not provide this functionality
                 tmp.latitude = std::stod(GetLatitude().c_str());
                 tmp.longitude = std::stod(GetLongitude().c_str());
 
-                IpGeo::coordinates = tmp;
+                IpGeo::coordinates = std::make_optional(tmp);
             }
             catch (const std::invalid_argument &aExc)
             {
@@ -183,12 +184,13 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
         {
-            OMeteo::FetchData(String(IpGeo::coordinates.latitude)
-                            , String(IpGeo::coordinates.longitude));
+            const auto coordinates = IpGeo::coordinates.value();
+            OMeteo::FetchData(String(coordinates.latitude)
+                            , String(coordinates.longitude));
 
             OpenWeather::FetchData(GetOpenWeatherKey()
-                            , String(IpGeo::coordinates.latitude)
-                            , String(IpGeo::coordinates.longitude));
+                            , String(coordinates.latitude)
+                            , String(coordinates.longitude));
         }
         else
         {

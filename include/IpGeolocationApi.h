@@ -13,7 +13,7 @@ namespace IpGeo
 
     auto FetchData(const String &aApiKey) -> bool;
 
-    extern Coordinates_t coordinates;
+    extern std::optional<Coordinates_t> coordinates;
 } // namespace
 
 #endif /* IPGEOLOCATIONAPI_H__ */

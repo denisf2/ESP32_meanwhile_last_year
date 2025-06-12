@@ -5,6 +5,8 @@
 
 #include <optional>
 
+#include "functional_aux.h"
+
 /*
     api description: https://ipgeolocation.io/ip-location-api.html#documentation-overview
 */
@@ -14,9 +16,17 @@ namespace IpGeo
 constexpr char TAG[] = "[IpGeoApi]";
 constexpr char API_BASE_URL[] = "https://api.ipgeolocation.io/ipgeo";
 
-Coordinates_t coordinates;
+std::optional<Coordinates_t> coordinates;
 
-auto ParseJsonResponse(const String &aData) -> std::optional<Coordinates_t>
+auto DecomposeJson(JsonDocument&& aDoc) -> Coordinates_t
+{
+    return Coordinates_t {
+        aDoc["latitude"].as<double>()
+        , aDoc["longitude"].as<double>()
+    };
+}
+
+auto ValidateJsonResponse(const String &aData) -> Functional::Optional<JsonDocument>
 {
     // Allocate the JSON document
     JsonDocument doc;
@@ -34,10 +44,7 @@ auto ParseJsonResponse(const String &aData) -> std::optional<Coordinates_t>
         return std::nullopt;
     }
 
-    return Coordinates_t {
-        doc["latitude"].as<double>()
-        , doc["longitude"].as<double>()
-    };
+    return doc;
 }
 
 auto BuildApiUrl(const String& aApiKey)-> String
@@ -50,19 +57,20 @@ auto FetchData(const String &aApiKey) -> bool
     const String requestUrl = BuildApiUrl(aApiKey);
     log_d("%s", requestUrl.c_str());
 
-    const auto respond = SendGetRequest(requestUrl);
-    if(!respond)
-        return false;
+    if (auto res = Functional::Optional(SendGetRequest(requestUrl))
+                                        .and_then(ValidateJsonResponse)
+                                        .transform(DecomposeJson)
+                                        .into_optional()
+        ; res)
+    {
+        coordinates = res;
+        // Print values.
+        log_i("%s Acquired coordinates: [%3.3f, %3.3f]", TAG, coordinates.value().latitude, coordinates.value().longitude);
 
-    const auto res = ParseJsonResponse(respond.value());
-    if (!res)
-        return false;
+        return true;
+    }
 
-    coordinates = res.value();
-    // Print values.
-    log_i("%s Acquired coordinates: [%3.3f, %3.3f]", TAG, coordinates.latitude, coordinates.longitude);
-
-    return true;
+    return false;
 }
 
 } // namespace
