@@ -31,15 +31,14 @@ auto SendGetRequest(const String& aUrl) -> std::optional<String>
     int httpResponseCode = https.GET();
     if (httpResponseCode <= 0)
     {
-        log_w("%s Error code: %d", TAG, httpResponseCode);
+        log_w("%s Error code(%d): no info", TAG, httpResponseCode);
         // Free resources
         https.end();
 
         return std::nullopt;
     }
 
-    // [ ]TODO: handle response codes and JSONs 200 400 401 404
-    log_d("%s HTTP Response code: %d", TAG, httpResponseCode);
+    log_d("%s HTTP Response Content-Length: %d", TAG, httpResponseCode);
     const String payload = https.getString();
 
     // Free resources
