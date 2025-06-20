@@ -23,6 +23,7 @@
 #include <functional>
 #include <string>
 #include <exception>
+#include <array>
 
 #include "NvsPreferences.h"
 #include "resources.h"
@@ -38,11 +39,7 @@
 constexpr char TAG[] = "[Main]";
 
 // [ ]TODO: need refactoring to prev time stamps
-unsigned long oldmil1 = 0UL;
-unsigned long oldmil2 = 0UL;
-unsigned long oldmil3 = 0UL;
-unsigned long oldmil4 = 0UL;
-unsigned long oldmil5 = 0UL;
+std::array<unsigned long, 4> prevMil;
 
 constexpr unsigned long UPDATE_INTERVAL_10_S = 10000UL;
 constexpr unsigned long UPDATE_INTERVAL_1_S = 1000UL;
@@ -113,7 +110,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
 {
     // [ ]TODO: make run at start and once per hour
     static bool once = false;
-    if (aCurrent - oldmil4 >= 4 * UPDATE_INTERVAL_10_S && false == once)
+    if (aCurrent - prevMil[2] >= 4 * UPDATE_INTERVAL_10_S && false == once)
     {
         // [ ]TODO: choose user stored/automatic coordinates
         // if (GetAutoLocation())
@@ -159,19 +156,19 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
             }
         }
 
-        oldmil4 = aCurrent;
+        prevMil[2] = aCurrent;
         once = true;
     }
 }
 
 auto job_working_led_blink(unsigned long aCurrent) -> void
 {
-    if (aCurrent - oldmil1 >= UPDATE_INTERVAL_10_S)
+    if (aCurrent - prevMil[0] >= UPDATE_INTERVAL_10_S)
     {
         digitalWrite(BUILDIN_LED_PIN, ledState);
         ledState = 1 - ledState;
 
-        oldmil1 = aCurrent;
+        prevMil[0] = aCurrent;
     }
 }
 
@@ -179,7 +176,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
 {
     // [ ]TODO: make run at start and once per hour
     static bool once = false;
-    if (aCurrent - oldmil2 >= 6 * UPDATE_INTERVAL_10_S && false == once)
+    if (aCurrent - prevMil[1] >= 6 * UPDATE_INTERVAL_10_S && false == once)
     {
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
@@ -196,7 +193,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
         {
             log_i("%s WiFi Disconnected", TAG);
         }
-        oldmil2 = aCurrent;
+        prevMil[1] = aCurrent;
         once = true;
     }
 }
@@ -218,7 +215,7 @@ auto job_check_wifi_scan(unsigned long aCurrent) -> auto
     if (!scanInProgress)
         return;
 
-    if (aCurrent - oldmil5 >= UPDATE_INTERVAL_1_S)
+    if (aCurrent - prevMil[3] >= UPDATE_INTERVAL_1_S)
     {
         // [x]TODO: add some delay
         auto res = CheckWiFiScan(WiFi);
@@ -228,7 +225,7 @@ auto job_check_wifi_scan(unsigned long aCurrent) -> auto
             log_d("%s WiFi scan is ready", TAG);
         }
 
-        oldmil5 = aCurrent;
+        prevMil[3] = aCurrent;
     }
 }
 
