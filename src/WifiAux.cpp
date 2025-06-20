@@ -172,7 +172,7 @@ auto LockingWiFiConnection(WiFiClass aWiFi) -> bool
 auto PrintWifiStatus(WiFiClass &aWiFi) -> void
 {
     // Print local IP address and start web server
-    log_i("%s WiFi status: Connected to SSID: %s  IP Address: %s Signal strength (RSSI): %d dBm"
+    log_i("%s WiFi status: Connected to SSID: %s IP Address: %s Signal strength (RSSI): %d dBm"
             , TAG
             , aWiFi.SSID().c_str()
             , aWiFi.localIP().toString().c_str()
