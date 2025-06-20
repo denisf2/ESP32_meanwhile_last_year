@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "functional_aux.h"
+
 /*
 api description: https://openweathermap.org/current
 How to make an API call
@@ -31,9 +33,16 @@ namespace OpenWeather
 constexpr char TAG[] = "[OpenWeatherApi]";
 constexpr char BASE_API_URL[] = "https://api.openweathermap.org/data/2.5/weather";
 
-Weather_t weather;
+std::optional<Weather_t> weather;
 
-auto ParseJsonResponse(const String& aData) -> std::optional<Weather_t>
+auto DecomposeJson(JsonDocument&& aDoc) -> Weather_t
+{
+    return Weather_t {
+        aDoc["main"]["temp"].as<double>()
+    };
+}
+
+auto ValidateJsonResponse(const String& aData) -> Functional::Optional<JsonDocument>
 {
     // Allocate the JSON document
     JsonDocument doc;
@@ -58,11 +67,7 @@ auto ParseJsonResponse(const String& aData) -> std::optional<Weather_t>
     if (!(respondOK == code || respondGoodKeyInvalidData == code))
         return std::nullopt;
 
-    // Fetch values.
-    Weather_t w;
-    w.temp = doc["main"]["temp"];
-
-    return std::make_optional(std::move(w));
+    return doc;
 }
 
 auto BuildApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-> String
@@ -75,24 +80,24 @@ auto BuildApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-
                 + "&units=" + units;
 }
 
-auto FetchData(const String &aApiKey, const String &aLat, const String &aLon) -> bool // [ ]FIXME:rename
+auto FetchData(const String &aApiKey, const String &aLat, const String &aLon) -> bool
 {
     const String requestUrl = BuildApiUrl(aApiKey, aLat, aLon);
     log_d("%s", requestUrl.c_str());
 
-    auto respond = SendGetRequest(requestUrl);
-    if(!respond)
-        return false;
+    if (auto res = Functional::Optional(SendGetRequest(requestUrl))
+                                        .and_then(ValidateJsonResponse)
+                                        .transform(DecomposeJson)
+                                        .into_optional()
+        ; res)
+    {
+        weather = res;
+        // Print values.
+        log_i("%s Acquired temperature: [ %4.1f ]", TAG, weather.value().temp);
 
-    const auto res = ParseJsonResponse(respond.value());
+        return true;
+    }
 
-    if (!res)
-        return false;
-
-    weather = res.value();
-    // Print values.
-    log_i("%s Acquired temperature: [ %4.1f ]", TAG, weather.temp);
-
-    return true;
+    return false;
 }
 }

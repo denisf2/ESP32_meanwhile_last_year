@@ -12,7 +12,7 @@ namespace OpenWeather
 
     auto FetchData(const String &aApiKey, const String &aLat, const String &aLon) -> bool;
 
-    extern Weather_t weather;
+    extern std::optional<Weather_t> weather;
 }
 
 #endif /* OPENWEATHERAPI_H__ */
