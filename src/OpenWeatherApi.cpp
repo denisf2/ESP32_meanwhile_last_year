@@ -83,7 +83,7 @@ auto BuildApiUrl(const String &aApiKey, const String &aLat, const String &aLon)-
 auto FetchData(const String &aApiKey, const String &aLat, const String &aLon) -> bool
 {
     const String requestUrl = BuildApiUrl(aApiKey, aLat, aLon);
-    log_d("%s", requestUrl.c_str());
+    log_d("%s %s", TAG, requestUrl.c_str());
 
     if (auto res = Functional::Optional(SendGetRequest(requestUrl))
                                         .and_then(ValidateJsonResponse)

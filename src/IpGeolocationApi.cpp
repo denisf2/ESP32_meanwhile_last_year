@@ -55,7 +55,7 @@ auto BuildApiUrl(const String& aApiKey)-> String
 auto FetchData(const String &aApiKey) -> bool
 {
     const String requestUrl = BuildApiUrl(aApiKey);
-    log_d("%s", requestUrl.c_str());
+    log_d("%s %s", TAG, requestUrl.c_str());
 
     if (auto res = Functional::Optional(SendGetRequest(requestUrl))
                                         .and_then(ValidateJsonResponse)
