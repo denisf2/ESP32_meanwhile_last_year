@@ -2,7 +2,6 @@
 #include "WifiAux.h"
 #include "NvsPreferences.h"
 #include "OpenMeteoApi.h"
-#include "OpenWeatherApi.h"
 
 constexpr char TAG[] = "[JSON]";
 
