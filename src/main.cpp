@@ -272,20 +272,20 @@ void setup()
 // ===================================================
 void loop()
 {
-    // [ ]TODO: wrap into task or jobs
-    // server.handleClient();
-    // server.send(200, "text/html", getPage());
-    // * must send data by websocket
-
     websocket.cleanupClients();
 
     const auto newmil = millis();
+
+    // [ ]TODO: each jobs runs in a certain interval periodically. Needs to clarify frequency
+    // [ ]TODO: seems jobs won`t run on previous tick overflow anymore
 
     job_working_led_blink(newmil);
     job_acquire_coordinates(newmil);
     job_request_weather_data(newmil);
     job_update_chart_data(newmil);
     job_check_wifi_scan(newmil);
+
+    //[ ] TODO: due to all of these jobs are not to be the fastest make main loop some time quant relative
 }
 
 //===========================================================
