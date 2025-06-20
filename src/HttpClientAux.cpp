@@ -45,5 +45,5 @@ auto SendGetRequest(const String& aUrl) -> std::optional<String>
     // Free resources
     https.end();
 
-    return std::make_optional(std::move(payload));
+    return {payload};
 }
