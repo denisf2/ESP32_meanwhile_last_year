@@ -84,10 +84,6 @@ auto PreWiFiSNTPInit() -> void
 
 auto InitNTPClient() -> void
 {
-    // ntpTimeClient.begin();
-    // ntpTimeClient.setTimeOffset(0); // UTC time
-
-    // =================
     // set notification call-back function
     sntp_set_time_sync_notification_cb(timeavailable);
 
@@ -285,29 +281,10 @@ void loop()
     job_update_chart_data(newmil);
     job_check_wifi_scan(newmil);
 
-    //[ ] TODO: due to all of these jobs are not to be the fastest make main loop some time quant relative
+    // [ ] TODO: due to all of these jobs are not to be the fastest make main loop some time quant relative
 }
 
 //===========================================================
-
-/************************
-get cooord
-    v
-has city name?
-             |
-    |------------------|
-    v                  v
-    no                yes
-    v                  |
-get city info by ip ---]----|
-    v                  |    |
-return coordinates <---|    |
-    v                       |
-get forcast by coordinate   |
-    v                       |
-print city/forecast info <--|
-*************************/
-
 // show user a page with plot
 // current temperature
 // meanwhile this day last year min/max temp per day
