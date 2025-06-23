@@ -29,7 +29,7 @@ const int daylightOffset_sec = 3600;
 //         3: at 3 AM
 const char time_zone[] = "CET-1CEST,M3.5.0,M10.5.0/3";
 
-auto print(tm *aTimeInfo, const char *aFormat) -> String
+auto Format(tm *aTimeInfo, const char *aFormat) -> String
 {
     const char *format = aFormat;
     if (!format)
@@ -42,7 +42,7 @@ auto print(tm *aTimeInfo, const char *aFormat) -> String
     return String(buf);
 }
 
-auto printLocalTime() -> void
+auto PrintLocalTime() -> void
 {
     tm timeinfo;
     if (!getLocalTime(&timeinfo))
@@ -51,13 +51,13 @@ auto printLocalTime() -> void
         return;
     }
 
-    log_i("%s %s", TAG, print(&timeinfo, "%A, %B %d %Y %H:%M:%S").c_str());
+    log_i("%s %s", TAG, Format(&timeinfo, "%A, %B %d %Y %H:%M:%S").c_str());
 }
 
-auto timeavailable(timeval * aTimeVal) -> void
+auto TimeAvailable(timeval * aTimeVal) -> void
 {
     log_i("%s Got time adjustment from NTP!", TAG);
-    printLocalTime();
+    PrintLocalTime();
 }
 
 // Adjust date by a number of days +/-
@@ -85,11 +85,11 @@ auto GetDateRangeEnds(bool aForLastYear) -> std::pair<String, String>
         timeInfoLastYear.tm_year -= 1;
 
     DatePlusDays(&timeInfoLastYear, -3);
-    const auto threeDaysPastTodayLastYear = print(&timeInfoLastYear, "%F");
+    const auto threeDaysPastTodayLastYear = Format(&timeInfoLastYear, "%F");
 
     DatePlusDays(&timeInfoLastYear
                 , (aForLastYear) ? +6 : +3);
-    const auto threeDaysBeforeTodayLastYear = print(&timeInfoLastYear, "%F");
+    const auto threeDaysBeforeTodayLastYear = Format(&timeInfoLastYear, "%F");
 
     log_d("%s Date range is from %s till %s"
                 , TAG

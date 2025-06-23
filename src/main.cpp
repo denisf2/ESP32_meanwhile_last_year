@@ -41,9 +41,12 @@ constexpr char TAG[] = "[Main]";
 // [ ]TODO: need refactoring to prev time stamps
 std::array<unsigned long, 4> prevMil;
 
-constexpr unsigned long UPDATE_INTERVAL_10_S = 10000UL;
-constexpr unsigned long UPDATE_INTERVAL_1_S = 1000UL;
-constexpr unsigned long UPDATE_INTERVAL_05_S = 500UL;
+namespace update_interval
+{
+    constexpr unsigned long _10_S = 10000UL;
+    constexpr unsigned long _1_S = 1000UL;
+    constexpr unsigned long _05_S = 500UL;
+}
 
 constexpr uint8_t BUILDIN_LED_PIN{2};
 uint8_t ledState{static_cast<uint8_t>(LOW)};
@@ -85,7 +88,7 @@ auto PreWiFiSNTPInit() -> void
 auto InitNTPClient() -> void
 {
     // set notification call-back function
-    sntp_set_time_sync_notification_cb(timeavailable);
+    sntp_set_time_sync_notification_cb(TimeAvailable);
 
     /**
      * This will set configured ntp servers and constant TimeZone/daylightOffset
@@ -106,7 +109,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
 {
     // [ ]TODO: make run at start and once per hour
     static bool once = false;
-    if (aCurrent - prevMil[2] >= 4 * UPDATE_INTERVAL_10_S && false == once)
+    if (aCurrent - prevMil[2] >= 4 * update_interval::_10_S && false == once)
     {
         // [ ]TODO: choose user stored/automatic coordinates
         // if (GetAutoLocation())
@@ -159,7 +162,7 @@ auto job_acquire_coordinates(unsigned long aCurrent) -> void
 
 auto job_working_led_blink(unsigned long aCurrent) -> void
 {
-    if (aCurrent - prevMil[0] >= UPDATE_INTERVAL_10_S)
+    if (aCurrent - prevMil[0] >= update_interval::_10_S)
     {
         digitalWrite(BUILDIN_LED_PIN, ledState);
         ledState = 1 - ledState;
@@ -172,7 +175,7 @@ auto job_request_weather_data(unsigned long aCurrent) -> void
 {
     // [ ]TODO: make run at start and once per hour
     static bool once = false;
-    if (aCurrent - prevMil[1] >= 6 * UPDATE_INTERVAL_10_S && false == once)
+    if (aCurrent - prevMil[1] >= 6 * update_interval::_10_S && false == once)
     {
         // Check WiFi connection status
         if (WL_CONNECTED == WiFi.status())
@@ -211,7 +214,7 @@ auto job_check_wifi_scan(unsigned long aCurrent) -> auto
     if (!scanInProgress)
         return;
 
-    if (aCurrent - prevMil[3] >= UPDATE_INTERVAL_1_S)
+    if (aCurrent - prevMil[3] >= update_interval::_1_S)
     {
         // [x]TODO: add some delay
         auto res = CheckWiFiScan(WiFi);

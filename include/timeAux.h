@@ -10,11 +10,8 @@ extern const long gmtOffset_sec;
 extern const int daylightOffset_sec;
 extern const char time_zone[];
 
-auto print(tm *aTimeinfo, const char * aFormat) -> String;
-auto printLocalTime() -> void;
-
 // Callback function (gets called when time adjusts via NTP)
-auto timeavailable(timeval * aTimeVal) -> void;
+auto TimeAvailable(timeval * aTimeVal) -> void;
 auto GetDateRangeEnds(bool aForLastYear = true) -> std::pair<String, String>;
 
 #endif
