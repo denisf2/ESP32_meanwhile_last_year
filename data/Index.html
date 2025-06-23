@@ -317,12 +317,14 @@
             <div class="form-group">
                 <div id="LocationFlag" class="form-group location hideable">
                     <button id="manualLocation"
+                            class="location-toggler"
                             type="button">
                         <i class="fa fa-map-pin"></i> Set Location Manually
                     </button>
                 </div>
                 <div class="form-group location hideable hidden">
                     <button id="autoLocation"
+                            class="location-toggler"
                             type="button">
                         <i class="fa fa-location-arrow"></i> Set Location Automatically
                     </button>
@@ -1093,7 +1095,7 @@
             document.querySelector('#toggle-button')
                     ?.addEventListener('click', onClickToggle);
 
-            document.querySelectorAll('.location.hideable').forEach(
+            document.querySelectorAll('.location-toggler').forEach(
                 (control) => control.addEventListener('click', ToggleLocationAcqusition)
             );
 
